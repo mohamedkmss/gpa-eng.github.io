@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب المعدل التراكمي والفصلي - كلية الهندسة جامعة بنغازي</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-section">
+                <img src="images/benghazi-university-logo.png" alt="شعار جامعة بنغازي" class="university-logo" id="universityLogo">
+                <div class="header-text">
+                    <h1>حساب المعدل التراكمي والفصلي</h1>
+                    <p>كلية الهندسة - جامعة بنغازي</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-calculator"></i> بيانات المعدل السابق</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="previousGPA">المعدل التراكمي السابق:</label>
+                        <input type="number" id="previousGPA" step="0.01" min="0" max="4" placeholder="مثال: 3.25">
+                    </div>
+                    <div class="form-group">
+                        <label for="previousUnits">عدد الوحدات السابقة:</label>
+                        <input type="number" id="previousUnits" min="0" placeholder="مثال: 120">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-book"></i> إضافة المواد</h2>
+                </div>
+                <div class="card-body">
+                    <div class="subject-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="subjectName">اسم المادة:</label>
+                                <input type="text" id="subjectName" placeholder="مثال: الرياضيات 1">
+                            </div>
+                            <div class="form-group">
+                                <label for="grade">الدرجة:</label>
+                                <select id="grade">
+                                    <option value="">اختر الدرجة</option>
+                                    <option value="AA">AA (4.0)</option>
+                                    <option value="A">A (3.5)</option>
+                                    <option value="BB">BB (3.0)</option>
+                                    <option value="B">B (2.5)</option>
+                                    <option value="CC">CC (2.0)</option>
+                                    <option value="C">C (1.5)</option>
+                                    <option value="DD">DD (1.0)</option>
+                                    <option value="D">D (0.5)</option>
+                                    <option value="F">F (0.0)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="units">عدد الوحدات:</label>
+                                <input type="number" id="units" min="1" placeholder="مثال: 3">
+                            </div>
+                            <div class="form-group">
+                                <label for="isRetake">نوع المادة:</label>
+                                <select id="isRetake">
+                                    <option value="false">مادة جديدة</option>
+                                    <option value="true">مادة معادة</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="addSubject()">
+                            <i class="fas fa-plus"></i> إضافة المادة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="subjectsCard" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-list"></i> المواد المضافة</h2>
+                </div>
+                <div class="card-body">
+                    <div class="subjects-table">
+                        <table id="subjectsTable">
+                            <thead>
+                                <tr>
+                                    <th>اسم المادة</th>
+                                    <th>الدرجة</th>
+                                    <th>الوحدات</th>
+                                    <th>النوع</th>
+                                    <th>النقاط</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjectsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="calculate-section">
+                        <button type="button" class="btn btn-success" onclick="calculateGPA()">
+                            <i class="fas fa-calculator"></i> حساب المعدل
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="resultsCard" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> النتائج</h2>
+                </div>
+                <div class="card-body">
+                    <div class="results-grid">
+                        <div class="result-item">
+                            <div class="result-label">المعدل الفصلي</div>
+                            <div class="result-value" id="semesterGPA">0.00</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">المعدل التراكمي الجديد</div>
+                            <div class="result-value" id="cumulativeGPA">0.00</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">إجمالي الوحدات الجديد</div>
+                            <div class="result-value" id="totalUnits">0</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-label">النقاط المكتسبة هذا الفصل</div>
+                            <div class="result-value" id="semesterPoints">0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 كلية الهندسة - جامعة بنغازي. جميع الحقوق محفوظة.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
