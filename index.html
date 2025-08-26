@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>حساب المعدل التراكمي والفصلي (GPA) - جامعة بنغازي- كلية الهندسة</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -207,6 +207,153 @@
             border-color: rgba(255, 193, 7, 0.3);
             color: #ffd351;
         }
+
+        /* إضافة استعلامات الوسائط للهواتف المحمولة */
+        @media (max-width: 768px) {
+            /* تحسين التباعد العام */
+            .container {
+                padding: 1rem;
+            }
+            
+            /* تحسين رأس الصفحة */
+            header {
+                margin-bottom: 1rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            /* تحسين التبويبات */
+            .flex.border-b {
+                flex-direction: column;
+                border-bottom: none;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid var(--input-border);
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .tab-active {
+                border-bottom: 3px solid var(--tab-active-border);
+            }
+            
+            /* تحسين نمط البطاقات */
+            .card {
+                padding: 1rem;
+                border-radius: 1rem;
+            }
+            
+            /* تحسين نمط الجداول */
+            .courses-table {
+                font-size: 0.8rem;
+            }
+            
+            .courses-table th, 
+            .courses-table td {
+                padding: 0.25rem;
+                word-break: break-word;
+            }
+            
+            /* تحسين نمط صفوف المواد */
+            .course-row {
+                grid-template-columns: 1fr !important;
+                gap: 0.75rem;
+            }
+            
+            /* تحسين نمط قسم المساعدة */
+            #content-help .grid.grid-cols-2,
+            #content-help .grid.grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            #content-help .bg-blue-50,
+            #content-help .bg-green-50,
+            #content-help .bg-yellow-50 {
+                padding: 1rem;
+            }
+            
+            /* تحسين النمط في قسم الإرشادات */
+            #instructions .grid.grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            /* تحسين النمط في النتائج المحفوظة */
+            .saved-result .grid.grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            /* تحسين النمط في المحاكاة */
+            #content-simulation .grid.grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            /* تحسين النمط في النافذة المنبثقة */
+            .modal-content {
+                margin: 1rem;
+                padding: 1rem;
+                width: calc(100% - 2rem);
+            }
+            
+            .save-buttons {
+                flex-direction: column;
+            }
+            
+            /* تحسين أزرار الإضافة والحذف */
+            button {
+                padding: 0.5rem 1rem;
+            }
+            
+            /* تحسين حجم الخطوط للهواتف */
+            .text-2xl {
+                font-size: 1.5rem;
+            }
+            
+            .text-xl {
+                font-size: 1.25rem;
+            }
+            
+            .text-lg {
+                font-size: 1.125rem;
+            }
+            
+            /* تحسين النص في التلميحات */
+            .help-tooltip .tooltip-text {
+                width: 200px;
+                font-size: 0.8rem;
+                margin-right: -100px;
+            }
+        }
+
+        /* تحسينات إضافية للشاشات المتوسطة */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .course-row {
+                grid-template-columns: repeat(6, 1fr) !important;
+            }
+            
+            .course-row > div {
+                grid-column: span 3;
+            }
+            
+            .course-row > div:last-child {
+                grid-column: span 6;
+                text-align: center;
+            }
+        }
+
+        /* تحسينات عامة للوضع الأفقي على الهواتف */
+        @media (max-height: 500px) and (max-width: 900px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .card {
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -369,7 +516,7 @@
                 
                 <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6">
                     <h3 class="text-xl font-semibold mb-2">كيفية استخدام الأداة</h3>
-                    <ol class="list-decimal list-inside pr-4 space-y-2">
+                    <ol class="list-decimal list-inside pr-4 space-y-2 text-sm md:text-base">
                         <li>ادخل معدلك التراكمي الحالي وعدد الساعات المعتمدة التي درستها حتى الآن</li>
                         <li>أضف مواد الفصل الحالي مع تحديد عدد الساعات والتقدير المتوقع لكل مادة</li>
                         <li>حدد إذا كانت المادة جديدة أو معادة (للمعادلة، يجب إدخال التقدير القديم أيضاً)</li>
@@ -398,19 +545,19 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold">كيف يتم حساب المعدل التراكمي؟</h4>
-                            <p class="text-sm">يتم حساب المعدل التراكمي بقسمة مجموع (نقاط كل مادة × عدد وحداتها) على إجمالي عدد الوحدات الدراسية.</p>
+                            <p class="text-sm md:text-base">يتم حساب المعدل التراكمي بقسمة مجموع (نقاط كل مادة × عدد وحداتها) على إجمالي عدد الوحدات الدراسية.</p>
                         </div>
                         <div>
                             <h4 class="font-semibold">كيف تؤثر المواد المعادة على المعدل؟</h4>
-                            <p class="text-sm">في حالة المواد المعادة، يتم استبدال التقدير القديم بالتقدير الجديد، حيث يخصم تأثير التقدير القديم ويضاف تأثير التقدير الجديد.</p>
+                            <p class="text-sm md:text-base">في حالة المواد المعادة، يتم استبدال التقدير القديم بالتقدير الجديد، حيث يخصم تأثير التقدير القديم ويضاف تأثير التقدير الجديد.</p>
                         </div>
                         <div>
                             <h4 class="font-semibold">هل يمكنني حفظ نتائجي؟</h4>
-                            <p class="text-sm">نعم، يمكنك حفظ النتائج وعرضها لاحقاً من قسم "النتائج المحفوظة".</p>
+                            <p class="text-sm md:text-base">نعم، يمكنك حفظ النتائج وعرضها لاحقاً من قسم "النتائج المحفوظة".</p>
                         </div>
                         <div>
                             <h4 class="font-semibold">ماذا أفعل إذا كنت طالب فصل أول؟</h4>
-                            <p class="text-sm">إذا كنت طالب فصل أول، أدخل القيمة 0 في حقل المعدل التراكمي وعدد الساعات الإجمالية.</p>
+                            <p class="text-sm md:text-base">إذا كنت طالب فصل أول، أدخل القيمة 0 في حقل المعدل التراكمي وعدد الساعات الإجمالية.</p>
                         </div>
                     </div>
                 </div>
@@ -556,9 +703,9 @@
                         <div>المعدل الفصلي: <span class="font-bold">${result.semesterGPA}</span></div>
                         <div>المعدل التراكمي الجديد: <span class="font-bold">${result.cumulativeGPA}</span></div>
                     </div>
-                    <div class="mt-2 flex justify-end space-x-2">
-                        <button onclick="viewSavedResult(${index})" class="text-blue-600 hover:text-blue-800">عرض</button>
-                        <button onclick="deleteSavedResult(${index})" class="text-red-600 hover:text-red-800">حذف</button>
+                    <div class="mt-2 flex flex-wrap justify-end gap-2">
+                        <button onclick="viewSavedResult(${index})" class="text-blue-600 hover:text-blue-800 px-2 py-1 text-sm">عرض</button>
+                        <button onclick="deleteSavedResult(${index})" class="text-red-600 hover:text-red-800 px-2 py-1 text-sm">حذف</button>
                     </div>
                 `;
                 container.appendChild(resultElement);
