@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>حساب المعدل GPA - كلية الهندسة جامعة بنغازي</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts: Cairo -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f4f8;
+        }
+        /* Custom styles for a modern look */
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #005a9e;
+            color: white;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #004a83;
+            box-shadow: 0 4px 14px 0 rgba(0, 90, 158, 0.39);
+        }
+        .btn-danger {
+            background-color: #f56565;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-danger:hover {
+            background-color: #e53e3e;
+        }
+        .form-input, .form-select {
+            border-color: #cbd5e0;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: #005a9e;
+            box-shadow: 0 0 0 3px rgba(0, 90, 158, 0.2);
+            outline: none;
+        }
+        .result-card {
+            border: 2px solid #005a9e;
+            background: linear-gradient(135deg, #e0f7ff 0%, #ffffff 100%);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #005a9e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div class="container mx-auto p-4 md:p-8 max-w-5xl">
+<!-- Header Section -->
+<header class="text-center mb-8">
+<img alt="شعار جامعة بنغازي" class="mx-auto h-28 w-28 mb-4 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/112x112/005a9e/FFFFFF?text=UOB';" src="logo_uob.png"/>
+<h1 class="text-3xl md:text-4xl font-bold text-gray-800">حساب المعدل التراكمي والفصلي (GPA)</h1>
+<p class="text-lg text-gray-600 mt-2">لطلاب كلية الهندسة - جامعة بنغازي</p>
+</header>
+<!-- Main Calculator Card -->
+<main class="card p-6 md:p-10">
+<!-- Previous GPA Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b pb-8 mb-8 border-gray-200">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1" for="prev_gpa">المعدل التراكمي السابق</label>
+<input class="form-input w-full rounded-lg p-3 text-lg" id="prev_gpa" placeholder="مثال: 3.25" step="0.01" type="number"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1" for="prev_units">مجموع الوحدات السابقة المنجزة</label>
+<input class="form-input w-full rounded-lg p-3 text-lg" id="prev_units" placeholder="مثال: 120" type="number"/>
+</div>
+</div>
+<!-- Current Semester Courses Section -->
+<h2 class="text-2xl font-semibold text-gray-700 mb-4">مواد الفصل الدراسي الحالي</h2>
+<div class="space-y-4" id="courses_container">
+<!-- Course rows will be dynamically inserted here -->
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-between mt-6">
+<button class="btn-primary font-semibold py-2 px-5 rounded-lg flex items-center" onclick="addCourse()">
+<svg class="h-5 w-5 ml-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" fill-rule="evenodd"></path>
+</svg>
+                    إضافة مادة
+                </button>
+<button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all" onclick="calculateGPA()">
+                    احسب المعدل
+                </button>
+</div>
+<!-- Results Section -->
+<div class="mt-10 p-6 rounded-2xl result-card hidden" id="results_section">
+<div class="mx-auto loader hidden" id="loader"></div>
+<div id="result-content">
+<h3 class="text-2xl font-bold text-center text-gray-800 mb-6">النتائج النهائية</h3>
+<div class="flex flex-col md:flex-row justify-around text-center">
+<div class="p-4">
+<p class="text-lg text-gray-600">المعدل الفصلي</p>
+<p class="text-5xl font-extrabold text-[#005a9e] mt-2" id="semester_gpa">0.00</p>
+</div>
+<div class="p-4 mt-4 md:mt-0">
+<p class="text-lg text-gray-600">المعدل التراكمي الجديد</p>
+<p class="text-5xl font-extrabold text-green-600 mt-2" id="cumulative_gpa">0.00</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Error Message Box -->
+<div class="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden" id="error_box">
+<p id="error_message"></p>
+</div>
+</main>
+<!-- Footer -->
+<footer class="text-center mt-8 text-gray-500 text-sm">
+<p>تم التصميم والتطوير لخدمة طلاب جامعة بنغازي</p>
+<p>© <span id="year"></span> - كل الحقوق محفوظة</p>
+</footer>
+</div>
+<script>
+        // Grade points mapping
+        const gradePoints = {
+            'AA': 4.0, 'A': 3.5, 'BB': 3.0, 'B': 2.5,
+            'CC': 2.0, 'C': 1.5, 'DD': 1.0, 'D': 0.5, 'F': 0.0
+        };
+        let courseCounter = 0;
+
+        // Function to add a new course row
+        function addCourse() {
+            courseCounter++;
+            const container = document.getElementById('courses_container');
+            const courseRow = document.createElement('div');
+            courseRow.id = `course-row-${courseCounter}`;
+            courseRow.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-gray-50 rounded-xl border items-center';
+            
+            courseRow.innerHTML = `
+                <input type="text" placeholder="اسم المادة (اختياري)" class="form-input md:col-span-3 rounded-md p-2">
+                <input type="number" placeholder="الوحدات" class="form-input md:col-span-2 rounded-md p-2 units-input">
+                <select class="form-select md:col-span-2 rounded-md p-2 grade-select">
+                    <option value="">الدرجة الجديدة</option>
+                    ${Object.keys(gradePoints).map(grade => `<option value="${grade}">${grade}</option>`).join('')}
+                </select>
+                <select class="form-select md:col-span-2 rounded-md p-2 status-select" onchange="handleStatusChange(this, ${courseCounter})">
+                    <option value="new">مادة جديدة</option>
+                    <option value="retaken">مادة معادة</option>
+                </select>
+                <div id="old-grade-container-${courseCounter}" class="md:col-span-2"></div>
+                <button onclick="removeCourse(${courseCounter})" class="btn-danger md:col-span-1 flex justify-center items-center rounded-md p-2 h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            `;
+            container.appendChild(courseRow);
+        }
+
+        // Function to handle status change (new/retaken)
+        function handleStatusChange(selectElement, courseId) {
+            const container = document.getElementById(`old-grade-container-${courseId}`);
+            if (selectElement.value === 'retaken') {
+                container.innerHTML = `
+                    <select class="form-select w-full rounded-md p-2 old-grade-select">
+                        <option value="">الدرجة القديمة</option>
+                        ${Object.keys(gradePoints).map(grade => `<option value="${grade}">${grade}</option>`).join('')}
+                    </select>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        // Function to remove a course row
+        function removeCourse(id) {
+            const courseRow = document.getElementById(`course-row-${id}`);
+            if (courseRow) {
+                courseRow.remove();
+            }
+        }
+        
+        // Function to show error messages
+        function showError(message) {
+            const errorBox = document.getElementById('error_box');
+            const errorMessage = document.getElementById('error_message');
+            errorMessage.textContent = message;
+            errorBox.classList.remove('hidden');
+        }
+
+        // Function to hide error messages
+        function hideError() {
+            const errorBox = document.getElementById('error_box');
+            errorBox.classList.add('hidden');
+        }
+
+        // Main GPA calculation function
+        function calculateGPA() {
+            hideError();
+            const prevGpaInput = document.getElementById('prev_gpa');
+            const prevUnitsInput = document.getElementById('prev_units');
+            
+            const prevGpa = parseFloat(prevGpaInput.value);
+            const prevUnits = parseInt(prevUnitsInput.value);
+
+            // Validate previous GPA data
+            if (isNaN(prevGpa) || isNaN(prevUnits) || prevGpa < 0 || prevUnits < 0) {
+                showError('الرجاء إدخال قيم صالحة للمعدل التراكمي وعدد الوحدات السابقة.');
+                return;
+            }
+
+            const courses = document.querySelectorAll('#courses_container > div');
+            if (courses.length === 0) {
+                showError('الرجاء إضافة مادة واحدة على الأقل لحساب المعدل الفصلي.');
+                return;
+            }
+
+            let semesterPoints = 0;
+            let semesterUnits = 0;
+            let newCoursesUnits = 0;
+            let pointsToSubtract = 0;
+
+            // Validate and calculate for each course
+            for (const course of courses) {
+                const units = parseInt(course.querySelector('.units-input').value);
+                const grade = course.querySelector('.grade-select').value;
+                const status = course.querySelector('.status-select').value;
+
+                if (isNaN(units) || units <= 0 || grade === "") {
+                    showError('الرجاء التأكد من إدخال عدد وحدات ودرجة صالحة لكل المواد.');
+                    return;
+                }
+                
+                semesterPoints += gradePoints[grade] * units;
+                semesterUnits += units;
+                
+                if (status === 'new') {
+                    newCoursesUnits += units;
+                } else { // status === 'retaken'
+                    const oldGradeSelect = course.querySelector('.old-grade-select');
+                    if (!oldGradeSelect || oldGradeSelect.value === "") {
+                        showError('الرجاء إدخال الدرجة القديمة لكل مادة معادة.');
+                        return;
+                    }
+                    const oldGrade = oldGradeSelect.value;
+                    pointsToSubtract += gradePoints[oldGrade] * units;
+                }
+            }
+
+            // Calculations
+            const semesterGpa = semesterUnits > 0 ? (semesterPoints / semesterUnits) : 0;
+            
+            const initialTotalPoints = prevGpa * prevUnits;
+            // Subtract the old points of retaken courses, then add all new semester points
+            const newTotalPoints = initialTotalPoints - pointsToSubtract + semesterPoints;
+            // Total units only increase by the units of new courses
+            const newTotalUnits = prevUnits + newCoursesUnits;
+            
+            const cumulativeGpa = newTotalUnits > 0 ? (newTotalPoints / newTotalUnits) : 0;
+
+            // Display results with a loading effect
+            const resultsSection = document.getElementById('results_section');
+            const loader = document.getElementById('loader');
+            const resultContent = document.getElementById('result-content');
+            
+            resultsSection.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+
+            setTimeout(() => {
+                document.getElementById('semester_gpa').textContent = semesterGpa.toFixed(2);
+                document.getElementById('cumulative_gpa').textContent = cumulativeGpa.toFixed(2);
+                loader.classList.add('hidden');
+                resultContent.classList.remove('hidden');
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }, 1000); // 1 second delay for effect
+        }
+
+        // Initialize with one course row and set the year
+        window.onload = function() {
+            addCourse();
+            document.getElementById('year').textContent = new Date().getFullYear();
+        };
+    </script>
+</body>
+</html>
