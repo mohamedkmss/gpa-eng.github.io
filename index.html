@@ -1,1201 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>حساب المعدل التراكمي والفصلي (GPA) - جامعة بنغازي- كلية الهندسة</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Cairo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- html2canvas library for saving as image -->
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --bg-main: linear-gradient(120deg, #f0f4f8 0%, #d9e2ec 100%);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(255, 255, 255, 0.3);
-            --text-primary: #1a202c;
-            --text-secondary: #4a5568;
-            --input-bg: rgba(255, 255, 255, 0.6);
-            --input-border: #cbd5e0;
-            --accent-color: #005a9e;
-            --tab-active-border: #005a9e;
-            --new-course-color: #e6f7ff;
-            --retaken-course-color: #fff7e6;
-        }
-
-        .dark {
-            --bg-main: linear-gradient(120deg, #1a202c 0%, #2d3748 100%);
-            --card-bg: rgba(45, 55, 72, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #f7fafc;
-            --text-secondary: #a0aec0;
-            --input-bg: rgba(74, 85, 104, 0.5);
-            --input-border: #4a5568;
-            --accent-color: #63b3ed;
-            --tab-active-border: #63b3ed;
-            --new-course-color: rgba(0, 120, 215, 0.2);
-            --retaken-course-color: rgba(215, 120, 0, 0.2);
-        }
-
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            transition: background 0.3s ease, color 0.3s ease;
-            min-height: 100vh;
-        }
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            transition: background 0.3s ease, border 0.3s ease;
-        }
-        .btn-primary {
-            background-color: var(--accent-color);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-        .form-input, .form-select {
-            background-color: var(--input-bg);
-            border-color: var(--input-border);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-        .form-input::placeholder { color: var(--text-secondary); opacity: 0.7; }
-        .form-input:focus, .form-select:focus {
-            background-color: var(--card-bg);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
-            outline: none;
-        }
-        .course-row {
-            transition: all 0.4s ease-in-out;
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        .course-row.show { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
-        .course-row.new-course {
-            background-color: var(--new-course-color);
-            border-right: 4px solid var(--accent-color);
-        }
-        .course-row.retaken-course {
-            background-color: var(--retaken-course-color);
-            border-right: 4px solid #ffa500;
-        }
-        .modal-overlay {
-            transition: opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        .modal-content {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform: translateY(-50px) scale(0.95);
-            opacity: 0;
-        }
-        .modal-content.show { transform: translateY(0) scale(1); opacity: 1; }
-        .tab {
-            cursor: pointer;
-            padding: 0.75rem 1.5rem;
-            border-bottom: 3px solid transparent;
-            color: var(--text-secondary);
-        }
-        .tab-active {
-            border-bottom-color: var(--tab-active-border);
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        .status-new {
-            background-color: #e6f7ff;
-            color: #005a9e;
-        }
-        .dark .status-new {
-            background-color: rgba(0, 120, 215, 0.3);
-            color: #a0d2ff;
-        }
-        .status-retaken {
-            background-color: #fff7e6;
-            color: #cc7000;
-        }
-        .dark .status-retaken {
-            background-color: rgba(215, 120, 0, 0.3);
-            color: #ffc46b;
-        }
-        .help-tooltip {
-            cursor: help;
-            position: relative;
-            display: inline-block;
-        }
-        .help-tooltip .tooltip-text {
-            visibility: hidden;
-            width: 250px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            right: 50%;
-            margin-right: -125px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .help-tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-        .courses-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        .courses-table th, .courses-table td {
-            padding: 0.5rem;
-            text-align: center;
-            border: 1px solid var(--input-border);
-        }
-        .courses-table th {
-            background-color: var(--input-bg);
-        }
-        .save-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .saved-result {
-            background-color: var(--input-bg);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
-        }
-        .first-semester-note {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 0.5rem;
-            color: #856404;
-        }
-        .dark .first-semester-note {
-            background-color: rgba(255, 193, 7, 0.2);
-            border-color: rgba(255, 193, 7, 0.3);
-            color: #ffd351;
-        }
-
-        /* إضافة استعلامات الوسائط للهواتف المحمولة */
-        @media (max-width: 768px) {
-            /* تحسين التباعد العام */
-            .container {
-                padding: 1rem;
-            }
-            
-            /* تحسين رأس الصفحة */
-            header {
-                margin-bottom: 1rem;
-            }
-            
-            header h1 {
-                font-size: 1.5rem;
-            }
-            
-            /* تحسين التبويبات */
-            .flex.border-b {
-                flex-direction: column;
-                border-bottom: none;
-            }
-            
-            .tab {
-                width: 100%;
-                text-align: center;
-                border-bottom: 1px solid var(--input-border);
-                padding: 0.75rem 0.5rem;
-            }
-            
-            .tab-active {
-                border-bottom: 3px solid var(--tab-active-border);
-            }
-            
-            /* تحسين نمط البطاقات */
-            .card {
-                padding: 1rem;
-                border-radius: 1rem;
-            }
-            
-            /* تحسين نمط الجداول */
-            .courses-table {
-                font-size: 0.8rem;
-            }
-            
-            .courses-table th, 
-            .courses-table td {
-                padding: 0.25rem;
-                word-break: break-word;
-            }
-            
-            /* تحسين نمط صفوف المواد */
-            .course-row {
-                grid-template-columns: 1fr !important;
-                gap: 0.75rem;
-            }
-            
-            /* تحسين نمط قسم المساعدة */
-            #content-help .grid.grid-cols-2,
-            #content-help .grid.grid-cols-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            #content-help .bg-blue-50,
-            #content-help .bg-green-50,
-            #content-help .bg-yellow-50 {
-                padding: 1rem;
-            }
-            
-            /* تحسين النمط في قسم الإرشادات */
-            #instructions .grid.grid-cols-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            /* تحسين النمط في النتائج المحفوظة */
-            .saved-result .grid.grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-            
-            /* تحسين النمط في المحاكاة */
-            #content-simulation .grid.grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-            
-            /* تحسين النمط في النافذة المنبثقة */
-            .modal-content {
-                margin: 1rem;
-                padding: 1rem;
-                width: calc(100% - 2rem);
-            }
-            
-            .save-buttons {
-                flex-direction: column;
-            }
-            
-            /* تحسين أزرار الإضافة والحذف */
-            button {
-                padding: 0.5rem 1rem;
-            }
-            
-            /* تحسين حجم الخطوط للهواتف */
-            .text-2xl {
-                font-size: 1.5rem;
-            }
-            
-            .text-xl {
-                font-size: 1.25rem;
-            }
-            
-            .text-lg {
-                font-size: 1.125rem;
-            }
-            
-            /* تحسين النص في التلميحات */
-            .help-tooltip .tooltip-text {
-                width: 200px;
-                font-size: 0.8rem;
-                margin-right: -100px;
-            }
-        }
-
-        /* تحسينات إضافية للشاشات المتوسطة */
-        @media (max-width: 1024px) and (min-width: 769px) {
-            .course-row {
-                grid-template-columns: repeat(6, 1fr) !important;
-            }
-            
-            .course-row > div {
-                grid-column: span 3;
-            }
-            
-            .course-row > div:last-child {
-                grid-column: span 6;
-                text-align: center;
-            }
-        }
-
-        /* تحسينات عامة للوضع الأفقي على الهواتف */
-        @media (max-height: 500px) and (max-width: 900px) {
-            .container {
-                padding: 0.5rem;
-            }
-            
-            .card {
-                padding: 0.75rem;
-            }
-        }
-    </style>
-</head>
-<body class="antialiased">
-    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
-        
-        <header class="text-center mb-6 relative">
-            <!-- University Logo -->
-            <div class="flex justify-center mb-4">
-                <img src="images/benghazi-university-logo.png" 
-                     alt="شعار جامعة بنغازي - كلية الهندسة" 
-                     class="w-32 h-32 rounded-full object-contain">
-            </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold">حساب المعدل التراكمي والفصلي (GPA)</h1>
-            <p class="text-lg mt-2" style="color: var(--text-secondary);">لطلاب كلية الهندسة - جامعة بنغازي</p>
-            <!-- Dark Mode Toggle -->
-            <div class="absolute top-0 left-0">
-                <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                    <svg id="theme-icon-light" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                </button>
-            </div>
-        </header>
-
-        <main class="card p-6 md:p-10">
-            <!-- Tabs -->
-            <div class="flex border-b mb-6" style="border-color: var(--input-border);">
-                <div id="tab-calculator" class="tab tab-active" onclick="switchTab('calculator')">حساب الفصل الحالي</div>
-                <div id="tab-simulation" class="tab" onclick="switchTab('simulation')">محاكاة المستقبل (ماذا لو؟)</div>
-                <div id="tab-saved" class="tab" onclick="switchTab('saved')">النتائج المحفوظة</div>
-                <div id="tab-help" class="tab" onclick="switchTab('help')">المساعدة</div>
-            </div>
-
-            <!-- Calculator Content -->
-            <div id="content-calculator">
-                <div class="space-y-10">
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">الخطوة الأولى: وضعك الدراسي الحالي</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="prev_gpa" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">معدلك التراكمي
-                                    <span class="help-tooltip">ℹ️
-                                        <span class="tooltip-text">المعدل التراكمي الحالي الذي حصلت عليه من الجامعة</span>
-                                    </span>
-                                </label>
-                                <input type="number" id="prev_gpa" step="0.01" min="0" max="4" placeholder="مثال: 3.25" class="form-input w-full rounded-lg p-3 text-lg">
-                                <div class="first-semester-note text-sm mt-1">
-                                    <strong>ملاحظة:</strong> إذا كنت طالب فصل أول، أدخل القيمة 0
-                                </div>
-                            </div>
-                            <div>
-                                <label for="prev_units" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">عدد الساعات الإجمالية الموجودة في إستمارتك
-                                    <span class="help-tooltip">ℹ️
-                                        <span class="tooltip-text">إجمالي عدد الساعات المعتمدة التي درستها حتى الآن</span>
-                                    </span>
-                                </label>
-                                <input type="number" id="prev_units" min="0" placeholder="مثال: 120" class="form-input w-full rounded-lg p-3 text-lg">
-                                <div class="first-semester-note text-sm mt-1">
-                                    <strong>ملاحظة:</strong> إذا كنت طالب فصل أول، أدخل القيمة 0
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">الخطوة الثانية: مواد هذا الفصل</h2>
-                        <div class="mb-4 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                            <p class="text-sm" style="color: var(--text-secondary);">
-                                <span class="font-bold">ملاحظة:</span> بالنسبة للمواد المعادة، سيتم استبدال تقديرك القديم بالتقدير الجديد في حساب المعدل التراكمي.
-                            </p>
-                        </div>
-                        <div id="courses_container" class="space-y-4"></div>
-                        <div class="flex items-center justify-between mt-4">
-                            <button onclick="addCourse()" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-2 px-5 rounded-lg flex items-center transition-colors" style="color: var(--text-primary);">
-                                <svg class="w-5 h-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                                إضافة مادة
-                            </button>
-                        </div>
-                    </div>
-                    <div class="text-center border-t pt-8" style="border-color: var(--card-border);">
-                        <button onclick="calculateGPA()" class="btn-primary font-bold py-4 px-16 text-xl rounded-lg shadow-lg hover:shadow-xl">
-                            احسب المعدل
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Simulation Content -->
-            <div id="content-simulation" class="hidden">
-                 <div class="space-y-8">
-                    <div>
-                        <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">الخطوة الأولى: وضعك الدراسي الحالي</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <div>
-                                <label for="sim_current_gpa" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">معدلك التراكمي الحالي</label>
-                                <input type="number" id="sim_current_gpa" step="0.01" min="0" max="4" placeholder="أدخل معدلك الحالي" class="form-input w-full rounded-lg p-3 text-lg">
-                                <div class="first-semester-note text-sm mt-1">
-                                    <strong>ملاحظة:</strong> إذا كنت طالب فصل أول، أدخل القيمة 0
-                                </div>
-                            </div>
-                            <div>
-                                <label for="sim_current_units" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">وحداتك المنجزة</label>
-                                <input type="number" id="sim_current_units" min="0" placeholder="أدخل وحداتك المنجزة" class="form-input w-full rounded-lg p-3 text-lg">
-                                <div class="first-semester-note text-sm mt-1">
-                                    <strong>ملاحظة:</strong> إذا كنت طالب فصل أول، أدخل القيمة 0
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                     <div>
-                        <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">الخطوة الثانية: ما هو هدفك؟</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="sim_target_gpa" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">المعدل الذي تطمح إليه</label>
-                                <input type="number" id="sim_target_gpa" step="0.01" min="0" max="4" placeholder="مثال: 3.50" class="form-input w-full rounded-lg p-3 text-lg">
-                            </div>
-                            <div>
-                                <label for="sim_future_units_new" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">عدد الوحدات الجديدة</label>
-                                <input type="number" id="sim_future_units_new" min="0" placeholder="الوحدات للمواد الجديدة" class="form-input w-full rounded-lg p-3 text-lg">
-                            </div>
-                            <div>
-                                <label for="sim_future_units_retaken" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">عدد الوحدات المعادة (اختياري)</label>
-                                <input type="number" id="sim_future_units_retaken" min="0" placeholder="الوحدات للمواد المعادة" class="form-input w-full rounded-lg p-3 text-lg">
-                            </div>
-                            <div>
-                                <label for="sim_avg_grade" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">متوسط التقدير المتوقع</label>
-                                <select id="sim_avg_grade" class="form-select w-full rounded-lg p-3 text-lg">
-                                    <option value="4.0">AA (4.0)</option>
-                                    <option value="3.5">A (3.5)</option>
-                                    <option value="3.0">BB (3.0)</option>
-                                    <option value="2.5">B (2.5)</option>
-                                    <option value="2.0">CC (2.0)</option>
-                                    <option value="1.5">C (1.5)</option>
-                                    <option value="1.0">DD (1.0)</option>
-                                    <option value="0.5">D (0.5)</option>
-                                    <option value="0.0">F (0.0)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center border-t pt-8" style="border-color: var(--card-border);">
-                        <button onclick="runSimulation()" class="btn-primary font-bold py-3 px-12 text-lg rounded-lg">حلّل هدفي</button>
-                    </div>
-                    <div id="simulation_result" class="text-center bg-blue-50 dark:bg-blue-900/30 p-6 rounded-lg hidden">
-                        <h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3>
-                        <div id="simulation_details" class="text-right space-y-3"></div>
-                    </div>
-                 </div>
-            </div>
-
-            <!-- Saved Results Content -->
-            <div id="content-saved" class="hidden">
-                <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">النتائج المحفوظة</h2>
-                <div id="saved-results-container" class="space-y-4">
-                    <p class="text-center text-gray-500" id="no-saved-results">لا توجد نتائج محفوظة حتى الآن</p>
-                </div>
-            </div>
-
-            <!-- Help Content -->
-            <div id="content-help" class="hidden">
-                <h2 class="text-2xl font-bold mb-4 border-r-4 pr-4" style="border-color: var(--accent-color);">مركز المساعدة</h2>
-                
-                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-2">كيفية استخدام الأداة</h3>
-                    <ol class="list-decimal list-inside pr-4 space-y-2 text-sm md:text-base">
-                        <li>ادخل معدلك التراكمي الحالي وعدد الساعات المعتمدة التي درستها حتى الآن</li>
-                        <li>أضف مواد الفصل الحالي مع تحديد عدد الساعات والتقدير المتوقع لكل مادة</li>
-                        <li>حدد إذا كانت المادة جديدة أو معادة (للمعادلة، يجب إدخال التقدير القديم أيضاً)</li>
-                        <li>انقر على "احسب المعدل" لرؤية المعدل الفصلي والتراكمي المتوقع</li>
-                        <li>يمكنك حفظ النتيجة أو مشاركتها كصورة</li>
-                    </ol>
-                </div>
-
-                <div class="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-2">نظام التقديرات</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-center">
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">AA = 4.0</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">A = 3.5</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">BB = 3.0</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">B = 2.5</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">CC = 2.0</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">C = 1.5</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">DD = 1.0</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">D = 0.5</div>
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded">F = 0.0</div>
-                    </div>
-                </div>
-
-                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
-                    <h3 class="text-xl font-semibold mb-2">أسئلة شائعة</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold">كيف يتم حساب المعدل التراكمي؟</h4>
-                            <p class="text-sm md:text-base">يتم حساب المعدل التراكمي بقسمة مجموع (نقاط كل مادة × عدد وحداتها) على إجمالي عدد الوحدات الدراسية.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold">كيف تؤثر المواد المعادة على المعدل؟</h4>
-                            <p class="text-sm md:text-base">في حالة المواد المعادة، يتم استبدال التقدير القديم بالتقدير الجديد، حيث يخصم تأثير التقدير القديم ويضاف تأثير التقدير الجديد.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold">هل يمكنني حفظ نتائجي؟</h4>
-                            <p class="text-sm md:text-base">نعم، يمكنك حفظ النتائج وعرضها لاحقاً من قسم "النتائج المحفوظة".</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold">ماذا أفعل إذا كنت طالب فصل أول؟</h4>
-                            <p class="text-sm md:text-base">إذا كنت طالب فصل أول، أدخل القيمة 0 في حقل المعدل التراكمي وعدد الساعات الإجمالية.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <!-- Instructions Section -->
-        <section id="instructions" class="card p-8 mt-8">
-             <h2 class="text-2xl font-bold mb-4 text-center">إرشادات: كيف يتم حساب معدلك؟</h2>
-             <div class="text-right space-y-4 mt-4" style="color: var(--text-secondary);">
-                <p><strong>1. نقاط التقديرات المعتمدة في الكلية:</strong></p>
-                <div class="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center">
-                    <span>AA = 4.0</span><span>A = 3.5</span><span>BB = 3.0</span>
-                    <span>B = 2.5</span><span>CC = 2.0</span><span>C = 1.5</span>
-                    <span>DD = 1.0</span><span>D = 0.5</span><span>F = 0.0</span>
-                </div>
-                <p><strong>2. المعدل الفصلي (Semester GPA):</strong></p>
-                <p class="text-sm bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg">هو مقياس لأدائك في الفصل الدراسي الحالي فقط. يُحسب بجمع (نقاط كل مادة × عدد وحداتها) ثم قسمة المجموع على إجمالي عدد وحدات الفصل.</p>
-                
-                <p><strong>3. المعدل التراكمي (Cumulative GPA):</strong></p>
-                <p class="text-sm bg-green-50 dark:bg-green-900/30 p-3 rounded-lg">هو المقياس الأهم لمسيرتك الدراسية، ويُحسب بدقة كالتالي:</p>
-                <ul class="list-disc list-inside pr-4 text-sm space-y-2">
-                    <li><strong>للمواد الجديدة:</strong> تُضاف نقاطها ووحداتها بالكامل إلى مجموعك السابق.</li>
-                    <li><strong>للمواد المُعادة:</strong> يتم أولاً **خصم** تأثيرها القديم (نقاط الدرجة القديمة × الوحدات) من مجموعك الكلي، ثم يُضاف تأثيرها الجديد. وحداتها **لا تُضاف** مرة أخرى لأنك أنجزتها سابقاً.</li>
-                </ul>
-                <p class="text-sm bg-yellow-50 dark:bg-yellow-900/30 p-3 rounded-lg mt-2">
-                    <strong>ملاحظة للطلاب الجدد:</strong> إذا كنت طالب فصل أول، أدخل القيمة 0 في حقل المعدل التراكمي وعدد الساعات الإجمالية.
-                </p>
-            </div>
-        </section>
-
-        <footer class="text-center mt-8 text-sm" style="color: var(--text-secondary);">
-            <p>&copy; <span id="year"></span> - تم التطوير لخدمة طلاب جامعة بنغازي</p>
-            <p class="mt-2">هذه الأداة للاستخدام الشخصي فقط ولا توجد حاجة للاتصال بأي شخص للاستفادة منها</p>
-        </footer>
-    </div>
-
-    <!-- Results Modal -->
-    <div id="results_modal" class="fixed inset-0 bg-black bg-opacity-60 modal-overlay flex items-center justify-center p-4 z-50">
-        <div class="card modal-content p-8 rounded-2xl w-full max-w-2xl" id="result-to-capture">
-            <h3 id="modal_title" class="text-2xl font-bold mb-6 text-center">هذه هي نتيجتك أيها المهندس!</h3>
-            
-            <div class="mb-6">
-                <h4 class="text-xl font-semibold mb-3 text-center">المواد المدخلة</h4>
-                <div class="overflow-x-auto">
-                    <table class="courses-table">
-                        <thead>
-                            <tr>
-                                <th>اسم المادة</th>
-                                <th>الوحدات</th>
-                                <th>التقدير</th>
-                                <th>النوع</th>
-                                <th>التقدير القديم</th>
-                            </tr>
-                        </thead>
-                        <tbody id="courses_summary">
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="flex flex-col md:flex-row justify-around text-center">
-                <div>
-                    <p class="text-lg" style="color: var(--text-secondary);">المعدل الفصلي</p>
-                    <p id="semester_gpa" class="text-5xl font-extrabold mt-2" style="color: var(--accent-color);">0.00</p>
-                </div>
-                <div class="mt-4 md:mt-0">
-                    <p class="text-lg" style="color: var(--text-secondary);">المعدل التراكمي الجديد</p>
-                    <p id="cumulative_gpa" class="text-5xl font-extrabold text-green-500 mt-2">0.00</p>
-                </div>
-            </div>
-            
-            <div id="insights_section" class="mt-6 pt-6 border-t" style="border-color: var(--card-border);">
-                 <h4 class="text-xl font-semibold mb-3 text-center flex items-center justify-center gap-2">نصيحة ذكية لك 💡</h4>
-                 <div id="insights_text_container" class="text-center bg-green-100 dark:bg-green-900/40 p-4 rounded-lg min-h-[60px] flex items-center justify-center" style="color: var(--text-secondary);">
-                    <p id="insights_text"></p>
-                 </div>
-            </div>
-            
-            <div id="error_message" class="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden"></div>
-            
-            <div class="save-buttons mt-6">
-                <button onclick="saveResult()" class="btn-primary font-semibold py-2 px-4 rounded-lg">حفظ النتيجة</button>
-                <button onclick="saveAsImage()" class="bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-700">حفظ كصورة</button>
-                <button onclick="closeModal('results_modal')" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold py-2 px-4 rounded-lg" style="color: var(--text-primary);">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- THEME LOGIC ---
-        const themeToggle = document.getElementById('theme-toggle');
-        const lightIcon = document.getElementById('theme-icon-light');
-        const darkIcon = document.getElementById('theme-icon-dark');
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            darkIcon.classList.remove('hidden');
-        } else {
-            lightIcon.classList.remove('hidden');
-        }
-        themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            lightIcon.classList.toggle('hidden');
-            darkIcon.classList.toggle('hidden');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-
-        // --- GPA LOGIC ---
-        const gradePoints = { 'AA': 4.0, 'A': 3.5, 'BB': 3.0, 'B': 2.5, 'CC': 2.0, 'C': 1.5, 'DD': 1.0, 'D': 0.5, 'F': 0.0 };
-        let courseCounter = 0;
-        let currentCourses = [];
-
-        // Set current year in footer
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // Load saved results
-        function loadSavedResults() {
-            const savedResults = JSON.parse(localStorage.getItem('savedGpaResults') || '[]');
-            const container = document.getElementById('saved-results-container');
-            const noResultsMsg = document.getElementById('no-saved-results');
-            
-            if (savedResults.length === 0) {
-                noResultsMsg.classList.remove('hidden');
-                container.innerHTML = '';
-                return;
-            }
-            
-            noResultsMsg.classList.add('hidden');
-            container.innerHTML = '';
-            
-            savedResults.forEach((result, index) => {
-                const resultElement = document.createElement('div');
-                resultElement.className = 'saved-result';
-                resultElement.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold">الحساب ${savedResults.length - index}</h3>
-                        <span class="text-sm">${new Date(result.timestamp).toLocaleString('ar-EG')}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>المعدل التراكمي السابق: <span class="font-bold">${result.prevGPA}</span></div>
-                        <div>الوحدات السابقة: <span class="font-bold">${result.prevUnits}</span></div>
-                        <div>المعدل الفصلي: <span class="font-bold">${result.semesterGPA}</span></div>
-                        <div>المعدل التراكمي الجديد: <span class="font-bold">${result.cumulativeGPA}</span></div>
-                    </div>
-                    <div class="mt-2 flex flex-wrap justify-end gap-2">
-                        <button onclick="viewSavedResult(${index})" class="text-blue-600 hover:text-blue-800 px-2 py-1 text-sm">عرض</button>
-                        <button onclick="deleteSavedResult(${index})" class="text-red-600 hover:text-red-800 px-2 py-1 text-sm">حذف</button>
-                    </div>
-                `;
-                container.appendChild(resultElement);
-            });
-        }
-
-        function viewSavedResult(index) {
-            const savedResults = JSON.parse(localStorage.getItem('savedGpaResults') || '[]');
-            if (index >= 0 && index < savedResults.length) {
-                const result = savedResults[index];
-                
-                // Fill the calculator with saved data
-                document.getElementById('prev_gpa').value = result.prevGPA;
-                document.getElementById('prev_units').value = result.prevUnits;
-                
-                // Clear current courses and add the saved ones
-                const container = document.getElementById('courses_container');
-                container.innerHTML = '';
-                currentCourses = [];
-                courseCounter = 0;
-                
-                result.courses.forEach(course => {
-                    courseCounter++;
-                    const courseRow = document.createElement('div');
-                    courseRow.id = `course-row-${courseCounter}`;
-                    courseRow.className = 'course-row show grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-xl border items-center';
-                    if (course.status === 'new') {
-                        courseRow.classList.add('new-course');
-                    } else {
-                        courseRow.classList.add('retaken-course');
-                    }
-                    
-                    courseRow.innerHTML = `
-                        <div class="md:col-span-3">
-                            <label class="block text-xs mb-1" style="color: var(--text-secondary);">اسم المادة</label>
-                            <input type="text" placeholder="اسم المادة" value="${course.name}" class="form-input w-full rounded-md p-2 course-name">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs mb-1" style="color: var(--text-secondary);">الوحدات</label>
-                            <input type="number" placeholder="الوحدات" min="1" value="${course.units}" class="form-input w-full rounded-md p-2 units-input">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs mb-1" style="color: var(--text-secondary);">التقدير</label>
-                            <select class="form-select w-full rounded-md p-2 grade-select">
-                                <option value="">اختر التقدير</option>
-                                ${Object.keys(gradePoints).map(g => `<option value="${g}" ${g === course.grade ? 'selected' : ''}>${g}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs mb-1" style="color: var(--text-secondary);">نوع المادة</label>
-                            <select class="form-select w-full rounded-md p-2 status-select" onchange="handleStatusChange(this, ${courseCounter})">
-                                <option value="new" ${course.status === 'new' ? 'selected' : ''}>مادة جديدة</option>
-                                <option value="retaken" ${course.status === 'retaken' ? 'selected' : ''}>مادة معادة</option>
-                            </select>
-                        </div>
-                        <div id="old-grade-container-${courseCounter}" class="md:col-span-2">
-                            ${course.status === 'retaken' ? `
-                                <div>
-                                    <label class="block text-xs mb-1" style="color: var(--text-secondary);">التقدير القديم</label>
-                                    <select class="form-select w-full rounded-md p-2 old-grade-select">
-                                        <option value="">اختر التقدير القديم</option>
-                                        ${Object.keys(gradePoints).map(g => `<option value="${g}" ${g === course.oldGrade ? 'selected' : ''}>${g}</option>`).join('')}
-                                    </select>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="md:col-span-1 flex justify-center items-center">
-                            <button type="button" onclick="removeCourse(${courseCounter})" class="text-red-500 hover:text-red-700 rounded-md p-2">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(courseRow);
-                    
-                    // Store course data
-                    currentCourses.push({
-                        id: courseCounter,
-                        name: course.name,
-                        units: course.units,
-                        grade: course.grade,
-                        status: course.status,
-                        oldGrade: course.oldGrade || ''
-                    });
-                });
-                
-                // Switch to calculator tab
-                switchTab('calculator');
-            }
-        }
-
-        function deleteSavedResult(index) {
-            const savedResults = JSON.parse(localStorage.getItem('savedGpaResults') || '[]');
-            if (index >= 0 && index < savedResults.length) {
-                savedResults.splice(index, 1);
-                localStorage.setItem('savedGpaResults', JSON.stringify(savedResults));
-                loadSavedResults();
-            }
-        }
-
-        function switchTab(tabName) {
-            const isCalculator = tabName === 'calculator';
-            const isSimulation = tabName === 'simulation';
-            const isSaved = tabName === 'saved';
-            const isHelp = tabName === 'help';
-            
-            document.getElementById('content-calculator').classList.toggle('hidden', !isCalculator);
-            document.getElementById('content-simulation').classList.toggle('hidden', !isSimulation);
-            document.getElementById('content-saved').classList.toggle('hidden', !isSaved);
-            document.getElementById('content-help').classList.toggle('hidden', !isHelp);
-            
-            document.getElementById('tab-calculator').classList.toggle('tab-active', isCalculator);
-            document.getElementById('tab-simulation').classList.toggle('tab-active', isSimulation);
-            document.getElementById('tab-saved').classList.toggle('tab-active', isSaved);
-            document.getElementById('tab-help').classList.toggle('tab-active', isHelp);
-            
-            if (isSaved) {
-                loadSavedResults();
-            }
-            
-            if (isCalculator) {
-                document.getElementById('prev_gpa').value = document.getElementById('sim_current_gpa').value;
-                document.getElementById('prev_units').value = document.getElementById('sim_current_units').value;
-            } else if (isSimulation) {
-                document.getElementById('sim_current_gpa').value = document.getElementById('prev_gpa').value;
-                document.getElementById('sim_current_units').value = document.getElementById('prev_units').value;
-            }
-        }
-
-        function addCourse() {
-            courseCounter++;
-            const container = document.getElementById('courses_container');
-            const courseRow = document.createElement('div');
-            courseRow.id = `course-row-${courseCounter}`;
-            courseRow.className = 'course-row new-course grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-xl border items-center';
-            courseRow.innerHTML = `
-                <div class="md:col-span-3">
-                    <label class="block text-xs mb-1" style="color: var(--text-secondary);">اسم المادة</label>
-                    <input type="text" placeholder="اسم المادة" class="form-input w-full rounded-md p-2 course-name">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs mb-1" style="color: var(--text-secondary);">الوحدات</label>
-                    <input type="number" placeholder="الوحدات" min="1" class="form-input w-full rounded-md p-2 units-input">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs mb-1" style="color: var(--text-secondary);">التقدير</label>
-                    <select class="form-select w-full rounded-md p-2 grade-select">
-                        <option value="">اختر التقدير</option>
-                        ${Object.keys(gradePoints).map(g => `<option value="${g}">${g}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs mb-1" style="color: var(--text-secondary);">نوع المادة</label>
-                    <select class="form-select w-full rounded-md p-2 status-select" onchange="handleStatusChange(this, ${courseCounter})">
-                        <option value="new">مادة جديدة</option>
-                        <option value="retaken">مادة معادة</option>
-                    </select>
-                </div>
-                <div id="old-grade-container-${courseCounter}" class="md:col-span-2"></div>
-                <div class="md:col-span-1 flex justify-center items-center">
-                    <button type="button" onclick="removeCourse(${courseCounter})" class="text-red-500 hover:text-red-700 rounded-md p-2">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
-                </div>
-            `;
-            container.appendChild(courseRow);
-            setTimeout(() => courseRow.classList.add('show'), 10);
-            
-            // Add to current courses array
-            currentCourses.push({
-                id: courseCounter,
-                name: '',
-                units: '',
-                grade: '',
-                status: 'new',
-                oldGrade: ''
-            });
-        }
-
-        function handleStatusChange(selectElement, courseId) {
-            const container = document.getElementById(`old-grade-container-${courseId}`);
-            const courseRow = document.getElementById(`course-row-${courseId}`);
-            const index = currentCourses.findIndex(course => course.id === courseId);
-            
-            if (selectElement.value === 'retaken') {
-                courseRow.classList.remove('new-course');
-                courseRow.classList.add('retaken-course');
-                container.innerHTML = `
-                    <div>
-                        <label class="block text-xs mb-1" style="color: var(--text-secondary);">التقدير القديم</label>
-                        <select class="form-select w-full rounded-md p-2 old-grade-select">
-                            <option value="">اختر التقدير القديم</option>
-                            ${Object.keys(gradePoints).map(g => `<option value="${g}">${g}</option>`).join('')}
-                        </select>
-                    </div>
-                `;
-                
-                if (index !== -1) {
-                    currentCourses[index].status = 'retaken';
-                }
-            } else {
-                courseRow.classList.remove('retaken-course');
-                courseRow.classList.add('new-course');
-                container.innerHTML = '';
-                
-                if (index !== -1) {
-                    currentCourses[index].status = 'new';
-                    currentCourses[index].oldGrade = '';
-                }
-            }
-        }
-
-        function removeCourse(id) {
-            const courseRow = document.getElementById(`course-row-${id}`);
-            if (courseRow) {
-                courseRow.classList.remove('show');
-                setTimeout(() => courseRow.remove(), 400);
-                
-                // Remove from current courses array
-                currentCourses = currentCourses.filter(course => course.id !== id);
-            }
-        }
-        
-        function showModalError(message) {
-            document.getElementById('modal_title').textContent = "عفواً، هناك خطأ";
-            document.getElementById('error_message').textContent = message;
-            document.getElementById('error_message').classList.remove('hidden');
-            document.getElementById('insights_section').classList.add('hidden');
-            openModal('results_modal');
-        }
-
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.classList.add('show');
-            setTimeout(() => {
-                modal.querySelector('.modal-content').classList.add('show');
-            }, 10);
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.querySelector('.modal-content').classList.remove('show');
-            setTimeout(() => {
-                modal.classList.remove('show');
-            }, 300);
-        }
-
-        function calculateGPA() {
-            // Get current GPA and units
-            const prevGPA = parseFloat(document.getElementById('prev_gpa').value);
-            const prevUnits = parseInt(document.getElementById('prev_units').value);
-            
-            // Validate inputs
-            if (isNaN(prevGPA) || isNaN(prevUnits) || prevGPA < 0 || prevGPA > 4 || prevUnits < 0) {
-                showModalError("يرجى التأكد من إدخال المعدل التراكمي وعدد الساعات بشكل صحيح (المعدل بين 0 و 4)");
-                return;
-            }
-            
-            // Get all courses
-            const courseRows = document.querySelectorAll('#courses_container .course-row');
-            if (courseRows.length === 0) {
-                showModalError("يرجى إضافة مواد الفصل الحالي أولاً");
-                return;
-            }
-            
-            let totalPoints = prevGPA * prevUnits;
-            let totalUnits = prevUnits;
-            let semesterPoints = 0;
-            let semesterUnits = 0;
-            let hasError = false;
-            let errorMessage = "";
-            
-            // Update current courses with input values
-            courseRows.forEach(row => {
-                const courseId = parseInt(row.id.split('-')[2]);
-                const index = currentCourses.findIndex(course => course.id === courseId);
-                
-                if (index !== -1) {
-                    currentCourses[index].name = row.querySelector('.course-name').value;
-                    currentCourses[index].units = parseInt(row.querySelector('.units-input').value);
-                    currentCourses[index].grade = row.querySelector('.grade-select').value;
-                    
-                    if (currentCourses[index].status === 'retaken') {
-                        currentCourses[index].oldGrade = row.querySelector('.old-grade-select') ? row.querySelector('.old-grade-select').value : '';
-                    }
-                }
-            });
-            
-            // Process each course
-            currentCourses.forEach(course => {
-                if (hasError) return;
-                
-                const units = course.units;
-                const grade = course.grade;
-                const status = course.status;
-                const oldGrade = course.oldGrade;
-                
-                // Validate course inputs
-                if (isNaN(units) || units <= 0) {
-                    hasError = true;
-                    errorMessage = "يرجى التأكد من إدخال عدد وحدات صحيح لكل المواد";
-                    return;
-                }
-                
-                if (!grade) {
-                    hasError = true;
-                    errorMessage = "يرجى اختيار تقدير لكل المواد";
-                    return;
-                }
-                
-                const points = gradePoints[grade] * units;
-                semesterPoints += points;
-                semesterUnits += units;
-                
-                // For retaken courses, subtract old points
-                if (status === 'retaken') {
-                    if (!oldGrade) {
-                        hasError = true;
-                        errorMessage = "يرجى اختيار التقدير القديم للمواد المعادة";
-                        return;
-                    }
-                    
-                    const oldPoints = gradePoints[oldGrade] * units;
-                    totalPoints -= oldPoints;
-                    // Note: We don't subtract units for retaken courses because they were already counted
-                }
-                
-                // Add new points to total
-                totalPoints += points;
-                
-                // For new courses, add units to total
-                if (status === 'new') {
-                    totalUnits += units;
-                }
-            });
-            
-            if (hasError) {
-                showModalError(errorMessage);
-                return;
-            }
-            
-            // Calculate GPAs
-            const semesterGPA = semesterUnits > 0 ? (semesterPoints / semesterUnits) : 0;
-            const cumulativeGPA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
-            
-            // Display results
-            document.getElementById('modal_title').textContent = "هذه هي نتيجتك أيها المهندس!";
-            document.getElementById('semester_gpa').textContent = semesterGPA.toFixed(2);
-            document.getElementById('cumulative_gpa').textContent = cumulativeGPA.toFixed(2);
-            document.getElementById('error_message').classList.add('hidden');
-            document.getElementById('insights_section').classList.remove('hidden');
-            
-            // Generate course summary
-            const coursesSummary = document.getElementById('courses_summary');
-            coursesSummary.innerHTML = '';
-            
-            currentCourses.forEach(course => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${course.name || 'غير مسمى'}</td>
-                    <td>${course.units}</td>
-                    <td>${course.grade}</td>
-                    <td>${course.status === 'new' ? 'جديدة' : 'معادة'}</td>
-                    <td>${course.oldGrade || '-'}</td>
-                `;
-                coursesSummary.appendChild(row);
-            });
-            
-            // Generate insights
-            const insightsText = generateInsights(prevGPA, cumulativeGPA, semesterGPA);
-            document.getElementById('insights_text').textContent = insightsText;
-            
-            // Store current result for saving
-            window.currentResult = {
-                prevGPA,
-                prevUnits,
-                semesterGPA: semesterGPA.toFixed(2),
-                cumulativeGPA: cumulativeGPA.toFixed(2),
-                courses: currentCourses,
-                timestamp: new Date().toISOString()
-            };
-            
-            openModal('results_modal');
-        }
-
-        function generateInsights(prevGPA, newGPA, semesterGPA) {
-            if (newGPA > prevGPA) {
-                if (semesterGPA >= 3.5) {
-                    return "معدلك في تحسن مستمر! استمر في هذا الأداء المتميز لتحقيق أهدافك.";
-                } else if (semesterGPA >= 2.5) {
-                    return "أداؤك جيد هذا الفصل، يمكنك التحسن أكثر بالتركيز على المواد الصعبة.";
-                } else {
-                    return "هناك تحسن في معدلك لكنك تحتاج إلى بذل جهد أكبر في الفصول القادمة.";
-                }
-            } else if (newGPA < prevGPA) {
-                return "معدلك انخفض هذا الفصل. راجع استراتيجيتك الدراسية وركز على تحسين أدائك.";
-            } else {
-                return "معدلك ثابت هذا الفصل. حاول تحسين أدائك في الفصل القادم لرفع معدلك.";
-            }
-        }
-
-        function saveResult() {
-            if (!window.currentResult) return;
-            
-            const savedResults = JSON.parse(localStorage.getItem('savedGpaResults') || '[]');
-            savedResults.push(window.currentResult);
-            localStorage.setItem('savedGpaResults', JSON.stringify(savedResults));
-            
-            alert('تم حفظ النتيجة بنجاح! يمكنك عرضها لاحقاً من قسم "النتائج المحفوظة"');
-        }
-
-        function saveAsImage() {
-            html2canvas(document.getElementById('result-to-capture')).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'نتيجة_المعدل_التراكمي.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function runSimulation() {
-            const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value);
-            const currentUnits = parseInt(document.getElementById('sim_current_units').value);
-            const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value);
-            const futureUnitsNew = parseInt(document.getElementById('sim_future_units_new').value) || 0;
-            const futureUnitsRetaken = parseInt(document.getElementById('sim_future_units_retaken').value) || 0;
-            const avgGrade = parseFloat(document.getElementById('sim_avg_grade').value);
-            
-            // Validate inputs
-            if (isNaN(currentGPA) || isNaN(currentUnits) || isNaN(targetGPA) || 
-                currentGPA < 0 || currentGPA > 4 || targetGPA < 0 || targetGPA > 4 ||
-                currentUnits <= 0 || (futureUnitsNew === 0 && futureUnitsRetaken === 0)) {
-                document.getElementById('simulation_result').classList.remove('hidden');
-                document.getElementById('simulation_details').innerHTML = `
-                    <p class="text-red-500">يرجى التأكد من إدخال جميع القيم بشكل صحيح</p>
-                    <p class="text-sm">المعدل يجب أن يكون بين 0 و 4، وعدد الوحدات يجب أن يكون أكبر من 0</p>
-                `;
-                return;
-            }
-            
-            // Calculate required points
-            const totalFutureUnits = futureUnitsNew + futureUnitsRetaken;
-            const currentTotalPoints = currentGPA * currentUnits;
-            const targetTotalPoints = targetGPA * (currentUnits + futureUnitsNew); // Only new units add to total units
-            
-            // Points from new courses
-            const newCoursesPoints = avgGrade * futureUnitsNew;
-            
-            // Points needed from retaken courses (to replace old points)
-            const pointsNeeded = targetTotalPoints - (currentTotalPoints + newCoursesPoints);
-            const requiredAvgRetaken = futureUnitsRetaken > 0 ? (pointsNeeded / futureUnitsRetaken) : 0;
-            
-            // Display results
-            const resultElement = document.getElementById('simulation_result');
-            const detailsElement = document.getElementById('simulation_details');
-            
-            resultElement.classList.remove('hidden');
-            
-            if (requiredAvgRetaken > 4 || requiredAvgRetaken < 0) {
-                detailsElement.innerHTML = `
-                    <p class="text-red-500">هدفك صعب التحقيق بالمعطيات الحالية</p>
-                    <p class="text-sm">لتحقيق معدل ${targetGPA.toFixed(2)}، ستحتاج إلى متوسط ${requiredAvgRetaken.toFixed(2)} للمواد المعادة، وهو غير ممكن.</p>
-                    <p class="text-sm mt-3">حلول مقترحة:</p>
-                    <ul class="list-disc list-inside text-sm pr-4">
-                        <li>زيادة عدد الوحدات الجديدة</li>
-                        <li>تحسين متوسط تقديرك المتوقع</li>
-                        <li>إعادة مواد أكثر لتحسين المعدل</li>
-                    </ul>
-                `;
-            } else {
-                detailsElement.innerHTML = `
-                    <p class="text-green-500">هدفك قابل للتحقيق!</p>
-                    <p class="text-sm">لتحقيق معدل ${targetGPA.toFixed(2)}:</p>
-                    <p class="text-sm">- يجب أن تحصل على متوسط ${avgGrade.toFixed(2)} في المواد الجديدة (${futureUnitsNew} وحدة)</p>
-                    ${futureUnitsRetaken > 0 ? 
-                        `<p class="text-sm">- يجب أن تحصل على متوسط ${requiredAvgRetaken.toFixed(2)} في المواد المعادة (${futureUnitsRetaken} وحدة)</p>` : 
-                        ''}
-                    <p class="text-sm mt-3">سيصبح إجمالي وحداتك: ${currentUnits + futureUnitsNew} وحدة</p>
-                `;
-            }
-        }
-
-        // Initialize with one course
-        document.addEventListener('DOMContentLoaded', function() {
-            addCourse();
-            loadSavedResults();
-        });
-    </script>
-</body>
-</html>
