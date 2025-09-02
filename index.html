@@ -363,6 +363,22 @@
             document.querySelectorAll('.form-input, .form-select').forEach(input => {
                 input.addEventListener('change', saveFormState);
             });
+
+            // Restrict GPA inputs to be between 0 and 4
+            const gpaInputs = ['prev_gpa', 'sim_current_gpa', 'sim_target_gpa'];
+            gpaInputs.forEach(id => {
+                const inputElement = document.getElementById(id);
+                if (inputElement) {
+                    inputElement.addEventListener('input', () => {
+                        let value = parseFloat(inputElement.value);
+                        if (value > 4) {
+                            inputElement.value = '4';
+                        } else if (value < 0) {
+                            inputElement.value = '0';
+                        }
+                    });
+                }
+            });
         });
 
         function loadSavedResults() {
@@ -722,9 +738,8 @@
             const clone = originalElement.cloneNode(true);
             clone.id = 'result-clone-for-export';
             clone.style.position = 'absolute';
-            clone.style.top = '0';
-            clone.style.left = '-9999px';
-            clone.style.width = '800px';
+            clone.style.left = '-9999px'; // Position off-screen
+            clone.style.width = '800px'; // Set a fixed width for consistent layout
             clone.style.padding = '2rem';
             
             const tableWrapperInClone = clone.querySelector('.overflow-x-auto');
@@ -737,16 +752,28 @@
             await ensureImagesLoaded(clone);
 
             try {
-                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(clone, { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: '#ffffff',
+                    logging: false, // Suppress verbose logging
+                    allowTaint: true // Allows cross-origin images to be rendered
+                });
+                
+                // Create a download link. This method is more robust across browsers.
                 const link = document.createElement('a');
                 link.download = `gpa-result-${new Date().toISOString().slice(0,10)}.png`;
                 link.href = canvas.toDataURL('image/png');
+                
+                document.body.appendChild(link); // Link must be in the document to be clicked in some browsers
                 link.click();
+                document.body.removeChild(link); // Clean up the link
+
             } catch (err) {
                 console.error("Image generation failed:", err);
                 showToast("حدث خطأ أثناء إنشاء الصورة.", "error");
             } finally {
-                document.body.removeChild(clone);
+                document.body.removeChild(clone); // Clean up the clone
             }
         }
         
@@ -757,7 +784,6 @@
             const clone = originalElement.cloneNode(true);
             clone.id = 'result-clone-for-export';
             clone.style.position = 'absolute';
-            clone.style.top = '0';
             clone.style.left = '-9999px';
             clone.style.width = '800px'; 
             clone.style.padding = '2rem';
@@ -771,7 +797,13 @@
             await ensureImagesLoaded(clone);
 
             try {
-                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(clone, { 
+                    scale: 2, 
+                    useCORS: true, 
+                    backgroundColor: '#ffffff',
+                    logging: false, // Suppress verbose logging
+                    allowTaint: true // Allows cross-origin images to be rendered
+                });
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
                 
@@ -782,7 +814,10 @@
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                // Use .save() for direct download, which is more reliable than opening a new window.
                 pdf.save(`gpa-result-${new Date().toISOString().slice(0,10)}.pdf`);
+                
             } catch (err) {
                 console.error("PDF generation failed:", err);
                 showToast("حدث خطأ أثناء إنشاء الملف.", "error");
@@ -956,7 +991,7 @@
         }
 
         async function callGeminiAPI(userMessage, requestType = 'general') {
-            const apiKey = ""; 
+            const apiKey = "AIzaSyCiOXNWUZHPXuzgRsFdxPYXsF2QvxdHy1w"; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             let systemInstruction = "أنت مرشد أكاديمي ذكي وخبير، متخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. كن دائماً إيجابياً ومشجعاً، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز. أكِّد على أهمية مراجعة المصادر الرسمية في الكلية.";
             const payload = { contents: [{ parts: [{ text: userMessage }] }], systemInstruction: { parts: [{ text: systemInstruction }] }, generationConfig: { temperature: 0.6, maxOutputTokens: 1024 } };
