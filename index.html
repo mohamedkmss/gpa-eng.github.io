@@ -753,27 +753,26 @@
 
             try {
                 const canvas = await html2canvas(clone, { 
-                    scale: 2, 
+                    scale: 3, 
                     useCORS: true, 
                     backgroundColor: '#ffffff',
-                    logging: false, // Suppress verbose logging
-                    allowTaint: true // Allows cross-origin images to be rendered
+                    logging: false,
+                    allowTaint: true
                 });
                 
-                // Create a download link. This method is more robust across browsers.
                 const link = document.createElement('a');
                 link.download = `gpa-result-${new Date().toISOString().slice(0,10)}.png`;
                 link.href = canvas.toDataURL('image/png');
                 
-                document.body.appendChild(link); // Link must be in the document to be clicked in some browsers
+                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link); // Clean up the link
+                document.body.removeChild(link);
 
             } catch (err) {
                 console.error("Image generation failed:", err);
                 showToast("حدث خطأ أثناء إنشاء الصورة.", "error");
             } finally {
-                document.body.removeChild(clone); // Clean up the clone
+                document.body.removeChild(clone);
             }
         }
         
@@ -798,11 +797,11 @@
 
             try {
                 const canvas = await html2canvas(clone, { 
-                    scale: 2, 
+                    scale: 3, 
                     useCORS: true, 
                     backgroundColor: '#ffffff',
-                    logging: false, // Suppress verbose logging
-                    allowTaint: true // Allows cross-origin images to be rendered
+                    logging: false,
+                    allowTaint: true
                 });
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
@@ -815,7 +814,6 @@
                 
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
                 
-                // Use .save() for direct download, which is more reliable than opening a new window.
                 pdf.save(`gpa-result-${new Date().toISOString().slice(0,10)}.pdf`);
                 
             } catch (err) {
