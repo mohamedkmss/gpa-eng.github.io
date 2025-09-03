@@ -592,7 +592,7 @@
             const today = new Date().toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
             
             resultContainer.innerHTML = `
-                <div class="transcript-header flex justify-between items-center">
+                <div class="transcript-header flex justify-between items-center" style="color: #000;">
                     <img src="./uob-logo.png" alt="شعار الجامعة" class="w-20 h-20 object-contain">
                     <div class="text-center">
                         <h2 class="text-xl sm:text-2xl font-bold">جامعة بنغازي - كلية الهندسة</h2>
@@ -602,24 +602,24 @@
                     <div class="w-20"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="transcript-table">
+                    <table class="transcript-table" style="color: #000;">
                         <thead><tr><th>اسم المادة</th><th>الحالة</th><th>الوحدات</th><th>التقدير</th><th>النقاط</th></tr></thead>
                         <tbody>${data.courses.map(c => `<tr><td>${c.name}</td><td><span class="status-badge ${c.type === 'retaken' ? 'status-retaken' : 'status-new'}">${c.type === 'retaken' ? 'معادة' : 'جديدة'}</span></td><td>${c.units}</td><td><span style="direction: ltr; display: inline-block; width: 100%;">${getGradeText(c.grade)} (${c.grade.toFixed(1)})</span></td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}</tbody>
                     </table>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t">
-                    <div class="text-center"><p class="text-sm font-semibold">المعدل الفصلي</p><p class="text-xl font-bold text-blue-600">${data.semesterGPA.toFixed(3)}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold">المعدل التراكمي</p><p class="text-xl font-bold text-green-600">${data.cumulativeGPA.toFixed(3)}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold">وحدات الفصل</p><p class="text-xl font-bold">${data.semesterUnits}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold">مجموع الساعات</p><p class="text-xl font-bold">${data.cumulativeUnits}</p></div>
+                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">المعدل الفصلي</p><p class="text-xl font-bold" style="color: #0b57d0;">${data.semesterGPA.toFixed(3)}</p></div>
+                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">المعدل التراكمي</p><p class="text-xl font-bold" style="color: #1e8e3e;">${data.cumulativeGPA.toFixed(3)}</p></div>
+                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">وحدات الفصل</p><p class="text-xl font-bold" style="color: #000;">${data.semesterUnits}</p></div>
+                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">مجموع الساعات</p><p class="text-xl font-bold" style="color: #000;">${data.cumulativeUnits}</p></div>
                 </div>
                 <div class="mt-6 p-4 rounded-lg" style="background-color: #f1f3f4;">
-                    <h4 class="font-bold flex items-center gap-2"><i data-feather="message-square"></i> نصيحة لك أيها المهندس:</h4>
+                    <h4 class="font-bold flex items-center gap-2" style="color: #000;"><i data-feather="message-square"></i> نصيحة لك أيها المهندس:</h4>
                     <p class="mt-2 text-sm" style="color: #5f6368;">${getStaticGPAAdvice(data.cumulativeGPA)}</p>
                 </div>
                 <div class="text-center mt-6 pt-4 border-t border-dashed">
-                     <p class="text-sm font-bold text-red-600">تنبيه: هذا الكشف تقديري وغير رسمي، ولا يغني عن الاستمارة المعتمدة من الكلية.</p>
-                     <p class="text-xs mt-4 text-gray-500">تم إنشاؤه بواسطة أداة "مسارك الهندسي" | rebrand.ly/gpaeng-uob</p>
+                     <p class="text-sm font-bold" style="color: #d93025;">تنبيه: هذا الكشف تقديري وغير رسمي، ولا يغني عن الاستمارة المعتمدة من الكلية.</p>
+                     <p class="text-xs mt-4" style="color: #5f6368;">تم إنشاؤه بواسطة أداة "مسارك الهندسي" | rebrand.ly/gpaeng-uob</p>
                 </div>
             `;
             feather.replace();
