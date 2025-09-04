@@ -28,6 +28,13 @@
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-15px); max-height: 0; } to { opacity: 1; transform: translateY(0); max-height: 500px; } }
         @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); max-height: 0; padding-top: 0; padding-bottom: 0; margin-top: 0; margin-bottom: 0; border-width: 0; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .result-item {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
         html { scroll-behavior: smooth; }
         body { font-family: 'Noto Sans Arabic', sans-serif; background-color: var(--bg-main); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.5rem; box-shadow: 0 4px 16px var(--shadow-color); transition: all 0.3s; animation: fadeIn 0.5s ease-out forwards; }
@@ -58,7 +65,8 @@
         .highlight-row { background-color: color-mix(in srgb, var(--accent-color) 8%, transparent); }
         .modal-overlay { transition: opacity 0.3s; opacity: 0; pointer-events: none; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        .modal-content { animation: popIn 0.3s ease-out forwards; max-height: 90vh; overflow-y: auto;}
+        .modal-content { animation: popIn 0.3s ease-out forwards; max-height: 90vh; display: flex; flex-direction: column; }
+        #result-content-area { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
         .tab { position: relative; cursor: pointer; padding: 0.75rem 1rem; border-bottom: 3px solid transparent; color: var(--text-secondary); font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: color 0.2s, background-color 0.2s; border-radius: 0.5rem 0.5rem 0 0; }
         .tab:hover { color: var(--text-primary); background-color: var(--input-bg); }
         .tab-active { color: var(--accent-color); }
@@ -66,9 +74,7 @@
         .tab-active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background-color: var(--accent-color); border-radius: 3px; }
         .tab-content { display: none; animation: fadeIn 0.4s; }
         .tab-content.active { display: block; }
-        /* Styles for the element that will be captured for export */
-        #result-to-capture { background-color: #ffffff; color: #000000; padding: 2rem; font-family: 'Noto Sans Arabic', sans-serif; }
-        .transcript-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        
         .transcript-table { width: 100%; border-collapse: collapse; font-size: 1rem; }
         .transcript-table th, .transcript-table td { border: 1px solid #ccc; padding: 0.75rem; text-align: center; }
         .transcript-table th { background-color: #f3f4f6; font-weight: bold; }
@@ -79,7 +85,7 @@
         .help-section h3 { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;}
         .help-section p, .help-section li { color: var(--text-secondary); }
         .help-section strong { color: var(--text-primary); }
-        .chat-bubble { padding: 0.75rem 1rem; border-radius: 1.25rem; line-height: 1.6; max-width: 100%; word-wrap: break-word; }
+        .chat-bubble { padding: 0.8rem 1.2rem; border-radius: 1.5rem; line-height: 1.6; max-width: 100%; word-wrap: break-word; }
         .chat-bubble ul { list-style-type: disc; padding-right: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
         .loading-dots span { height: 8px; width: 8px; background-color: var(--text-secondary); border-radius: 50%; display: inline-block; animation: wave 1.3s infinite; }
         .loading-dots span:nth-of-type(2) { animation-delay: -1.1s; }
@@ -130,7 +136,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="prev_gpa" class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">معدلك التراكمي الحالي (المعدل العام)</label>
-                                <input type="number" id="prev_gpa" step="0.001" min="0" max="4" placeholder="مثال: 3.250" class="form-input text-lg">
+                                <input type="number" id="prev_gpa" step="0.001" placeholder="مثال: 3.250" class="form-input text-lg">
                             </div>
                             <div>
                                 <label for="prev_units" class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">عدد الساعات الإجمالية</label>
@@ -170,7 +176,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                            <div>
                                 <label for="sim_current_gpa" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">معدلك التراكمي الحالي</label>
-                                <input type="number" id="sim_current_gpa" step="0.001" min="0" max="4" placeholder="أدخل معدلك الحالي" class="form-input">
+                                <input type="number" id="sim_current_gpa" step="0.001" placeholder="أدخل معدلك الحالي" class="form-input">
                             </div>
                             <div>
                                 <label for="sim_current_units" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">عدد الساعات الإجمالية</label>
@@ -178,7 +184,7 @@
                             </div>
                             <div>
                                 <label for="sim_target_gpa" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">المعدل الذي تطمح إليه</label>
-                                <input type="number" id="sim_target_gpa" step="0.001" min="0" max="4" placeholder="مثال: 3.500" class="form-input">
+                                <input type="number" id="sim_target_gpa" step="0.001" placeholder="مثال: 3.500" class="form-input">
                             </div>
                             <div>
                                 <label for="sim_future_units" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">كم عدد الوحدات القادمة؟</label>
@@ -217,12 +223,14 @@
                         <div id="chat-messages" class="flex-grow p-4 overflow-y-auto flex flex-col gap-4">
                             <!-- Messages are appended here -->
                         </div>
-                        <form id="chat-form" class="p-2 flex gap-2 border-t" style="border-color: var(--card-border);">
-                            <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." class="form-input w-full !rounded-full" autocomplete="off">
-                            <button type="submit" id="send-button" class="btn btn-primary !rounded-full !p-3 !gap-0" aria-label="إرسال الرسالة">
-                                <i data-feather="send"></i>
-                            </button>
-                        </form>
+                        <div class="p-4 border-t" style="border-color: var(--card-border); background-color: var(--card-bg);">
+                            <form id="chat-form" class="flex items-center gap-2">
+                                <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." class="form-input flex-grow !rounded-full" autocomplete="off">
+                                <button type="submit" id="send-button" class="btn btn-primary !rounded-full !p-3 !gap-0" aria-label="إرسال الرسالة">
+                                    <i data-feather="send"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -308,14 +316,14 @@
 
     <!-- Results Modal -->
     <div id="results_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
-        <div class="card modal-content p-4 sm:p-6 w-full max-w-3xl relative">
-            <button onclick="closeModal('results_modal')" class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="إغلاق النافذة">
+        <div class="card modal-content p-0 w-full max-w-3xl relative">
+             <button onclick="closeModal('results_modal')" class="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 z-20" aria-label="إغلاق النافذة">
                 <i data-feather="x" class="w-6 h-6" style="color: var(--text-secondary)"></i>
             </button>
-            <div id="result-to-capture">
-                <!-- Transcript Content will be dynamically generated here -->
+            <div id="result-content-area" class="p-4 sm:p-6">
+                 <!-- Transcript Content will be dynamically generated here -->
             </div>
-            <div id="modal-buttons" class="flex flex-wrap justify-center gap-3 mt-6 pt-4 border-t" style="border-color: var(--card-border);">
+            <div id="modal-buttons" class="flex flex-wrap justify-center gap-3 p-4 border-t" style="border-color: var(--card-border);">
                 <button onclick="saveResult()" class="btn btn-primary"><i data-feather="save"></i> حفظ النتيجة</button>
                 <button onclick="shareWebsite()" class="btn btn-secondary"><i data-feather="share-2"></i> مشاركة الموقع</button>
                 <button onclick="shareAsImage()" class="btn btn-secondary"><i data-feather="camera"></i> حفظ كصورة</button>
@@ -347,7 +355,6 @@
     <script>
         // --- GLOBAL VARIABLES & INITIALIZATION ---
         let courseCount = 0, planCourseCount = 0, savedResults = [], gpaChart = null, lastCalculationData = {};
-        const formState = {};
         
         document.addEventListener('DOMContentLoaded', () => {
             feather.replace();
@@ -359,55 +366,7 @@
             document.getElementById('year').textContent = new Date().getFullYear();
             document.getElementById('chat-form').addEventListener('submit', handleSendMessage);
             setupChat();
-            
-            document.querySelectorAll('.form-input, .form-select').forEach(input => {
-                input.addEventListener('change', saveFormState);
-            });
-
-            // Restrict GPA inputs to be between 0 and 4
-            const gpaInputs = ['prev_gpa', 'sim_current_gpa', 'sim_target_gpa'];
-            gpaInputs.forEach(id => {
-                const inputElement = document.getElementById(id);
-                if (inputElement) {
-                    inputElement.addEventListener('input', () => {
-                        let value = parseFloat(inputElement.value);
-                        if (value > 4) {
-                            inputElement.value = '4';
-                        } else if (value < 0) {
-                            inputElement.value = '0';
-                        }
-                    });
-                }
-            });
         });
-
-        function loadSavedResults() {
-             try {
-                savedResults = JSON.parse(localStorage.getItem('gpaResults')) || [];
-                if (!Array.isArray(savedResults)) {
-                    savedResults = [];
-                    localStorage.setItem('gpaResults', JSON.stringify([]));
-                }
-            } catch (e) {
-                console.error("Error loading saved results:", e);
-                savedResults = [];
-                localStorage.setItem('gpaResults', JSON.stringify([]));
-            }
-        }
-        
-        function saveFormState() {
-            document.querySelectorAll('.form-input, .form-select').forEach(input => {
-                if (input.id) formState[input.id] = input.value;
-            });
-        }
-        
-        function loadFormState() {
-             document.querySelectorAll('.form-input, .form-select').forEach(input => {
-                if (input.id && formState[input.id]) {
-                    input.value = formState[input.id];
-                }
-            });
-        }
 
         // --- THEME & UI ---
         function applyTheme(theme) {
@@ -420,31 +379,19 @@
         }
 
         function setupTheme() {
-            // دالة لتطبيق الثيم الأولي بناءً على تفضيل المستخدم أو إعدادات النظام
             const setInitialTheme = () => {
                 const savedTheme = localStorage.getItem('theme');
                 const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (savedTheme) {
-                    applyTheme(savedTheme);
-                } else {
-                    applyTheme(systemPrefersDark ? 'dark' : 'light');
-                }
+                applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
             };
-
             setInitialTheme();
-
-            // مستمع لتغيرات ثيم النظام
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                // يتم التطبيق فقط إذا لم يقم المستخدم بتحديد ثيم يدويًا
                 if (!localStorage.getItem('theme')) {
                     applyTheme(e.matches ? 'dark' : 'light');
                 }
             });
-
-            // مستمع لزر تبديل الثيم اليدوي
             document.getElementById('theme-toggle').addEventListener('click', () => {
                 const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                // حفظ اختيار المستخدم في الـ localStorage لتجاوز إعدادات النظام
                 localStorage.setItem('theme', newTheme);
                 applyTheme(newTheme);
             });
@@ -456,7 +403,6 @@
             document.getElementById(`content-${tabName}`).classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('tab-active');
             if (tabName === 'dashboard') loadDashboard();
-            loadFormState();
         }
 
         // --- GPA CALCULATOR ---
@@ -468,42 +414,20 @@
             courseRow.style.borderColor = 'var(--card-border)';
             courseRow.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-x-3 gap-y-3 items-center">
-                    <!-- Course Name -->
-                    <div class="md:col-span-4">
-                        <label class="block text-xs font-medium md:hidden mb-1" style="color: var(--text-secondary);">اسم المادة</label>
-                        <input type="text" placeholder="اسم المادة" class="form-input p-2 course-name">
-                    </div>
-                    <!-- Units & Grade (Flex on mobile) -->
+                    <div class="md:col-span-4"><input type="text" placeholder="اسم المادة" class="form-input p-2 course-name"></div>
                     <div class="md:col-span-4 flex gap-3">
-                        <div class="w-1/2">
-                            <label class="block text-xs font-medium md:hidden mb-1" style="color: var(--text-secondary);">الوحدات</label>
-                            <input type="number" placeholder="الوحدات" min="1" class="form-input p-2 course-units">
-                        </div>
-                        <div class="w-1/2">
-                            <label class="block text-xs font-medium md:hidden mb-1" style="color: var(--text-secondary);">التقدير</label>
-                            <select class="form-select p-2 course-grade">${getGradeOptions()}</select>
-                        </div>
+                        <div class="w-1/2"><input type="number" placeholder="الوحدات" min="1" class="form-input p-2 course-units"></div>
+                        <div class="w-1/2"><select class="form-select p-2 course-grade">${getGradeOptions()}</select></div>
                     </div>
-                    <!-- Status Toggle -->
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-medium md:hidden mb-1" style="color: var(--text-secondary);">حالة المادة</label>
                         <div class="status-toggle-group">
                             <button type="button" class="btn-status active" data-value="new" onclick="setCourseType(this, ${courseCount})">جديدة</button>
                             <button type="button" class="btn-status" data-value="retaken" onclick="setCourseType(this, ${courseCount})">معادة</button>
                         </div>
                     </div>
-                    <!-- Remove Button -->
-                    <div class="md:col-span-1 flex justify-end">
-                        <button onclick="removeCourse('course_', ${courseCount})" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة"><i data-feather="trash-2" class="text-red-500"></i></button>
-                    </div>
-                    <!-- Old Grade Container (Spans full width) -->
+                    <div class="md:col-span-1 flex justify-end"><button onclick="removeCourse('course_', ${courseCount})" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة"><i data-feather="trash-2" class="text-red-500"></i></button></div>
                     <div id="old-grade-container-${courseCount}" class="md:col-span-12 hidden mt-2">
-                        <div class="p-3 rounded-md" style="background-color: var(--input-bg);">
-                            <label for="old-grade-select-${courseCount}" class="block text-sm text-center font-medium mb-2" style="color:var(--text-secondary)">أدخل التقدير القديم للمادة المعادة</label>
-                            <div class="max-w-xs mx-auto">
-                                <select id="old-grade-select-${courseCount}" class="form-select p-2 course-old-grade">${getGradeOptions(true)}</select>
-                            </div>
-                        </div>
+                        <div class="p-3 rounded-md" style="background-color: var(--input-bg);"><label for="old-grade-select-${courseCount}" class="block text-sm text-center font-medium mb-2" style="color:var(--text-secondary)">أدخل التقدير القديم للمادة المعادة</label><div class="max-w-xs mx-auto"><select id="old-grade-select-${courseCount}" class="form-select p-2 course-old-grade">${getGradeOptions(true)}</select></div></div>
                     </div>
                 </div>
             `;
@@ -528,155 +452,185 @@
         }
 
         function toggleOldGrade(courseType, courseId) {
-            const row = document.getElementById(`course_${courseId}`);
             const container = document.getElementById(`old-grade-container-${courseId}`);
-            if(!row || !container) return;
-            
-            if (courseType === 'retaken') {
-                container.classList.remove('hidden');
-                row.classList.add('highlight-row');
-                setTimeout(() => row.classList.remove('highlight-row'), 1500);
-            } else {
-                container.classList.add('hidden');
-                row.classList.remove('highlight-row');
-            }
+            if(!container) return;
+            container.classList.toggle('hidden', courseType !== 'retaken');
         }
 
         function calculateGPA() {
-            if (!validateInputs('#content-calculator')) {
-                showToast("يرجى ملء جميع الحقول المطلوبة.", "error");
-                return;
-            }
+            if (!validateInputs('#content-calculator')) return;
             const prevGPA = parseFloat(document.getElementById('prev_gpa').value) || 0;
             const prevUnits = parseInt(document.getElementById('prev_units').value) || 0;
-            
-            let cumulativePoints = prevGPA * prevUnits;
-            let cumulativeUnits = prevUnits;
-            let semesterPoints = 0;
-            let semesterUnits = 0;
-            let courses = [];
-
+            let cumulativePoints = prevGPA * prevUnits; let cumulativeUnits = prevUnits; let semesterPoints = 0; let semesterUnits = 0; let courses = [];
             document.querySelectorAll('#courses_container .course-row').forEach(row => {
-                const unitsInput = row.querySelector('.course-units');
-                const gradeInput = row.querySelector('.course-grade');
+                const units = parseInt(row.querySelector('.course-units').value);
+                const grade = parseFloat(row.querySelector('.course-grade').value);
+                if (!units || isNaN(grade)) return;
                 const type = row.querySelector('.btn-status.active').dataset.value;
-
-                if (!unitsInput.value || !gradeInput.value) return;
-
-                const units = parseInt(unitsInput.value);
-                const grade = parseFloat(gradeInput.value);
-                
-                semesterPoints += grade * units;
-                semesterUnits += units;
-
+                semesterPoints += grade * units; semesterUnits += units;
                 if (type === 'new') {
-                    cumulativePoints += grade * units;
-                    cumulativeUnits += units;
-                } else { // 'retaken'
-                    const oldGradeInput = row.querySelector('.course-old-grade');
-                    const oldGrade = parseFloat(oldGradeInput.value);
-                    cumulativePoints = cumulativePoints - (oldGrade * units) + (grade * units);
+                    cumulativePoints += grade * units; cumulativeUnits += units;
+                } else {
+                    const oldGrade = parseFloat(row.querySelector('.course-old-grade').value);
+                    cumulativePoints += (grade * units) - (oldGrade * units);
                 }
                 courses.push({ name: row.querySelector('.course-name').value || 'مادة', units, grade, type });
             });
-
             const semesterGPA = semesterUnits > 0 ? (semesterPoints / semesterUnits) : 0;
             const cumulativeGPA = cumulativeUnits > 0 ? (cumulativePoints / cumulativeUnits) : 0;
-            
-            lastCalculationData = { semesterGPA, cumulativeGPA, semesterUnits, cumulativeUnits, courses, prevGPA, prevUnits };
+            lastCalculationData = { semesterGPA, cumulativeGPA, semesterUnits, cumulativeUnits, courses };
             displayResults(lastCalculationData);
         }
 
-        function displayResults(data) {
-            const resultContainer = document.getElementById('result-to-capture');
+        function getTranscriptHTMLForExport(data) {
             const today = new Date().toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' });
-            
-            resultContainer.innerHTML = `
-                <div class="transcript-header flex justify-between items-center" style="color: #000;">
-                    <img src="./uob-logo.png" alt="شعار الجامعة" class="w-20 h-20 object-contain">
-                    <div class="text-center">
-                        <h2 class="text-xl sm:text-2xl font-bold">جامعة بنغازي - كلية الهندسة</h2>
-                        <p class="text-md sm:text-lg">كشف درجات تقديري</p>
-                        <p class="text-sm" style="color: #5f6368;">تاريخ الإصدار: ${today}</p>
+            const styles = `
+                <style>
+                    body { font-family: 'Noto Sans Arabic', sans-serif; }
+                    .export-wrapper { background-color: #ffffff; color: #1f1f1f; padding: 2rem; width: 800px; box-sizing: border-box; }
+                    .export-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+                    .export-header img { width: 112px; height: 112px; }
+                    .export-header-text { text-align: center; }
+                    .export-header-text h2 { font-size: 1.5rem; font-weight: 700; margin: 0; }
+                    .export-header-text p { font-size: 1.125rem; margin: 0.25rem 0; }
+                    .export-header-text span { font-size: 0.875rem; color: #5f6368; }
+                    .export-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+                    .summary-box { padding: 1rem; border-radius: 0.5rem; text-align: center; }
+                    .summary-box .label { font-size: 0.875rem; font-weight: 600; }
+                    .summary-box .value { font-size: 2.25rem; font-weight: 700; }
+                    .summary-box .units { font-size: 0.75rem; color: #5f6368; }
+                    .semester-box { background-color: #e8f0fe; color: #1967d2; }
+                    .semester-box .value { color: #0b57d0; }
+                    .cumulative-box { background-color: #e6f4ea; color: #1e8e3e; }
+                    .cumulative-box .value { color: #188038; }
+                    .transcript-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem; }
+                    .transcript-table th, .transcript-table td { border: 1px solid #ccc; padding: 0.5rem; text-align: center; }
+                    .transcript-table th { background-color: #f3f4f6; font-weight: bold; }
+                    .advice-box { margin-top: 1.5rem; padding: 1rem; border-radius: 0.5rem; background-color: #f1f3f4; }
+                    .advice-box h4 { font-weight: bold; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+                    .advice-box p { margin: 0.5rem 0 0 0; font-size: 0.875rem; color: #5f6368; }
+                    .export-footer { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #ccc; }
+                    .export-footer .warning { font-size: 0.875rem; font-weight: bold; color: #d93025; }
+                    .export-footer .credit { font-size: 0.75rem; margin-top: 1rem; color: #5f6368; }
+                </style>`;
+
+            return `
+                ${styles}
+                <div class="export-wrapper">
+                    <div class="export-header">
+                        <img src="./uob-logo.png" alt="شعار الجامعة">
+                        <div class="export-header-text">
+                            <h2>جامعة بنغازي - كلية الهندسة</h2>
+                            <p>كشف درجات تقديري</p>
+                            <span>تاريخ الإصدار: ${today}</span>
+                        </div>
+                        <div style="width: 112px;"></div>
                     </div>
-                    <div class="w-20"></div>
+                    <div class="export-summary">
+                        <div class="summary-box semester-box">
+                            <p class="label">المعدل الفصلي</p>
+                            <p class="value">${data.semesterGPA.toFixed(3)}</p>
+                            <p class="units">${data.semesterUnits} وحدات</p>
+                        </div>
+                        <div class="summary-box cumulative-box">
+                            <p class="label">المعدل التراكمي</p>
+                            <p class="value">${data.cumulativeGPA.toFixed(3)}</p>
+                            <p class="units">${data.cumulativeUnits} ساعة إجمالية</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="transcript-table">
+                            <thead><tr><th>اسم المادة</th><th>الحالة</th><th>الوحدات</th><th>التقدير</th><th>النقاط</th></tr></thead>
+                            <tbody>${data.courses.map(c => `<tr><td>${c.name}</td><td><span class="status-badge ${c.type === 'retaken' ? 'status-retaken' : 'status-new'}">${c.type === 'retaken' ? 'معادة' : 'جديدة'}</span></td><td>${c.units}</td><td><span style="direction: ltr; display: inline-block; width: 100%;">${getGradeText(c.grade)} (${c.grade.toFixed(1)})</span></td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}</tbody>
+                        </table>
+                    </div>
+                    <div class="advice-box">
+                        <h4><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> نصيحة لك أيها المهندس:</h4>
+                        <p>${getStaticGPAAdvice(data.cumulativeGPA)}</p>
+                    </div>
+                    <div class="export-footer">
+                        <p class="warning">تنبيه: هذا الكشف تقديري وغير رسمي، ولا يغني عن الاستمارة المعتمدة من الكلية.</p>
+                        <p class="credit">تم إنشاؤه بواسطة أداة "مسارك الهندسي" | rebrand.ly/gpaeng-uob</p>
+                    </div>
+                </div>`;
+        }
+
+
+        function displayResults(data) {
+            const resultContainer = document.getElementById('result-content-area');
+            const summaryHTML = `
+                 <div class="transcript-header flex justify-between items-center result-item">
+                    <img src="./uob-logo.png" alt="شعار الجامعة" class="w-28 h-28 object-contain">
+                    <div class="text-center">
+                        <h2 class="text-xl sm:text-2xl font-bold">نتيجتك التقديرية</h2>
+                    </div>
+                    <div class="w-28"></div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="transcript-table" style="color: #000;">
-                        <thead><tr><th>اسم المادة</th><th>الحالة</th><th>الوحدات</th><th>التقدير</th><th>النقاط</th></tr></thead>
-                        <tbody>${data.courses.map(c => `<tr><td>${c.name}</td><td><span class="status-badge ${c.type === 'retaken' ? 'status-retaken' : 'status-new'}">${c.type === 'retaken' ? 'معادة' : 'جديدة'}</span></td><td>${c.units}</td><td><span style="direction: ltr; display: inline-block; width: 100%;">${getGradeText(c.grade)} (${c.grade.toFixed(1)})</span></td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}</tbody>
-                    </table>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="p-4 rounded-lg text-center result-item" style="background-color: color-mix(in srgb, var(--accent-color) 15%, transparent); animation-delay: 0.1s;">
+                        <p class="text-sm font-semibold" style="color: var(--accent-color);">المعدل الفصلي</p>
+                        <p class="text-3xl font-bold" style="color: var(--accent-color);">${data.semesterGPA.toFixed(3)}</p>
+                        <p class="text-xs" style="color: var(--text-secondary);">${data.semesterUnits} وحدات</p>
+                    </div>
+                    <div class="p-4 rounded-lg text-center result-item" style="background-color: #e6f4ea; animation-delay: 0.2s;" >
+                        <p class="text-sm font-semibold" style="color: #1e8e3e;">المعدل التراكمي</p>
+                        <p class="text-3xl font-bold" style="color: #188038;">${data.cumulativeGPA.toFixed(3)}</p>
+                        <p class="text-xs" style="color: #5f6368;">${data.cumulativeUnits} ساعة إجمالية</p>
+                    </div>
+                </div>`;
+
+            resultContainer.innerHTML = summaryHTML + `
+                <div class="text-center my-4 result-item" style="animation-delay: 0.3s;">
+                    <button id="toggle-courses-btn" class="btn btn-secondary text-sm !py-2 !px-4"><i data-feather="list"></i> عرض تفاصيل المواد</button>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t">
-                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">المعدل الفصلي</p><p class="text-xl font-bold" style="color: #0b57d0;">${data.semesterGPA.toFixed(3)}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">المعدل التراكمي</p><p class="text-xl font-bold" style="color: #1e8e3e;">${data.cumulativeGPA.toFixed(3)}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">وحدات الفصل</p><p class="text-xl font-bold" style="color: #000;">${data.semesterUnits}</p></div>
-                    <div class="text-center"><p class="text-sm font-semibold" style="color: #333;">مجموع الساعات</p><p class="text-xl font-bold" style="color: #000;">${data.cumulativeUnits}</p></div>
-                </div>
-                <div class="mt-6 p-4 rounded-lg" style="background-color: #f1f3f4;">
-                    <h4 class="font-bold flex items-center gap-2" style="color: #000;"><i data-feather="message-square"></i> نصيحة لك أيها المهندس:</h4>
-                    <p class="mt-2 text-sm" style="color: #5f6368;">${getStaticGPAAdvice(data.cumulativeGPA)}</p>
-                </div>
-                <div class="text-center mt-6 pt-4 border-t border-dashed">
-                     <p class="text-sm font-bold" style="color: #d93025;">تنبيه: هذا الكشف تقديري وغير رسمي، ولا يغني عن الاستمارة المعتمدة من الكلية.</p>
-                     <p class="text-xs mt-4" style="color: #5f6368;">تم إنشاؤه بواسطة أداة "مسارك الهندسي" | rebrand.ly/gpaeng-uob</p>
-                </div>
-            `;
+                <div id="courses-table-container" class="hidden result-item" style="animation-delay: 0.4s;">
+                     <div class="overflow-x-auto mt-4"><table class="transcript-table"><thead><tr><th>اسم المادة</th><th>الحالة</th><th>الوحدات</th><th>التقدير</th><th>النقاط</th></tr></thead><tbody>${data.courses.map(c => `<tr><td>${c.name}</td><td><span class="status-badge ${c.type === 'retaken' ? 'status-retaken' : 'status-new'}">${c.type === 'retaken' ? 'معادة' : 'جديدة'}</span></td><td>${c.units}</td><td><span style="direction: ltr; display: inline-block; width: 100%;">${getGradeText(c.grade)} (${c.grade.toFixed(1)})</span></td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>
+                </div>`;
+            
+            document.getElementById('toggle-courses-btn').addEventListener('click', toggleCoursesDisplay);
             feather.replace();
             showModal('results_modal');
+        }
+        
+        function toggleCoursesDisplay() {
+            const container = document.getElementById('courses-table-container');
+            const btn = document.getElementById('toggle-courses-btn');
+            const isHidden = container.classList.toggle('hidden');
+            btn.innerHTML = isHidden ? '<i data-feather="list"></i> عرض تفاصيل المواد' : '<i data-feather="chevrons-up"></i> إخفاء تفاصيل المواد';
+            feather.replace();
         }
 
         // --- SIMULATION & PLANNING ---
         function runSimulation() {
+            if (!validateInputs('#content-simulation')) return;
             const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value);
             const currentUnits = parseInt(document.getElementById('sim_current_units').value);
             const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value);
             const futureUnits = parseInt(document.getElementById('sim_future_units').value);
-            const resultDiv = document.getElementById('simulation_result');
-            if (isNaN(currentGPA) || isNaN(currentUnits) || isNaN(targetGPA) || isNaN(futureUnits)) { showToast("يرجى ملء جميع حقول المحاكاة.", "error"); return; }
             const reqAvgGrade = ((targetGPA * (currentUnits + futureUnits)) - (currentGPA * currentUnits)) / futureUnits;
-            resultDiv.innerHTML = `<h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)}`;
-            resultDiv.classList.remove('hidden');
+            document.getElementById('simulation_result').innerHTML = `<h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)}`;
+            document.getElementById('simulation_result').classList.remove('hidden');
         }
 
-        function addPlanCourse() {
-            planCourseCount++;
-            const courseRow = document.createElement('div');
-            courseRow.id = 'plan_course_' + planCourseCount;
-            courseRow.className = 'plan-course-row grid grid-cols-12 gap-3 p-3 rounded-lg border';
-            courseRow.style.borderColor = 'var(--card-border)';
-            courseRow.innerHTML = `
-                <div class="col-span-8"><input type="text" placeholder="اسم المادة (مثال: رياضيات 1)" class="form-input p-2 plan-course-name"></div>
-                <div class="col-span-3"><input type="number" placeholder="الوحدات" min="1" class="form-input p-2 plan-course-units"></div>
-                <div class="col-span-1 flex items-center justify-end"><button onclick="removeCourse('plan_course_', ${planCourseCount})" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة من الخطة"><i data-feather="trash-2" class="text-red-500"></i></button></div>
-            `;
-            document.getElementById('plan_courses_container').appendChild(courseRow);
-            feather.replace();
-            courseRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        // --- DASHBOARD & DATA MANAGEMENT ---
+        // --- DATA MANAGEMENT ---
         function saveResult() {
-            const result = { id: Date.now(), date: new Date().toISOString().split('T')[0], semesterGPA: lastCalculationData.semesterGPA, cumulativeGPA: lastCalculationData.cumulativeGPA, courses: lastCalculationData.courses };
+            const result = { id: Date.now(), ...lastCalculationData };
             savedResults.push(result);
             localStorage.setItem('gpaResults', JSON.stringify(savedResults));
             showToast("تم حفظ النتيجة بنجاح!");
             closeModal('results_modal');
         }
 
+        function loadSavedResults() {
+             try { savedResults = JSON.parse(localStorage.getItem('gpaResults')) || []; if (!Array.isArray(savedResults)) savedResults = []; } catch (e) { savedResults = []; }
+        }
+
         function loadDashboard() {
             const container = document.getElementById('saved-results-container');
-            const noResultsMsg = document.getElementById('no-saved-results');
-            noResultsMsg.classList.toggle('hidden', savedResults.length > 0);
+            document.getElementById('no-saved-results').classList.toggle('hidden', savedResults.length > 0);
             container.innerHTML = savedResults.length > 0 ? savedResults.slice().reverse().map(result => `
                 <div class="p-4 rounded-lg border flex justify-between items-center transition-all hover:shadow-md hover:border-[var(--accent-color)]" style="border-color: var(--card-border); background-color: var(--input-bg);">
-                    <div>
-                        <span class="font-bold text-sm" style="color: var(--text-secondary);">${new Date(result.date).toLocaleDateString('ar-EG')}</span>
-                        <div class="flex gap-4 mt-1">
-                            <div><p class="text-xs">الفصلي</p><p class="font-bold text-lg" style="color: var(--accent-color);">${result.semesterGPA.toFixed(3)}</p></div>
-                            <div><p class="text-xs">التراكمي</p><p class="font-bold text-lg" style="color: #1e8e3e;">${result.cumulativeGPA.toFixed(3)}</p></div>
-                        </div>
-                    </div>
+                    <div><span class="font-bold text-sm" style="color: var(--text-secondary);">${new Date(result.date).toLocaleDateString('ar-EG')}</span><div class="flex gap-4 mt-1"><div><p class="text-xs">الفصلي</p><p class="font-bold text-lg" style="color: var(--accent-color);">${result.semesterGPA.toFixed(3)}</p></div><div><p class="text-xs">التراكمي</p><p class="font-bold text-lg" style="color: #1e8e3e;">${result.cumulativeGPA.toFixed(3)}</p></div></div></div>
                     <button onclick="deleteResult(${result.id})" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف النتيجة"><i data-feather="trash-2" class="text-red-500"></i></button>
                 </div>`).join('') : '';
             feather.replace();
@@ -684,329 +638,138 @@
         }
         
         function deleteResult(id) {
-            const confirmBtn = document.getElementById('confirm_button');
-            confirmBtn.onclick = () => {
+            showModal('confirm_modal');
+            document.getElementById('confirm_button').onclick = () => {
                 savedResults = savedResults.filter(r => r.id !== id);
                 localStorage.setItem('gpaResults', JSON.stringify(savedResults));
-                loadDashboard();
-                closeModal('confirm_modal');
-                showToast("تم حذف النتيجة بنجاح.");
+                loadDashboard(); closeModal('confirm_modal'); showToast("تم حذف النتيجة.");
             };
-            showModal('confirm_modal');
         }
         
-        function renderGPATrendChart() {
-            const ctx = document.getElementById('gpa-chart').getContext('2d');
-            const isDark = document.documentElement.classList.contains('dark');
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            const fontColor = isDark ? '#e8eaed' : '#1f1f1f';
-            if (gpaChart) gpaChart.destroy();
-            if (savedResults.length === 0) return;
-            gpaChart = new Chart(ctx, {
-                type: 'line', data: { labels: savedResults.map(r => new Date(r.date).toLocaleDateString('ar-EG', { month: 'short' })), datasets: [{ label: 'المعدل التراكمي', data: savedResults.map(r => r.cumulativeGPA), borderColor: 'var(--accent-color)', backgroundColor: 'color-mix(in srgb, var(--accent-color) 20%, transparent)', fill: true, tension: 0.3, pointRadius: 5 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: false, ticks: { color: fontColor }, grid: { color: gridColor } }, x: { ticks: { color: fontColor }, grid: { color: gridColor } } }, plugins: { legend: { display: false } } }
-            });
-        }
-        
-        function exportResults() {
-            if(savedResults.length === 0) { showToast("لا توجد بيانات لتصديرها.", "error"); return; }
-            const dataStr = JSON.stringify(savedResults, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'gpa_results.json'; a.click(); URL.revokeObjectURL(a.href);
-        }
-        
-        function importResults(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => { try { const imported = JSON.parse(e.target.result); if (Array.isArray(imported)) { savedResults = imported; localStorage.setItem('gpaResults', JSON.stringify(savedResults)); loadDashboard(); showToast("تم استيراد البيانات بنجاح!"); } else { throw new Error(); } } catch (error) { showToast("فشل استيراد الملف.", "error"); } };
-            reader.readAsText(file);
-        }
-
         // --- EXPORT & SHARE FUNCTIONS ---
-        async function ensureImagesLoaded(container) {
-            const images = Array.from(container.getElementsByTagName("img"));
-            await Promise.all(images.map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => { img.onload = img.onerror = resolve; });
-            }));
+        async function createExportCanvas() {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.innerHTML = getTranscriptHTMLForExport(lastCalculationData);
+            document.body.appendChild(tempDiv);
+            feather.replace(); 
+            await ensureImagesLoaded(tempDiv);
+            const elementToRender = tempDiv.querySelector('.export-wrapper');
+            const canvas = await html2canvas(elementToRender, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+            document.body.removeChild(tempDiv);
+            return canvas;
         }
 
         async function shareAsImage() {
             showToast("جاري تجهيز الصورة...", "info");
-            const originalElement = document.getElementById('result-to-capture');
-            
-            const clone = originalElement.cloneNode(true);
-            clone.id = 'result-clone-for-export';
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px'; // Position off-screen
-            clone.style.width = '800px'; // Set a fixed width for consistent layout
-            clone.style.padding = '2rem';
-            
-            const tableWrapperInClone = clone.querySelector('.overflow-x-auto');
-            if (tableWrapperInClone) {
-                tableWrapperInClone.classList.remove('overflow-x-auto');
-                tableWrapperInClone.style.overflow = 'visible';
-            }
-
-            document.body.appendChild(clone);
-            await ensureImagesLoaded(clone);
-
             try {
-                const canvas = await html2canvas(clone, { 
-                    scale: 3, 
-                    useCORS: true, 
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    allowTaint: true
-                });
-                
+                const canvas = await createExportCanvas();
                 const link = document.createElement('a');
                 link.download = `gpa-result-${new Date().toISOString().slice(0,10)}.png`;
                 link.href = canvas.toDataURL('image/png');
-                
-                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
-
             } catch (err) {
                 console.error("Image generation failed:", err);
                 showToast("حدث خطأ أثناء إنشاء الصورة.", "error");
-            } finally {
-                document.body.removeChild(clone);
             }
         }
         
         async function shareAsPDF() {
             showToast("جاري تجهيز ملف PDF...", "info");
-            const originalElement = document.getElementById('result-to-capture');
-
-            const clone = originalElement.cloneNode(true);
-            clone.id = 'result-clone-for-export';
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.width = '800px'; 
-            clone.style.padding = '2rem';
-            
-            const tableWrapperInClone = clone.querySelector('.overflow-x-auto');
-            if (tableWrapperInClone) {
-                tableWrapperInClone.classList.remove('overflow-x-auto');
-                tableWrapperInClone.style.overflow = 'visible';
-            }
-            document.body.appendChild(clone);
-            await ensureImagesLoaded(clone);
-
             try {
-                const canvas = await html2canvas(clone, { 
-                    scale: 3, 
-                    useCORS: true, 
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    allowTaint: true
-                });
+                const canvas = await createExportCanvas();
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
-                
                 const pdf = new jsPDF('p', 'mm', 'a4'); 
-                
                 const imgProps= pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                
                 pdf.save(`gpa-result-${new Date().toISOString().slice(0,10)}.pdf`);
-                
             } catch (err) {
                 console.error("PDF generation failed:", err);
                 showToast("حدث خطأ أثناء إنشاء الملف.", "error");
-            } finally {
-                document.body.removeChild(clone);
-            }
-        }
-        
-        function shareWebsite() {
-            const shareData = {
-                title: 'مسارك الهندسي: حاسبة المعدل الذكية',
-                text: 'اكتشف معدلك التراكمي والفصلي المتوقع مع هذه الأداة المفيدة لطلاب هندسة بنغازي!',
-                url: 'https://rebrand.ly/gpaeng-uob'
-            };
-            if (navigator.share) {
-                navigator.share(shareData).catch(err => console.error("Error sharing:", err));
-            } else {
-                navigator.clipboard.writeText(shareData.url).then(() => { showToast('تم نسخ رابط الموقع!'); }).catch(err => { showToast('فشل نسخ الرابط.', 'error'); });
             }
         }
         
         // --- UTILITIES & HELPERS ---
         function setupInputValidation() {
-             document.querySelectorAll('.form-input[type="number"], .form-select').forEach(input => {
-                input.addEventListener('input', e => { e.target.classList.remove('input-invalid'); });
+            ['prev_gpa', 'sim_current_gpa', 'sim_target_gpa'].forEach(id => {
+                const inputElement = document.getElementById(id);
+                if (inputElement) {
+                    inputElement.addEventListener('blur', () => {
+                        const value = parseFloat(inputElement.value);
+                        if (inputElement.value.trim() !== '' && (isNaN(value) || value < 0 || value > 4)) {
+                           inputElement.classList.add('input-invalid');
+                        } else {
+                           inputElement.classList.remove('input-invalid');
+                        }
+                    });
+                }
             });
         }
         
         function validateInputs(containerSelector) {
             let allValid = true;
             const container = document.querySelector(containerSelector);
-            if (!container) return false;
-            container.querySelectorAll('input, select').forEach(input => {
+            container.querySelectorAll('input[type="number"], select').forEach(input => {
                 input.classList.remove('input-invalid');
-                if (!input.closest('.hidden') && input.value.trim() === '' && !(input.classList.contains('course-name') || input.classList.contains('plan-course-name'))) {
+                 if (input.closest('.hidden')) return;
+
+                if (input.value.trim() === '' && !input.classList.contains('course-name')) {
                     input.classList.add('input-invalid');
                     allValid = false;
                 }
-            });
-            if (containerSelector === '#content-calculator') {
-                 container.querySelectorAll('#courses_container .course-row').forEach(row => {
-                    const type = row.querySelector('.btn-status.active').dataset.value;
-                    const oldGradeInput = row.querySelector('.course-old-grade');
-                    if (type === 'retaken') {
-                        oldGradeInput.classList.remove('input-invalid');
-                        if (oldGradeInput.value === '') {
-                            oldGradeInput.classList.add('input-invalid');
-                            allValid = false;
-                        }
+                if (input.id && input.id.includes('gpa')) {
+                    const value = parseFloat(input.value);
+                     if (input.value.trim() !== '' && (isNaN(value) || value < 0 || value > 4)) {
+                        input.classList.add('input-invalid');
+                        allValid = false;
+                        showToast("المعدل يجب أن يكون بين 0 و 4.", "error");
                     }
-                });
-            }
+                }
+            });
             return allValid;
         }
 
-        function showModal(modalId) { 
-            document.getElementById(modalId).classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeModal(modalId) { 
-            document.getElementById(modalId).classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if(!toast) return;
-            const toastMessage = document.getElementById('toast-message');
-            if(!toastMessage) return;
-            toastMessage.textContent = message;
-            toast.style.backgroundColor = type === 'error' ? 'var(--danger-color)' : '#2f855a';
-            toast.style.color = 'white';
-            toast.classList.remove('opacity-0', 'translate-y-3');
-            setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-3'); }, 3000);
-        }
-        
-        function getGradeOptions(isOldGrade = false) { 
-            const options = `<option value="4.0">AA (4.0)</option><option value="3.5">A (3.5)</option><option value="3.0">BB (3.0)</option><option value="2.5">B (2.5)</option><option value="2.0">CC (2.0)</option><option value="1.5">C (1.5)</option><option value="1.0">DD (1.0)</option><option value="0.5">D (0.5)</option><option value="0.0">F (0.0)</option>`;
-            return isOldGrade ? `<option value="" disabled selected>القديم</option>${options}` : `<option value="" disabled selected>اختر</option>${options}`;
-        }
-        function getGradeText(gradeValue) { const grades = {4.0: 'AA', 3.5: 'A', 3.0: 'BB', 2.5: 'B', 2.0: 'CC', 1.5: 'C', 1.0: 'DD', 0.5: 'D', 0.0: 'F'}; return grades[gradeValue] || `N/A`; }
-        function getStaticGPAAdvice(cgpa) { if (cgpa >= 3.7) return "أداء استثنائي! أنت في الطليعة. حافظ على هذا المستوى المتميز واستمر في التفوق."; if (cgpa >= 3.0) return "عمل رائع! لقد حققت تقدماً ملحوظاً. استمر في البناء على هذا النجاح."; if (cgpa >= 2.0) return "أداء جيد! أنت تسير في الاتجاه الصحيح. حافظ على تركيزك لتحسين أدائك أكثر."; return "لا تستسلم! كل نتيجة هي فرصة للتعلم والنمو. حدد نقاط ضعفك وخطط جيداً للفصل القادم."; }
-        function getSimulationAdvice(req, target, units) { if (req > 4.0) return `<p class="text-lg text-red-600 dark:text-red-400">للوصول إلى <strong>${target.toFixed(2)}</strong> خلال <strong>${units}</strong> وحدة، تحتاج لمتوسط <strong>${req.toFixed(2)}</strong>، وهو <span class="font-bold">غير ممكن</span>.</p>`; if (req < 0) return `<p class="text-lg text-green-600 dark:text-green-400">خبر رائع! معدلك الحالي أعلى من الهدف. حافظ على أدائك.</p>`; let advice = `لتحقيق هدفك، تحتاج لمتوسط <strong>${req.toFixed(2)}</strong> (ما يعادل تقدير <strong>${getGradeText(Math.ceil(req * 2) / 2)}</strong> أو أعلى) في الـ <strong>${units}</strong> وحدة القادمة.`; return `<p class="text-lg">${advice}</p>`; }
-        
         // --- AI & CHAT FUNCTIONS ---
-        async function generateStudyPlan() {
-            if (!validateInputs('#content-simulation section:last-child')) {
-                showToast("يرجى إدخال جميع المواد وعدد وحداتها.", "error");
-                return;
-            }
-            const resultDiv = document.getElementById('study_plan_result');
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<div class="p-4 flex items-center justify-center gap-3"><div class="loading-dots"><span></span><span></span><span></span></div><p>جاري إنشاء الخطة...</p></div>`;
-            let coursesForPlan = [];
-            document.querySelectorAll('#plan_courses_container .plan-course-row').forEach(row => {
-                const name = row.querySelector('.plan-course-name').value;
-                const units = row.querySelector('.plan-course-units').value;
-                if(name && units) coursesForPlan.push(`- ${name} (${units} وحدات)`);
-            });
-            if (coursesForPlan.length === 0) { showToast("الرجاء إضافة مادة واحدة على الأقل.", "error"); resultDiv.classList.add('hidden'); return; }
-            const prompt = `بصفتك مرشداً أكاديمياً خبيراً لطلاب الهندسة في جامعة بنغازي، قم بإنشاء خطة دراسية استراتيجية للفصل القادم. بيانات الطالب: المعدل الحالي ${document.getElementById('sim_current_gpa').value || 'غير محدد'}, الساعات المجتازة ${document.getElementById('sim_current_units').value || 'غير محدد'}. المواد المخطط لدراستها: ${coursesForPlan.join(', ')}. الخطة يجب أن تتضمن: تحليل للعبء الدراسي، توزيع مقترح لساعات المذاكرة، 3 نصائح استراتيجية، ورسالة تحفيزية. استخدم العناوين الغامقة والنقاط.`;
-            try {
-                const aiResponse = await callGeminiAPI(prompt, 'studyPlan');
-                resultDiv.innerHTML = renderAIContent(aiResponse);
-            } catch (error) {
-                resultDiv.textContent = 'عذراً، حدث خطأ أثناء إنشاء الخطة. يرجى المحاولة مرة أخرى.';
-            }
-        }
-        
-        function renderAIContent(text) {
-            let safeText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            let html = safeText.split('\n').map(line => {
-                line = line.trim().replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
-                if (line.startsWith('* ') || line.startsWith('- ')) return `<li>${line.substring(2)}</li>`;
-                if (line) return `<p>${line}</p>`;
-                return '';
-            }).join('');
-            return html.replace(/<\/li><li>/g, '</li><li>').replace(/<p><\/p>/g, '').replace(/<li>/g, '<ul class="list-disc list-inside space-y-2 my-2"><li>').replace(/<\/li>(?!<li>)/g, '</li></ul>');
-        }
-        
-        function setupChat() {
-            appendMessage('أهلاً بك! أنا مرشدك الأكاديمي. اسألني عن أي شيء يخص الدراسة.', 'advisor');
-        }
-        
-        async function handleSendMessage(e) {
-            e.preventDefault();
-            const chatInput = document.getElementById('chat-input');
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
-            appendMessage(userMessage, 'user');
-            chatInput.value = '';
-            showTypingIndicator();
-            try {
-                const aiResponse = await callGeminiAPI(userMessage, 'general');
-                removeTypingIndicator();
-                appendMessage(aiResponse, 'advisor');
-            } catch (error) {
-                removeTypingIndicator();
-                appendMessage(error.message, 'advisor');
-            }
-        }
-
-        function appendMessage(text, sender) {
-            const chatMessages = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex items-end gap-2 max-w-[85%] ${sender === 'user' ? 'self-end flex-row-reverse' : 'self-start'}`;
-            const content = sender === 'advisor' ? renderAIContent(text) : text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            messageDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--card-bg);"><i data-feather="${sender === 'user' ? 'user' : 'cpu'}"></i></div>
-                <div class="chat-bubble ${sender === 'user' ? 'rounded-br-none' : 'rounded-bl-none'}" style="background-color: ${sender === 'user' ? 'var(--accent-color)' : 'var(--card-bg)'}; color: ${sender === 'user' ? (document.documentElement.classList.contains('dark') ? '#001d35' : 'white') : 'var(--text-primary)'};">${content}</div>
-            `;
-            chatMessages.appendChild(messageDiv);
-            feather.replace();
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function showTypingIndicator() {
-            if(document.getElementById('typing-indicator')) return;
-            const chatMessages = document.getElementById('chat-messages');
-            const indicatorDiv = document.createElement('div');
-            indicatorDiv.id = 'typing-indicator';
-            indicatorDiv.className = `flex items-end gap-2 max-w-[85%] self-start`;
-            indicatorDiv.innerHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--card-bg);"><i data-feather="cpu"></i></div><div class="chat-bubble rounded-bl-none" style="background-color: var(--card-bg);"><div class="loading-dots"><span></span><span></span><span></span></div></div>`;
-            chatMessages.appendChild(indicatorDiv);
-            feather.replace();
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typing-indicator');
-            if (indicator) indicator.remove();
-        }
-
-        async function callGeminiAPI(userMessage, requestType = 'general') {
+        async function callGeminiAPI(userMessage) {
             const apiKey = "AIzaSyCiOXNWUZHPXuzgRsFdxPYXsF2QvxdHy1w"; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            let systemInstruction = "أنت مرشد أكاديمي ذكي وخبير، متخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. كن دائماً إيجابياً ومشجعاً، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز. أكِّد على أهمية مراجعة المصادر الرسمية في الكلية.";
-            const payload = { contents: [{ parts: [{ text: userMessage }] }], systemInstruction: { parts: [{ text: systemInstruction }] }, generationConfig: { temperature: 0.6, maxOutputTokens: 1024 } };
+            const systemInstruction = "أنت مرشد أكاديمي ذكي وخبير، متخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. كن دائماً إيجابياً ومشجعاً، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز. أكِّد على أهمية مراجعة المصادر الرسمية في الكلية.";
+            const payload = { contents: [{ parts: [{ text: userMessage }] }], systemInstruction: { parts: [{ text: systemInstruction }] } };
             try {
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (text) return text;
-                console.error("Invalid API Response Structure:", result);
-                if(result.promptFeedback && result.promptFeedback.blockReason) return "تم حظر الطلب لأسباب تتعلق بالسلامة. يرجى تعديل سؤالك.";
                 return "عذراً، لم أتمكن من الحصول على استجابة.";
             } catch (error) {
                 console.error("API Call failed:", error);
-                throw new Error("حدث خطأ في الاتصال بالمرشد الذكي. يرجى التحقق من اتصالك بالإنترنت.");
+                throw new Error("حدث خطأ في الاتصال بالمرشد الذكي.");
             }
         }
+        
+        // --- Static Helper Functions ---
+        async function ensureImagesLoaded(container) { const images = Array.from(container.getElementsByTagName("img")); await Promise.all(images.map(img => { if (img.complete) return Promise.resolve(); return new Promise(resolve => { img.onload = img.onerror = resolve; }); }));}
+        function showModal(id) { document.getElementById(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); document.body.style.overflow = 'auto'; }
+        function showToast(message, type = 'success') { const t=document.getElementById('toast'),m=document.getElementById('toast-message'); if(!t||!m)return; m.textContent=message; t.style.backgroundColor=type==='error'?'var(--danger-color)':'#2f855a'; t.style.color='white'; t.classList.remove('opacity-0','translate-y-3'); setTimeout(()=>t.classList.add('opacity-0','translate-y-3'),3000); }
+        function getGradeOptions(isOld=false){const o=`<option value="4.0">AA (4.0)</option><option value="3.5">A (3.5)</option><option value="3.0">BB (3.0)</option><option value="2.5">B (2.5)</option><option value="2.0">CC (2.0)</option><option value="1.5">C (1.5)</option><option value="1.0">DD (1.0)</option><option value="0.5">D (0.5)</option><option value="0.0">F (0.0)</option>`;return isOld?`<option value="" disabled selected>القديم</option>${o}`:`<option value="" disabled selected>اختر</option>${o}`}
+        function getGradeText(v){const g={4.0:'AA',3.5:'A',3.0:'BB',2.5:'B',2.0:'CC',1.5:'C',1.0:'DD',0.5:'D',0.0:'F'};return g[v]||`N/A`}
+        function getStaticGPAAdvice(gpa){if(gpa>=3.7)return"أداء استثنائي! أنت في الطليعة.";if(gpa>=3.0)return"عمل رائع! استمر في البناء على هذا النجاح.";if(gpa>=2.0)return"أداء جيد! أنت تسير في الاتجاه الصحيح.";return"لا تستسلم! كل نتيجة هي فرصة للتعلم والنمو."}
+        function getSimulationAdvice(req,target,units){if(req>4.0)return`<p class="text-lg text-red-600 dark:text-red-400">للوصول إلى <strong>${target.toFixed(2)}</strong> تحتاج لمتوسط <strong>${req.toFixed(2)}</strong>، وهو <span class="font-bold">غير ممكن</span>.</p>`;if(req<0)return`<p class="text-lg text-green-600 dark:text-green-400">خبر رائع! معدلك الحالي أعلى من الهدف.</p>`;return`<p class="text-lg">لتحقيق هدفك، تحتاج لمتوسط <strong>${req.toFixed(2)}</strong> (<strong>${getGradeText(Math.ceil(req*2)/2)}</strong> أو أعلى) في الـ <strong>${units}</strong> وحدة القادمة.</p>`}
+        function setupChat(){appendMessage('أهلاً بك! أنا مرشدك الأكاديمي. اسألني عن أي شيء يخص الدراسة.','advisor')}
+        async function handleSendMessage(e){e.preventDefault();const i=document.getElementById('chat-input'),m=i.value.trim();if(!m)return;appendMessage(m,'user');i.value='';showTypingIndicator();try{const r=await callGeminiAPI(m);removeTypingIndicator();appendMessage(r,'advisor')}catch(err){removeTypingIndicator();appendMessage(err.message,'advisor')}}
+        function appendMessage(t,s){const c=document.getElementById('chat-messages'),d=document.createElement('div');d.className=`flex items-end gap-2 max-w-[85%] ${s==='user'?'self-end flex-row-reverse':'self-start'}`;const o=s==='advisor'?renderAIContent(t):t.replace(/</g,'&lt;').replace(/>/g,'&gt;');d.innerHTML=`<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--card-bg);"><i data-feather="${s==='user'?'user':'cpu'}"></i></div><div class="chat-bubble ${s==='user'?'rounded-br-none':'rounded-bl-none'}" style="background-color: ${s==='user'?'var(--accent-color)':'var(--card-bg)'}; color: ${s==='user'?(document.documentElement.classList.contains('dark')?'#001d35':'white'):'var(--text-primary)'};">${o}</div>`;c.appendChild(d);feather.replace();c.scrollTop=c.scrollHeight}
+        function showTypingIndicator(){if(document.getElementById('typing-indicator'))return;const c=document.getElementById('chat-messages'),d=document.createElement('div');d.id='typing-indicator';d.className=`flex items-end gap-2 max-w-[85%] self-start`;d.innerHTML=`<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--card-bg);"><i data-feather="cpu"></i></div><div class="chat-bubble rounded-bl-none" style="background-color: var(--card-bg);"><div class="loading-dots"><span></span><span></span><span></span></div></div>`;c.appendChild(d);feather.replace();c.scrollTop=c.scrollHeight}
+        function removeTypingIndicator(){const i=document.getElementById('typing-indicator');if(i)i.remove()}
+        function renderAIContent(t){let s=t.replace(/</g,'&lt;').replace(/>/g,'&gt;');let h=s.split('\n').map(l=>{l=l.trim().replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>');if(l.startsWith('* ')||l.startsWith('- '))return`<li>${l.substring(2)}</li>`;if(l)return`<p>${l}</p>`;return''}).join('');return h.replace(/<\/li><li>/g,'</li><li>').replace(/<p><\/p>/g,'').replace(/<li>/g,'<ul class="list-disc list-inside space-y-2 my-2"><li>').replace(/<\/li>(?!<li>)/g,'</li></ul>')}
+        function addPlanCourse(){planCourseCount++;const c=document.createElement('div');c.id='plan_course_'+planCourseCount;c.className='plan-course-row grid grid-cols-12 gap-3 p-3 rounded-lg border';c.style.borderColor='var(--card-border)';c.innerHTML=`<div class="col-span-8"><input type="text" placeholder="اسم المادة (مثال: رياضيات 1)" class="form-input p-2 plan-course-name"></div><div class="col-span-3"><input type="number" placeholder="الوحدات" min="1" class="form-input p-2 plan-course-units"></div><div class="col-span-1 flex items-center justify-end"><button onclick="removeCourse('plan_course_',${planCourseCount})" class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة"><i data-feather="trash-2" class="text-red-500"></i></button></div>`;document.getElementById('plan_courses_container').appendChild(c);feather.replace();c.scrollIntoView({behavior:'smooth',block:'nearest'})}
+        async function generateStudyPlan(){if(!validateInputs('#content-simulation section:last-child'))return;const d=document.getElementById('study_plan_result');d.classList.remove('hidden');d.innerHTML=`<div class="p-4 flex items-center justify-center gap-3"><div class="loading-dots"><span></span><span></span><span></span></div><p>جاري إنشاء الخطة...</p></div>`;let p=[];document.querySelectorAll('#plan_courses_container .plan-course-row').forEach(r=>{const n=r.querySelector('.plan-course-name').value,u=r.querySelector('.plan-course-units').value;if(n&&u)p.push(`- ${n} (${u} وحدات)`)});if(p.length===0){showToast("الرجاء إضافة مادة واحدة على الأقل.","error");d.classList.add('hidden');return}const t=`بصفتك مرشداً أكاديمياً خبيراً لطلاب الهندسة في جامعة بنغازي، قم بإنشاء خطة دراسية استراتيجية. بيانات الطالب: المعدل الحالي ${document.getElementById("sim_current_gpa").value||"غير محدد"}, الساعات المجتازة ${document.getElementById("sim_current_units").value||"غير محدد"}. المواد: ${p.join(", ")}. الخطة يجب أن تتضمن: تحليل للعبء، توزيع ساعات المذاكرة، 3 نصائح، ورسالة تحفيزية.`;try{const s=await callGeminiAPI(t);d.innerHTML=renderAIContent(s)}catch(e){d.textContent='عذراً، حدث خطأ أثناء إنشاء الخطة.'}}
+
     </script>
 </body>
 </html>
