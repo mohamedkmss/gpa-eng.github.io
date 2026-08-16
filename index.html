@@ -2123,7 +2123,18 @@
                 btn.classList.add('is-loading');
                 btn.dataset.originalHtml = btn.dataset.originalHtml || btn.innerHTML;
                 btn.setAttribute('aria-busy', 'true');
-                btn.innerHTML = `<span class="loading-dots" aria-hidden="true"><span></span><span></span><span></span></span><span>${text || 'جاري الحساب...'}</span>`;
+                btn.textContent = '';
+                const loadingSpan = document.createElement('span');
+                loadingSpan.className = 'loading-dots';
+                loadingSpan.setAttribute('aria-hidden', 'true');
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    loadingSpan.appendChild(dot);
+                }
+                const textSpan = document.createElement('span');
+                textSpan.textContent = text || 'جاري الحساب...';
+                btn.appendChild(loadingSpan);
+                btn.appendChild(textSpan);
             } else {
                 btn.classList.remove('is-loading');
                 btn.removeAttribute('aria-busy');
@@ -2164,8 +2175,14 @@
             const container = document.getElementById('courses_container');
             const courseRows = container.querySelectorAll('.course-row');
             if (courseRows.length > 0) {
-                courseRows.forEach(row => removeCourse(row.id.split('_')[0] + '_', row.id.split('_')[1]));
-                showToast('تم مسح جميع المواد.');
+                courseRows.forEach(row => {
+                    row.style.animation = 'fadeOut 0.3s forwards';
+                    setTimeout(() => row.remove(), 300);
+                });
+                setTimeout(() => {
+                    checkEmptyState();
+                    showToast('تم مسح جميع المواد.');
+                }, 350);
             }
         }
         function addCourse({ scroll = true } = {}) {
@@ -2244,14 +2261,18 @@
         }
         function setCourseType(btn, courseId) {
             const parent = btn.parentElement;
-            parent.querySelector('.btn-status.active').classList.remove('active');
+            const activeBtn = parent.querySelector('.btn-status.active');
+            if (activeBtn && activeBtn !== btn) {
+                activeBtn.classList.remove('active');
+            }
             btn.classList.add('active');
             const courseType = btn.dataset.value;
             const courseRow = document.getElementById('course_' + courseId);
-            courseRow.classList.toggle('highlight-retaken', courseType === 'retaken');
-
-            const container = document.getElementById(`old-grade-container-${courseId}`);
-            if (container) container.classList.toggle('hidden', courseType !== 'retaken');
+            if (courseRow) {
+                courseRow.classList.toggle('highlight-retaken', courseType === 'retaken');
+                const container = document.getElementById(`old-grade-container-${courseId}`);
+                if (container) container.classList.toggle('hidden', courseType !== 'retaken');
+            }
         }
         function removeCourse(prefix, id) {
             const courseRow = document.getElementById(prefix + id);
@@ -2955,7 +2976,9 @@ ${courses}
         function showTypingIndicator() { if (document.getElementById('typing-indicator')) return; const mc = document.getElementById('chat-messages'); const ti = document.createElement('div'); ti.id = 'typing-indicator'; ti.className = 'flex items-start gap-2.5 w-full self-start'; ti.innerHTML = `<div class="chat-avatar chat-avatar-ai"><i data-feather="cpu" class="w-3.5 h-3.5" style="color:white;"></i></div><div class="ai-message-container" style="flex:1;"><div class="chat-bubble" style="min-width:68px;"><div class="loading-dots"><span></span><span></span><span></span></div></div></div>`; mc.appendChild(ti); feather.replace(); mc.scrollTop = mc.scrollHeight; }
         function removeTypingIndicator() { const ti = document.getElementById('typing-indicator'); if (ti) ti.remove(); }
         async function callGeminiAPI(userMessage, file) {
-            const apiKey = "AIzaSyAAlGyEkEpzeL4dPjEf57mQAB2LdKEHRlo";
+            // ⚠️ تنبيه: يجب استبدال هذا المفتاح بمفتاحك الخاص وعدم مشاركته أبداً
+            // للحصول على مفتاح API: https://aistudio.google.com/app/apikey
+            const apiKey = "AIzaSyAAlGyEkEpzeL4dPjEf57mQAB2LdKEHRlo"; // TODO: استبدل هذا بمفتاحك الخاص
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const systemInstructionBase = "أنت 'رفيق دراسي'، خبير ومتخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. مهمتك هي أن تكون مرشدًا أكاديميًا ومساعدًا في حل المسائل. كن دائمًا إيجابيًا ومشجعًا، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز ومنظم. عند حل المسائل، قم بتقسيم الحل إلى خطوات مرقمة. قم بحل المسائل الرياضية والهندسية وعرضها بصيغة LaTeX الصحيحة. قم بتضمين أي كود برمجي بين ``` و ```. أكِّد دائمًا على أهمية مراجعة المصادر الرسمية في الكلية للتحقق من المعلومات.";
             const modeInstruction = aiMode && aiMode !== 'عام' ? `\nالمجال المختار: ${aiMode}. عدِّل أسلوب الشرح والأمثلة وفق هذا التخصص، وقم بإجراء تحقق وحداتي (Units) وتحليل أبعاد Dimensional Analysis حيث يلزم، مع توضيح الافتراضات والتنبيهات.` : '';
