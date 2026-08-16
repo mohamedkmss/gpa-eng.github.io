@@ -142,6 +142,70 @@
             -webkit-font-smoothing: antialiased;
             transition: background var(--t-base) var(--ease),
                 color var(--t-base) var(--ease);
+            line-height: 1.6;
+        }
+
+        /* ── Accessibility & Focus States ── */
+        *:focus-visible {
+            outline: 3px solid var(--blue);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid var(--blue);
+            outline-offset: 2px;
+        }
+
+        /* Skip to content for screen readers */
+        .skip-link {
+            position: absolute;
+            top: -9999px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface-hi);
+            color: var(--t1);
+            padding: 12px 24px;
+            border-radius: var(--r2);
+            z-index: 9999;
+            box-shadow: var(--sh3);
+            transition: top var(--t-fast) var(--ease);
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --sep: rgba(0, 0, 0, 0.3);
+                --t2: rgba(0, 0, 0, 0.85);
+                --t3: rgba(0, 0, 0, 0.6);
+            }
+
+            .dark {
+                --sep: rgba(255, 255, 255, 0.4);
+                --t2: rgba(255, 255, 255, 0.85);
+                --t3: rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
         }
 
         /* ── Performance-optimised scrollbars ── */
@@ -442,6 +506,33 @@
             #content-calculator>section>div:not(.text-center) {
                 padding: 1rem;
             }
+
+            /* Mobile optimizations */
+            .btn {
+                padding: 0.7rem 1.1rem;
+                font-size: 0.9rem;
+            }
+
+            .form-input,
+            .form-select {
+                font-size: 16px; /* Prevent zoom on iOS */
+                padding: 0.8rem 1rem;
+            }
+
+            /* Larger touch targets for mobile */
+            button,
+            a,
+            input,
+            select {
+                min-height: 44px;
+            }
+        }
+
+        /* Tablet optimization */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .container {
+                max-width: 95%;
+            }
         }
 
         /* ══════════════════════════════════════
@@ -471,6 +562,31 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ripple effect for buttons */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+            opacity: 1;
+            transition: width 0s, height 0s, opacity 0s;
         }
 
         .btn.is-loading {
@@ -498,6 +614,7 @@
         .btn:disabled {
             opacity: .42;
             pointer-events: none;
+            cursor: not-allowed;
         }
 
         .btn:focus-visible {
@@ -534,6 +651,15 @@
             box-shadow: 0 8px 26px rgba(255, 59, 48, .4);
         }
 
+        /* Button loading spinner animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn.is-loading svg {
+            animation: spin 1s linear infinite;
+        }
+
         #content-calculator .btn-primary {
             border-radius: var(--rf);
         }
@@ -558,6 +684,26 @@
                 background var(--t-fast) var(--ease);
         }
 
+        /* Input validation states */
+        .form-input.is-valid,
+        .form-select.is-valid {
+            border-color: var(--green);
+            background: color-mix(in srgb, var(--green) 8%, var(--input-bg));
+        }
+
+        .form-input.is-invalid,
+        .form-select.is-invalid {
+            border-color: var(--red);
+            background: color-mix(in srgb, var(--red) 8%, var(--input-bg));
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
         .form-select {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: left .55rem center;
@@ -572,6 +718,11 @@
 
         .form-input::placeholder {
             color: var(--t3);
+            transition: color var(--t-fast) var(--ease);
+        }
+
+        .form-input:focus::placeholder {
+            color: transparent;
         }
 
         .form-input:focus,
@@ -591,6 +742,29 @@
             text-transform: uppercase;
             color: var(--t2);
             margin-bottom: .45rem;
+            transition: color var(--t-fast) var(--ease);
+        }
+
+        .form-input:focus + .field-label,
+        .form-select:focus + .field-label {
+            color: var(--blue);
+        }
+
+        /* Inline validation message */
+        .form-message {
+            font-size: .75rem;
+            margin-top: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .form-message.is-error {
+            color: var(--red);
+        }
+
+        .form-message.is-success {
+            color: var(--green);
         }
 
         /* ══════════════════════════════════════
@@ -1234,6 +1408,7 @@
             opacity: .6;
             animation: wave 1.4s ease-in-out infinite;
             display: inline-block;
+            transform-origin: center;
         }
 
         .loading-dots span:nth-of-type(2) {
@@ -1242,6 +1417,15 @@
 
         .loading-dots span:nth-of-type(3) {
             animation-delay: .36s;
+        }
+
+        /* Enhanced loading spinner for buttons */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn.is-loading .spinner {
+            animation: spin 1s linear infinite;
         }
 
         /* Status dot */
@@ -1344,6 +1528,15 @@
             letter-spacing: .01em;
             border-radius: var(--rf);
             padding: .65rem 1.1rem;
+            box-shadow: var(--sh3);
+            transform: translateY(0);
+            transition: opacity var(--t-base) var(--ease),
+                transform var(--t-base) var(--ease),
+                box-shadow var(--t-fast) var(--ease);
+        }
+
+        #toast:hover {
+            box-shadow: var(--sh4);
         }
 
         /* Performance layers */
@@ -1382,6 +1575,9 @@
 </head>
 
 <body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">تخطّ إلى المحتوى الرئيسي</a>
+    
     <!-- Main Content Area -->
     <div id="main-content" class="container mx-auto px-4 py-6 md:px-8 md:py-10 max-w-5xl pb-36 md:pb-10">
 
@@ -1407,7 +1603,7 @@
             <!-- Theme Toggle button remains in the same position -->
             <div class="absolute top-0 left-0 p-2">
                 <button id="theme-toggle" class="btn btn-secondary !p-3 !rounded-full !gap-0"
-                    aria-label="تبديل الوضع الليلي">
+                    aria-label="تبديل الوضع الليلي" aria-pressed="false">
                     <i data-feather="sun" id="theme-icon-light"></i>
                     <i data-feather="moon" id="theme-icon-dark" style="display:none;"></i>
                 </button>
@@ -2059,10 +2255,18 @@
             document.documentElement.classList.toggle('dark', theme === 'dark');
             const lightIcon = document.getElementById('theme-icon-light');
             const darkIcon = document.getElementById('theme-icon-dark');
+            const toggleBtn = document.getElementById('theme-toggle');
+            
             if (lightIcon && darkIcon) {
                 lightIcon.style.display = theme === 'dark' ? 'none' : 'block';
                 darkIcon.style.display = theme === 'dark' ? 'block' : 'none';
             }
+            
+            // Update aria-pressed attribute for accessibility
+            if (toggleBtn) {
+                toggleBtn.setAttribute('aria-pressed', String(theme === 'dark'));
+            }
+            
             if (gpaChart) {
                 setTimeout(() => renderGPATrendChart(), 10);
             }
@@ -2080,9 +2284,17 @@
                 }
             });
             document.getElementById('theme-toggle').addEventListener('click', () => {
-                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                const toggleBtn = document.getElementById('theme-toggle');
+                
                 localStorage.setItem('theme', newTheme);
                 applyTheme(newTheme);
+                
+                // Update aria-pressed for accessibility
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-pressed', String(!isDark));
+                }
             });
         }
         function switchTab(tabName) {
@@ -2148,14 +2360,36 @@
             const icon = document.getElementById('toast-icon');
             if (!t) return;
             if (_toastTimer) clearTimeout(_toastTimer);
+            
             const colors = { error: 'var(--danger-color)', info: 'var(--accent-color)', success: 'var(--success-color)' };
             const icons = { error: 'x-circle', info: 'info', success: 'check-circle' };
+            
             t.style.backgroundColor = colors[type] || colors.success;
             t.style.color = 'white';
-            document.getElementById('toast-message').textContent = message;
-            if (icon) { icon.setAttribute('data-feather', icons[type] || 'check-circle'); feather.replace(); }
+            
+            // Update message with animation
+            const msgEl = document.getElementById('toast-message');
+            if (msgEl) {
+                msgEl.style.opacity = '0';
+                setTimeout(() => {
+                    msgEl.textContent = message;
+                    msgEl.style.opacity = '1';
+                }, 150);
+            }
+            
+            if (icon) { 
+                icon.setAttribute('data-feather', icons[type] || 'check-circle'); 
+                feather.replace(); 
+            }
+            
+            // Show toast with smooth animation
             t.classList.remove('opacity-0', 'translate-y-3');
-            _toastTimer = setTimeout(() => t.classList.add('opacity-0', 'translate-y-3'), 3500);
+            t.style.transform = 'translateY(0)';
+            
+            _toastTimer = setTimeout(() => {
+                t.classList.add('opacity-0', 'translate-y-3');
+                t.style.transform = 'translateY(12px)';
+            }, 3500);
         }
         function getGradeOptions(isOld = false) { const o = `<option value="4.0">AA (4.0)</option><option value="3.5">A (3.5)</option><option value="3.0">BB (3.0)</option><option value="2.5">B (2.5)</option><option value="2.0">CC (2.0)</option><option value="1.5">C (1.5)</option><option value="1.0">DD (1.0)</option><option value="0.5">D (0.5)</option><option value="0.0">F (0.0)</option>`; return isOld ? `<option value="" disabled selected>التقدير القديم</option>${o}` : `<option value="" disabled selected>اختر التقدير</option>${o}` }
         function getGradeText(v) { const g = { 4.0: 'AA', 3.5: 'A', 3.0: 'BB', 2.5: 'B', 2.0: 'CC', 1.5: 'C', 1.0: 'DD', 0.5: 'D', 0.0: 'F' }; return g[v] || `N/A` }
