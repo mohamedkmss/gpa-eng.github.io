@@ -3,19 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مسارك الهندسى: حاسبة المعدل الذكية</title>
+    <meta name="description"
+        content="حاسبة المعدل الذكية لطلاب كلية الهندسة - جامعة بنغازي: احسب معدلك الفصلي والتراكمي، خطط لأهدافك، واحصل على نصائح دراسية مخصصة.">
+    <meta name="theme-color" content="#007aff">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
 
-    <!-- Scripts & Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-
-    <!-- KaTeX for LaTeX Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <!-- Libraries (deferred = non-render-blocking). Export libs load on demand. -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" defer></script>
 
     <!-- Google Fonts: Noto Sans Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -505,6 +504,13 @@
             outline-offset: 3px;
         }
 
+        .tab:focus-visible,
+        .bottom-nav-item:focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 3px;
+            border-radius: var(--r2);
+        }
+
         .btn-primary {
             background: var(--blue);
             color: #fff;
@@ -759,12 +765,6 @@
             transform: translateX(-3px);
         }
 
-        .plan-course-row {
-            border-radius: var(--r3);
-            animation: slideIn .34s var(--spring) both;
-            overflow: hidden;
-        }
-
         .highlight-retaken {
             background: rgba(255, 149, 0, .07) !important;
             border-color: rgba(255, 149, 0, .26) !important;
@@ -1005,220 +1005,6 @@
             font-weight: 700;
         }
 
-        /* ══════════════════════════════════════
-           AI COMPANION MODAL
-        ══════════════════════════════════════ */
-        #ai_companion_modal {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: var(--bg);
-            display: flex;
-            opacity: 0;
-            transform: translateY(16px) scale(.98);
-            pointer-events: none;
-            transition: opacity var(--t-base) var(--ease),
-                transform var(--t-slow) var(--spring);
-        }
-
-        #ai_companion_modal.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        .ai-chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: calc(var(--vh, 1vh)*100);
-        }
-
-        .ai-chat-header {
-            padding: .9rem 1.25rem;
-            border-bottom: 1px solid var(--sep);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--glass);
-            backdrop-filter: blur(36px) saturate(1.8);
-            -webkit-backdrop-filter: blur(36px) saturate(1.8);
-            flex-shrink: 0;
-        }
-
-        #chat-messages-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #chat-messages {
-            position: absolute;
-            inset: 0;
-            padding: 1.5rem 1.25rem 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .ai-chat-input-container {
-            padding: .85rem 1.25rem;
-            border-top: 1px solid var(--sep);
-            background: var(--glass);
-            backdrop-filter: blur(36px) saturate(1.8);
-            -webkit-backdrop-filter: blur(36px) saturate(1.8);
-            margin-bottom: env(safe-area-inset-bottom);
-            flex-shrink: 0;
-        }
-
-        #chat-welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 2rem 1.5rem;
-        }
-
-        .ai-sidebar {
-            width: 274px;
-            background: var(--surface);
-            border-left: 1px solid var(--sep);
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        #chat-history-container {
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        @media (max-width: 768px) {
-            .ai-sidebar {
-                position: fixed;
-                top: 0;
-                right: 0;
-                height: 100%;
-                z-index: 110;
-                transform: translateX(110%);
-                transition: transform var(--t-base) var(--ease);
-                background: var(--bg);
-                backdrop-filter: blur(40px);
-                -webkit-backdrop-filter: blur(40px);
-                border-left: 1px solid var(--sep);
-                box-shadow: -8px 0 40px rgba(0, 0, 0, .18);
-            }
-
-            .ai-sidebar.sidebar-visible {
-                transform: translateX(0);
-            }
-
-            .ai-chat-area {
-                height: 100%;
-            }
-        }
-
-        /* Example prompts */
-        .example-prompt {
-            background: var(--surface);
-            padding: 1rem 1.1rem;
-            border-radius: var(--r3);
-            border: 1px solid var(--sep);
-            cursor: pointer;
-            text-align: right;
-            transition: transform var(--t-fast) var(--spring),
-                background var(--t-fast) var(--ease),
-                border-color var(--t-fast) var(--ease),
-                box-shadow var(--t-fast) var(--ease);
-        }
-
-        .example-prompt:hover {
-            transform: translateY(-3px) scale(1.01);
-            background: var(--surface-hi);
-            border-color: rgba(0, 122, 255, .26);
-            box-shadow: var(--sh2), 0 0 0 1px var(--blue-l);
-        }
-
-        /* Chat bubbles */
-        .chat-bubble {
-            word-wrap: break-word;
-            padding: .78rem 1.05rem;
-            border-radius: 1.1rem;
-            line-height: 1.7;
-            font-size: .9rem;
-        }
-
-        .ai-message-container .chat-bubble {
-            background: var(--surface-hi);
-            border: 1px solid var(--sep);
-            color: var(--t1);
-            border-radius: 4px 1.1rem 1.1rem 1.1rem;
-            box-shadow: var(--sh0);
-        }
-
-        .user-message .chat-bubble {
-            background: var(--blue);
-            color: #fff;
-            border-radius: 1.1rem 4px 1.1rem 1.1rem;
-            box-shadow: 0 4px 18px var(--blue-g);
-        }
-
-        .error-bubble .chat-bubble {
-            background: rgba(255, 59, 48, .10);
-            color: var(--red);
-            border: 1px solid rgba(255, 59, 48, .22);
-        }
-
-        .chat-bubble p {
-            margin-bottom: .25rem;
-        }
-
-        .chat-bubble p:last-child {
-            margin-bottom: 0;
-        }
-
-        .chat-bubble ul {
-            list-style: disc;
-            padding-right: 1.2rem;
-            margin: .4rem 0;
-        }
-
-        .chat-bubble li {
-            margin-bottom: .15rem;
-        }
-
-        /* Chat avatars */
-        .chat-avatar {
-            width: 29px;
-            height: 29px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 3px;
-        }
-
-        .chat-avatar-ai {
-            background: var(--blue);
-            box-shadow: 0 2px 8px var(--blue-g);
-        }
-
-        .chat-avatar-user {
-            background: var(--surface-hi);
-            border: 1px solid var(--sep);
-        }
-
-        .chat-avatar svg,
-        .chat-avatar [data-feather] {
-            width: 14px;
-            height: 14px;
-        }
-
         /* Loading dots */
         .loading-dots {
             display: flex;
@@ -1242,77 +1028,6 @@
 
         .loading-dots span:nth-of-type(3) {
             animation-delay: .36s;
-        }
-
-        /* Status dot */
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--green);
-            display: inline-block;
-            animation: pulse 2.2s ease-in-out infinite;
-        }
-
-        /* Code blocks */
-        .katex-display {
-            direction: ltr !important;
-            text-align: left !important;
-            overflow-x: auto;
-            padding: .5rem;
-        }
-
-        .katex {
-            direction: ltr !important;
-        }
-
-        .code-block-wrapper {
-            margin: .8rem 0;
-            border-radius: var(--r3);
-            overflow: hidden;
-        }
-
-        .code-block-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1c2033;
-            color: #8891b4;
-            padding: .5rem 1rem;
-            font-size: .77rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-        }
-
-        .copy-code-btn {
-            background: transparent;
-            color: #8891b4;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-            font-size: .77rem;
-            padding: .2rem .5rem;
-            border-radius: var(--r1);
-            transition: all var(--t-fast) var(--ease);
-        }
-
-        .copy-code-btn:hover {
-            background: rgba(255, 255, 255, .08);
-            color: #fff;
-        }
-
-        .code-block-wrapper pre {
-            margin: 0;
-            background: #12192b;
-            color: #e2e8f0;
-            padding: 1rem;
-            overflow-x: auto;
-            direction: ltr;
-            text-align: left;
-            font-size: .86rem;
-            line-height: 1.65;
-            font-family: 'SF Mono', 'Fira Code', monospace;
         }
 
         /* Help sections */
@@ -1348,7 +1063,6 @@
 
         /* Performance layers */
         .glass-surface,
-        #ai_companion_modal,
         .modal-content {
             transform: translateZ(0);
         }
@@ -1379,6 +1093,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 
 <body>
@@ -1389,7 +1104,7 @@
             <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
                 <!-- App Logo -->
                 <div class="relative">
-                    <img src="logo.png" alt="شعار مسارك الهندسى"
+                    <img src="logo.webp" alt="شعار مسارك الهندسى"
                         class="relative w-32 h-32 object-contain filter drop-shadow-xl transition-transform hover:scale-105 duration-300">
                 </div>
                 <!-- Text content -->
@@ -1420,8 +1135,7 @@
                 <a id="tab-calculator" class="tab tab-active" onclick="switchTab('calculator')"><i
                         data-feather="plus-circle"></i> حساب الفصل</a>
                 <a id="tab-simulation" class="tab" onclick="switchTab('simulation')"><i data-feather="trending-up"></i>
-                    التخطيط للمستقبل</a>
-                <a id="tab-advisor" class="tab" onclick="openAiCompanion()"><i data-feather="cpu"></i> رفيقك الدراسي</a>
+                    محاكاة المعدل</a>
                 <a id="tab-dashboard" class="tab" onclick="switchTab('dashboard')"><i data-feather="bar-chart-2"></i>
                     لوحة التحكم</a>
                 <a id="tab-help" class="tab" onclick="switchTab('help')"><i data-feather="help-circle"></i> مساعدة</a>
@@ -1430,7 +1144,7 @@
             <!-- Regular Tab Content Wrapper -->
             <div id="tab-content-wrapper" class="relative">
                 <!-- Calculator Content -->
-                <div id="content-calculator" class="tab-content active" style="opacity: 1;">
+                <div id="content-calculator" class="tab-content active">
                     <section class="space-y-8">
                         <div>
                             <div class="section-head">
@@ -1524,6 +1238,30 @@
                                     <i data-feather="layers"></i> إضافة مواد متعددة
                                 </button>
                             </div>
+
+                            <!-- Live GPA preview — updates as you type -->
+                            <div id="live-gpa-bar" class="hidden mt-5">
+                                <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center"
+                                    style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--r3);padding:.9rem .8rem;box-shadow:var(--sh1);">
+                                    <div>
+                                        <p class="text-xs font-semibold" style="color:var(--t2)">الفصلي الآن</p>
+                                        <p class="text-xl sm:text-2xl font-bold" id="live-semester-gpa"
+                                            style="color:var(--accent-color)">—</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold" style="color:var(--t2)">وحدات الفصل</p>
+                                        <p class="text-xl sm:text-2xl font-bold" id="live-semester-units"
+                                            style="color:var(--t1)">—</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold" style="color:var(--t2)">التراكمي المتوقع</p>
+                                        <p class="text-xl sm:text-2xl font-bold" id="live-cumulative-gpa"
+                                            style="color:var(--t1)">—</p>
+                                    </div>
+                                </div>
+                                <p id="live-gpa-hint" class="hidden text-xs text-center mt-2"
+                                    style="color:var(--warning-color)"></p>
+                            </div>
                         </div>
                         <hr class="section-divider">
                         <div class="text-center">
@@ -1540,7 +1278,7 @@
                     </section>
                 </div>
 
-                <div id="content-simulation" class="tab-content" style="opacity: 0;">
+                <div id="content-simulation" class="tab-content">
                     <div class="space-y-8">
                         <section>
                             <div class="section-head">
@@ -1583,35 +1321,10 @@
                             <div id="simulation_result" class="text-center p-6 rounded-2xl hidden mt-6"
                                 style="background:var(--surface);border:1px solid var(--sep);"></div>
                         </section>
-
-                        <section class="mt-2">
-                            <div class="section-head">
-                                <div class="icon-badge"><i data-feather="cpu"></i></div>
-                                <div class="section-head-text">
-                                    <h2>إنشاء خطة دراسية بالذكاء الاصطناعي</h2>
-                                    <p>خطة مخصصة لمساعدتك على التفوق</p>
-                                </div>
-                            </div>
-                            <p class="mb-4" style="color: var(--text-secondary);">أدخل موادك للفصل القادم وسيقوم رفيقك
-                                الدراسي بإنشاء خطة مخصصة لمساعدتك.</p>
-                            <div id="plan_courses_container" class="space-y-3"></div>
-                            <div class="mt-4 flex gap-4">
-                                <button onclick="addPlanCourse()" class="btn btn-secondary">
-                                    <i data-feather="plus"></i> إضافة مادة للخطة
-                                </button>
-                            </div>
-                            <hr class="section-divider">
-                            <div class="text-center">
-                                <button onclick="generateStudyPlan()" class="btn btn-primary"><i data-feather="cpu"></i>
-                                    أنشئ الخطة الآن</button>
-                            </div>
-                            <div id="study_plan_result" class="p-6 rounded-2xl hidden mt-6"
-                                style="background:var(--surface);border:1px solid var(--sep);"></div>
-                        </section>
                     </div>
                 </div>
 
-                <div id="content-dashboard" class="tab-content" style="opacity: 0;">
+                <div id="content-dashboard" class="tab-content">
                     <section>
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                             <h2 class="text-xl font-bold">لوحة التحكم</h2>
@@ -1625,7 +1338,8 @@
                             </div>
                         </div>
                         <div class="space-y-6">
-                            <div class="p-5 rounded-2xl" style="background:var(--surface);border:1px solid var(--sep);">
+                            <div id="dashboard-insights" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+                            <div id="gpa-chart-card" class="p-5 rounded-2xl" style="background:var(--surface);border:1px solid var(--sep);">
                                 <h3 class="font-semibold mb-4" style="font-size:.95rem;">تطور المعدل التراكمي</h3>
                                 <div class="h-64"><canvas id="gpa-chart"></canvas></div>
                             </div>
@@ -1646,7 +1360,7 @@
                     </section>
                 </div>
 
-                <div id="content-help" class="tab-content" style="opacity: 0;">
+                <div id="content-help" class="tab-content">
                     <section class="space-y-6">
                         <div class="help-section">
                             <h3 class="font-semibold text-base mb-3 flex items-center gap-2.5"
@@ -1658,8 +1372,9 @@
                             </p>
                             <div class="flex justify-center p-2 border rounded-lg"
                                 style="background-color: var(--card-bg); border-color: var(--card-border);">
-                                <img src="transcript-guide.png" alt="شرح استمارة جامعة بنغازي"
-                                    class="rounded-md shadow-md max-w-full h-auto" onerror="this.style.display='none'">
+                                <img src="transcript-guide.webp" alt="شرح استمارة جامعة بنغازي"
+                                    class="rounded-md shadow-md max-w-full h-auto" loading="lazy" decoding="async"
+                                    onerror="if(this.dataset.fallback){this.style.display='none'}else{this.dataset.fallback='1';this.src='transcript-guide.jpg'}">
                             </div>
                         </div>
                         <div class="help-section">
@@ -1749,7 +1464,7 @@
         <footer class="text-center mt-10 pb-4" style="color:var(--t2);font-size:.84rem;">
             <div class="flex items-center justify-center gap-6 mb-3">
                 <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
+                    <img src="logo.webp" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
                     <div style="text-align:right">
                         <strong>مسارك الهندسى</strong>
                         <div style="font-size:0.85rem;color:var(--text-secondary)">مخصص لطلاب كلية الهندسة - جامعة
@@ -1758,7 +1473,7 @@
                 </div>
                 <div style="width:1px; height:48px; background:var(--sep)"></div>
                 <div class="flex items-center gap-3">
-                    <img src="uob-logo.png" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
+                    <img src="uob-logo.webp" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
                 </div>
             </div>
             <p>&copy; <span id="year"></span> - تم التطوير لخدمة طلاب كلية الهندسة - جامعة بنغازي.</p>
@@ -1780,23 +1495,13 @@
             </svg>
             <span class="nav-text">الفصل</span>
         </a>
-        <a id="bottom-nav-simulation" class="bottom-nav-item" onclick="switchTab('simulation')" aria-label="التخطيط">
+        <a id="bottom-nav-simulation" class="bottom-nav-item" onclick="switchTab('simulation')" aria-label="المحاكاة">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                 <polyline points="17 6 23 6 23 12" />
             </svg>
-            <span class="nav-text">التخطيط</span>
-        </a>
-        <a id="bottom-nav-advisor" class="bottom-nav-item" onclick="openAiCompanion()" aria-label="الرفيق الذكي">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4" />
-                <path d="M12 10c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4" />
-                <path d="M8 21h8" />
-                <path d="M12 17v4" />
-            </svg>
-            <span class="nav-text">الرفيق</span>
+            <span class="nav-text">المحاكاة</span>
         </a>
         <a id="bottom-nav-dashboard" class="bottom-nav-item" onclick="switchTab('dashboard')" aria-label="لوحة التحكم">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1818,126 +1523,6 @@
             <span class="nav-text">مساعدة</span>
         </a>
     </nav>
-
-    <!-- AI Companion Full Screen Modal -->
-    <div id="ai_companion_modal">
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleChatHistory()">
-        </div>
-        <aside class="ai-sidebar">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold">محادثاتي</h2>
-                <button id="new-chat-btn-modal" class="btn btn-secondary !py-2 !px-3 !gap-2 text-sm">
-                    <i data-feather="plus-circle" class="w-4 h-4"></i>
-                    <span>جديدة</span>
-                </button>
-            </div>
-            <!-- Chat history can be populated here -->
-            <div id="chat-history-container" class="text-center text-sm py-8" style="color: var(--text-secondary);">
-                <p>لا توجد محادثات سابقة.</p>
-            </div>
-        </aside>
-        <div class="ai-chat-area">
-            <header class="ai-chat-header">
-                <div class="flex items-center gap-2">
-                    <button id="toggle-chat-history" class="btn btn-secondary !p-2 !rounded-full !gap-0 md:hidden"
-                        onclick="toggleChatHistory()">
-                        <i data-feather="sidebar"></i>
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <h2 class="font-bold" style="font-size:.95rem;">رفيقك الدراسي</h2>
-                        <span class="status-dot" title="متصل"></span>
-                    </div>
-                    <div class="hidden md:block">
-                        <select id="ai-mode" class="form-select p-1 !rounded-full">
-                            <option value="عام">وضع عام</option>
-                            <option value="رياضيات">رياضيات</option>
-                            <option value="دوائر كهربائية">دوائر كهربائية</option>
-                            <option value="ميكانيكا">ميكانيكا</option>
-                            <option value="مدني">هندسة مدنية</option>
-                            <option value="برمجة">برمجة</option>
-                            <option value="تحكم">تحكم وأنظمة</option>
-                        </select>
-                    </div>
-                </div>
-                <button onclick="closeAiCompanion()" class="btn btn-secondary !p-2 !rounded-full !gap-0">
-                    <i data-feather="x"></i>
-                </button>
-            </header>
-            <div id="chat-messages-container">
-                <div class="chat-messages-wrapper" id="chat-messages-wrapper">
-                    <div id="chat-messages">
-                        <!-- Chat messages will be appended here -->
-                    </div>
-                </div>
-                <div id="chat-welcome-screen">
-                    <div class="mb-6"
-                        style="width:72px;height:72px;border-radius:22px;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px var(--blue-g);">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none"
-                            stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-                            <rect x="9" y="9" width="6" height="6" />
-                            <line x1="9" y1="1" x2="9" y2="4" />
-                            <line x1="15" y1="1" x2="15" y2="4" />
-                            <line x1="9" y1="20" x2="9" y2="23" />
-                            <line x1="15" y1="20" x2="15" y2="23" />
-                            <line x1="20" y1="9" x2="23" y2="9" />
-                            <line x1="20" y1="14" x2="23" y2="14" />
-                            <line x1="1" y1="9" x2="4" y2="9" />
-                            <line x1="1" y1="14" x2="4" y2="14" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-bold mb-2">أهلاً! أنا رفيقك الدراسي</h2>
-                    <p style="color:var(--t2);margin-bottom:2rem;font-size:.95rem;">كيف يمكنني مساعدتك اليوم في مسارك
-                        الهندسي؟</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
-                        <div class="example-prompt"
-                            onclick="setPromptAndSend('اشرح لي نظرية التراكب (Superposition) في الدوائر الكهربائية')">
-                            <p class="font-semibold">شرح نظرية</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">مثل نظرية التراكب في الدوائر</p>
-                        </div>
-                        <div class="example-prompt"
-                            onclick="setPromptAndSend('اكتب لي كود Python لحل نظام معادلات خطية باستخدام المصفوفات')">
-                            <p class="font-semibold">كتابة كود برمجي</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">لحل نظام معادلات خطية</p>
-                        </div>
-                        <div class="example-prompt"
-                            onclick="setPromptAndSend('حل المعادلة التفاضلية التالية: $y\'\' - 5y\' + 6y = 0$')">
-                            <p class="font-semibold">حل معادلة تفاضلية</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">مع خطوات الحل</p>
-                        </div>
-                        <div class="example-prompt"
-                            onclick="setPromptAndSend('ما هي أهم النصائح للتفوق في مادة الاستاتيكا؟')">
-                            <p class="font-semibold">طلب نصائح دراسية</p>
-                            <p class="text-sm" style="color: var(--text-secondary);">للتفوق في مادة معينة</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="ai-chat-input-container sticky" id="chat-input-container">
-                <div id="image-preview-container" class="hidden mb-2 relative w-24">
-                    <img id="image-preview" class="rounded-lg w-full h-auto" alt="معاينة الصورة">
-                    <button id="remove-image-btn"
-                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 leading-none"
-                        aria-label="إزالة الصورة">
-                        <i data-feather="x" class="w-4 h-4"></i>
-                    </button>
-                </div>
-                <form id="chat-form" class="flex items-center gap-2">
-                    <button type="button" id="attach-file-btn" class="btn btn-secondary !rounded-full !p-3 !gap-0"
-                        aria-label="إرفاق صورة">
-                        <i data-feather="image"></i>
-                    </button>
-                    <input type="file" id="file-input" class="hidden" accept="image/*">
-                    <input type="text" id="chat-input" placeholder="اكتب سؤالك أو ارفق صورة... (Enter للإرسال)"
-                        class="form-input flex-grow !rounded-full" autocomplete="off" maxlength="4000">
-                    <button type="submit" id="send-button" class="btn btn-primary !rounded-full !p-3 !gap-0"
-                        aria-label="إرسال الرسالة">
-                        <i data-feather="send"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- Results Modal -->
     <div id="results_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
@@ -2029,15 +1614,25 @@
 
     <script>
         // --- GLOBAL VARIABLES & INITIALIZATION ---
-        let courseCount = 0, planCourseCount = 0, savedResults = [], gpaChart = null, lastCalculationData = {};
-        let attachedFile = { data: null, type: null };
-        // AI chat history state
-        let chatThreads = JSON.parse(localStorage.getItem('aiChatThreads') || '[]');
-        let currentThreadId = null;
+        let courseCount = 0, savedResults = [], gpaChart = null, lastCalculationData = {};
+
+        // Safe storage access — browsers with blocked cookies throw on localStorage use,
+        // which would otherwise crash the whole script on load.
+        const storage = {
+            get(key, fallback = null) {
+                try { const v = localStorage.getItem(key); return v === null ? fallback : v; }
+                catch (e) { return fallback; }
+            },
+            set(key, value) {
+                try { localStorage.setItem(key, value); return true; }
+                catch (e) { console.warn('Storage write failed:', e); return false; }
+            },
+            remove(key) {
+                try { localStorage.removeItem(key); } catch (e) { /* ignore */ }
+            }
+        };
 
         let currentTab = 'calculator';
-        let aiMode = localStorage.getItem('aiMode') || 'عام';
-        const GEN_CONFIG = { temperature: 0.25, topP: 0.9, topK: 40, maxOutputTokens: 2048 };
 
         function roundTo(num, decimals = 3) {
             const factor = Math.pow(10, decimals);
@@ -2048,10 +1643,64 @@
             feather.replace();
             setupTheme();
             loadSavedResults();
+            restoreCalculatorDraft();
             checkEmptyState();
-            addPlanCourse();
             document.getElementById('year').textContent = new Date().getFullYear();
-            setupChat();
+
+            // Clean up data left over from the removed AI features
+            storage.remove('aiChatThreads');
+            storage.remove('aiMode');
+
+            // Live GPA preview + draft auto-save
+            document.getElementById('courses_container').addEventListener('input', onCalculatorInput);
+            document.getElementById('courses_container').addEventListener('change', onCalculatorInput);
+            ['prev_gpa', 'prev_units'].forEach(id => {
+                document.getElementById(id).addEventListener('input', onCalculatorInput);
+            });
+
+            // PWA: offline support after first visit
+            if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+                navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+            }
+
+            // Make custom controls reachable and activable by keyboard
+            document.querySelectorAll('.tab, .bottom-nav-item').forEach(el => {
+                el.setAttribute('tabindex', '0');
+                el.setAttribute('role', 'button');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const openModal = document.querySelector('.modal-overlay.show');
+                    if (openModal) closeModal(openModal.id);
+                    return;
+                }
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const t = e.target;
+                    if (t && t.getAttribute && t.getAttribute('role') === 'button' && typeof t.onclick === 'function') {
+                        e.preventDefault();
+                        t.onclick(e);
+                    }
+                }
+            });
+
+            // Clicking a modal backdrop closes it
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeModal(overlay.id);
+                });
+            });
+
+            // Enter confirms the bulk-add modal
+            const bulkInput = document.getElementById('bulk-course-count-modal');
+            if (bulkInput) bulkInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); confirmBulkAddCourses(); }
+            });
+
+            // Prevent accidental value changes when scrolling over a focused number input
+            document.addEventListener('wheel', (e) => {
+                const el = document.activeElement;
+                if (el && el.type === 'number' && e.target === el) e.preventDefault();
+            }, { passive: false });
         });
 
         // --- THEME & UI ---
@@ -2069,19 +1718,19 @@
         }
         function setupTheme() {
             const setInitialTheme = () => {
-                const savedTheme = localStorage.getItem('theme');
+                const savedTheme = storage.get('theme');
                 const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
             };
             setInitialTheme();
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem('theme')) {
+                if (!storage.get('theme')) {
                     applyTheme(e.matches ? 'dark' : 'light');
                 }
             });
             document.getElementById('theme-toggle').addEventListener('click', () => {
                 const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                localStorage.setItem('theme', newTheme);
+                storage.set('theme', newTheme);
                 applyTheme(newTheme);
             });
         }
@@ -2113,7 +1762,8 @@
             el.classList.remove('show');
             window.setTimeout(() => {
                 el.classList.remove('closing');
-                document.body.style.overflow = 'auto';
+                // Only release the scroll lock when no other modal is still open
+                if (!document.querySelector('.modal-overlay.show')) document.body.style.overflow = 'auto';
             }, 260);
         }
 
@@ -2141,10 +1791,15 @@
             const icons = { error: 'x-circle', info: 'info', success: 'check-circle' };
             t.style.backgroundColor = colors[type] || colors.success;
             t.style.color = 'white';
+            t.style.cursor = 'pointer';
             document.getElementById('toast-message').textContent = message;
             if (icon) { icon.setAttribute('data-feather', icons[type] || 'check-circle'); feather.replace(); }
             t.classList.remove('opacity-0', 'translate-y-3');
             _toastTimer = setTimeout(() => t.classList.add('opacity-0', 'translate-y-3'), 3500);
+            t.onclick = () => {
+                t.classList.add('opacity-0', 'translate-y-3');
+                if (_toastTimer) clearTimeout(_toastTimer);
+            };
         }
         function getGradeOptions(isOld = false) { const o = `<option value="4.0">AA (4.0)</option><option value="3.5">A (3.5)</option><option value="3.0">BB (3.0)</option><option value="2.5">B (2.5)</option><option value="2.0">CC (2.0)</option><option value="1.5">C (1.5)</option><option value="1.0">DD (1.0)</option><option value="0.5">D (0.5)</option><option value="0.0">F (0.0)</option>`; return isOld ? `<option value="" disabled selected>التقدير القديم</option>${o}` : `<option value="" disabled selected>اختر التقدير</option>${o}` }
         function getGradeText(v) { const g = { 4.0: 'AA', 3.5: 'A', 3.0: 'BB', 2.5: 'B', 2.0: 'CC', 1.5: 'C', 1.0: 'DD', 0.5: 'D', 0.0: 'F' }; return g[v] || `N/A` }
@@ -2159,15 +1814,130 @@
                 emptyState.style.flexDirection = 'column';
                 emptyState.style.alignItems = 'center';
             }
+            updateLiveGPA();
         }
         function clearCourses() {
             const container = document.getElementById('courses_container');
             const courseRows = container.querySelectorAll('.course-row');
             if (courseRows.length > 0) {
                 courseRows.forEach(row => removeCourse(row.id.split('_')[0] + '_', row.id.split('_')[1]));
+                storage.remove(DRAFT_KEY);
+                updateLiveGPA();
                 showToast('تم مسح جميع المواد.');
             }
         }
+
+        // --- Live GPA preview (mirrors calculateGPA math) & draft auto-save ---
+        const DRAFT_KEY = 'calculatorDraft';
+        function updateLiveGPA() {
+            const bar = document.getElementById('live-gpa-bar');
+            if (!bar) return;
+            let semesterPoints = 0, semesterUnits = 0;
+            let cumulativePoints = 0, cumulativeUnits = 0;
+            let missingOld = 0;
+
+            const prevGPA = parseFloat(document.getElementById('prev_gpa').value);
+            const prevUnits = parseFloat(document.getElementById('prev_units').value);
+            if (!isNaN(prevGPA) && !isNaN(prevUnits) && prevUnits > 0) {
+                cumulativePoints += prevGPA * prevUnits;
+                cumulativeUnits += prevUnits;
+            }
+
+            document.querySelectorAll('#courses_container .course-row').forEach(row => {
+                const units = parseFloat(row.querySelector('.course-units').value);
+                const grade = parseFloat(row.querySelector('.course-grade').value);
+                if (!units || isNaN(grade)) return;
+                semesterPoints += grade * units; semesterUnits += units;
+                const type = row.querySelector('.btn-status.active')?.dataset.value;
+                if (type === 'retaken') {
+                    const oldGrade = parseFloat(row.querySelector('.course-old-grade')?.value);
+                    if (!isNaN(oldGrade)) {
+                        cumulativePoints += (grade - oldGrade) * units;
+                    } else {
+                        missingOld++;
+                    }
+                } else {
+                    cumulativePoints += grade * units; cumulativeUnits += units;
+                }
+            });
+
+            if (semesterUnits <= 0) { bar.classList.add('hidden'); return; }
+            bar.classList.remove('hidden');
+
+            const semesterGPA = roundTo(semesterPoints / semesterUnits, 3);
+            const semEl = document.getElementById('live-semester-gpa');
+            if (semEl) {
+                semEl.textContent = semesterGPA.toFixed(3);
+                semEl.style.color = getGPAAdviceAndIcon(semesterGPA).color;
+            }
+            document.getElementById('live-semester-units').textContent = semesterUnits;
+            const cumEl = document.getElementById('live-cumulative-gpa');
+            cumEl.textContent = cumulativeUnits > 0 ? roundTo(cumulativePoints / cumulativeUnits, 3).toFixed(3) : '—';
+
+            const hint = document.getElementById('live-gpa-hint');
+            if (missingOld > 0) {
+                hint.textContent = `⚠️ ${missingOld} مادة معادة بدون تقدير قديم — لن تدخل في التراكمي المتوقع حتى تكمله.`;
+                hint.classList.remove('hidden');
+            } else {
+                hint.classList.add('hidden');
+            }
+        }
+
+        let _draftTimer = null;
+        function scheduleDraftSave() {
+            clearTimeout(_draftTimer);
+            _draftTimer = setTimeout(() => {
+                const courses = [];
+                document.querySelectorAll('#courses_container .course-row').forEach(row => {
+                    courses.push({
+                        name: row.querySelector('.course-name').value,
+                        units: row.querySelector('.course-units').value,
+                        grade: row.querySelector('.course-grade').value,
+                        type: row.querySelector('.btn-status.active')?.dataset.value || 'new',
+                        oldGrade: row.querySelector('.course-old-grade')?.value || ''
+                    });
+                });
+                const draft = {
+                    prevGPA: document.getElementById('prev_gpa').value,
+                    prevUnits: document.getElementById('prev_units').value,
+                    courses
+                };
+                const meaningful = draft.prevGPA.trim() !== '' || draft.prevUnits.trim() !== '' ||
+                    courses.some(c => c.name.trim() !== '' || c.units.trim() !== '' || c.grade !== '' || c.oldGrade !== '');
+                if (meaningful) storage.set(DRAFT_KEY, JSON.stringify(draft));
+                else storage.remove(DRAFT_KEY);
+            }, 400);
+        }
+        function restoreCalculatorDraft() {
+            let draft = null;
+            try { draft = JSON.parse(storage.get(DRAFT_KEY, 'null')); } catch (e) { draft = null; }
+            if (!draft || !Array.isArray(draft.courses) || draft.courses.length === 0) return;
+            document.getElementById('prev_gpa').value = draft.prevGPA || '';
+            document.getElementById('prev_units').value = draft.prevUnits || '';
+            let restored = 0;
+            draft.courses.forEach(c => {
+                if (!c || (!c.name && !c.units && !c.grade && !c.oldGrade)) return;
+                addCourse({ scroll: false });
+                const row = document.getElementById('course_' + courseCount);
+                if (!row) return;
+                row.querySelector('.course-name').value = c.name || '';
+                row.querySelector('.course-units').value = c.units || '';
+                row.querySelector('.course-grade').value = c.grade || '';
+                if (c.type === 'retaken') {
+                    const btn = row.querySelector('.btn-status[data-value="retaken"]');
+                    if (btn) setCourseType(btn, courseCount);
+                }
+                const oldSel = row.querySelector('.course-old-grade');
+                if (oldSel && c.oldGrade !== '') oldSel.value = c.oldGrade;
+                restored++;
+            });
+            if (restored > 0) showToast('تم استعادة موادك الأخيرة تلقائياً.', 'info');
+        }
+        function onCalculatorInput() {
+            updateLiveGPA();
+            scheduleDraftSave();
+        }
+
         function addCourse({ scroll = true } = {}) {
             courseCount++;
             const courseRow = document.createElement('div');
@@ -2179,7 +1949,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-3 items-center">
                     <div class="md:col-span-4">
                         <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">اسم المادة</label>
-                        <input type="text" placeholder="مثال: ES102" class="form-input p-2.5 course-name">
+                        <input type="text" placeholder="مثال: ES102" dir="auto" class="form-input p-2.5 course-name">
                     </div>
                     <div class="md:col-span-4 flex gap-3">
                         <div class="flex-1">
@@ -2252,6 +2022,7 @@
 
             const container = document.getElementById(`old-grade-container-${courseId}`);
             if (container) container.classList.toggle('hidden', courseType !== 'retaken');
+            onCalculatorInput();
         }
         function removeCourse(prefix, id) {
             const courseRow = document.getElementById(prefix + id);
@@ -2260,16 +2031,32 @@
                 setTimeout(() => {
                     courseRow.remove();
                     checkEmptyState();
+                    scheduleDraftSave();
                 }, 400);
             }
         }
         function calculateGPA() {
             const calcBtn = document.getElementById('calculate-gpa-btn');
+            // Blank "current data" fields mean first semester — default them to 0 instead of blocking
+            ['prev_gpa', 'prev_units'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim() === '') el.value = '0';
+            });
+            const prevGPA = parseFloat(document.getElementById('prev_gpa').value) || 0;
+            const prevUnits = parseFloat(document.getElementById('prev_units').value) || 0;
+            if (prevGPA < 0 || prevGPA > 4) { showToast('المعدل التراكمي الحالي يجب أن يكون بين 0 و 4.', 'error'); return; }
+            if (prevUnits < 0) { showToast('عدد الساعات لا يمكن أن يكون سالباً.', 'error'); return; }
+            // Silently drop course rows the user left completely empty
+            document.querySelectorAll('#courses_container .course-row').forEach(row => {
+                const name = row.querySelector('.course-name').value.trim();
+                const units = row.querySelector('.course-units').value.trim();
+                const grade = row.querySelector('.course-grade').value;
+                if (!name && !units && !grade) row.remove();
+            });
+            checkEmptyState();
             if (!validateInputs('#content-calculator')) return;
             setLoadingButton(calcBtn, true, 'جاري الحساب...');
             try {
-                const prevGPA = parseFloat(document.getElementById('prev_gpa').value) || 0;
-                const prevUnits = parseFloat(document.getElementById('prev_units').value) || 0;
                 let cumulativePoints = prevGPA * prevUnits; let cumulativeUnits = prevUnits; let semesterPoints = 0; let semesterUnits = 0; let courses = []; let missingOld = false;
                 document.querySelectorAll('#courses_container .course-row').forEach(row => {
                     const units = parseFloat(row.querySelector('.course-units').value);
@@ -2285,11 +2072,15 @@
                         if (!isNaN(oldGrade)) {
                             cumulativePoints += (grade - oldGrade) * units; // replace points only
                         } else {
-                            if (oldSel) oldSel.classList.add('border-red-500');
+                            if (oldSel) {
+                                oldSel.classList.remove('shake');
+                                void oldSel.offsetWidth; // restart the shake animation
+                                oldSel.classList.add('border-red-500', 'shake');
+                            }
                             missingOld = true;
                         }
                     }
-                    courses.push({ name: row.querySelector('.course-name').value || 'مادة', units, grade, type });
+                    courses.push({ name: row.querySelector('.course-name').value.trim() || 'مادة', units, grade, type });
                 });
                 if (semesterUnits <= 0) { showToast('الرجاء إضافة مادة واحدة على الأقل قبل الحساب.', 'error'); return; }
                 if (missingOld) { showToast('للمواد المعادة، يرجى إدخال التقدير القديم لضمان دقة الحساب.', 'error'); return; }
@@ -2385,12 +2176,6 @@
                         <i data-feather="list"></i>
                         <span>تفاصيل المواد</span>
                     </button>
-                    <button id="ai-gpa-advice-btn" onclick="getGPAAdviceByAI(lastCalculationData)" class="btn btn-secondary" style="margin-right:0.5rem; color:var(--purple);">
-                        <i data-feather="cpu"></i>
-                        <span>تحليل الرفيق الذكي</span>
-                    </button>
-                </div>
-                <div id="ai-gpa-advice-result" class="text-right p-5 rounded-xl hidden mt-4 text-sm" style="background:var(--input-bg); border:1px solid color-mix(in srgb, var(--card-border) 50%, transparent); line-height: 1.6; max-height: 250px; overflow-y: auto;">
                 </div>
                 <div id="courses-details-table" class="overflow-x-auto mt-4 rounded-xl" style="display:none;">
                     <table class="w-full text-sm text-center">
@@ -2403,7 +2188,7 @@
                         </tr></thead>
                         <tbody>${data.courses.map((c, i) => `
                             <tr style="border-top:1px solid color-mix(in srgb, var(--card-border) 50%, transparent);${i % 2 ? 'background:color-mix(in srgb, var(--input-bg) 40%, transparent);' : ''}">
-                                <td class="p-2 font-medium">${c.name}</td>
+                                <td class="p-2 font-medium">${escapeHtml(c.name)}</td>
                                 <td class="p-2">${c.units}</td>
                                 <td class="p-2">${c.type === 'retaken'
                     ? '<span style="color:var(--warning-color);font-weight:700;font-size:0.75rem;">معادة</span>'
@@ -2416,36 +2201,17 @@
                 </div>
             `;
             feather.replace();
+            // Animate the ring from empty to the final GPA percentage
+            const arc = document.getElementById('gpa-ring-arc');
+            if (arc) {
+                arc.style.strokeDashoffset = circ;
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    arc.style.strokeDashoffset = circ - dash;
+                }));
+            }
             showModal('results_modal');
             animateResultsNumbers(data);
             if (data.semesterGPA >= 3.5) triggerConfetti();
-        }
-
-        async function getGPAAdviceByAI(data) {
-            const btn = document.getElementById('ai-gpa-advice-btn');
-            const resultDiv = document.getElementById('ai-gpa-advice-result');
-
-            btn.style.display = 'none';
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `<div class="p-4 flex items-center justify-center gap-3"><div class="loading-dots"><span></span><span></span><span></span></div><p>جاري تحليل نتيجتك واستخراج النصائح...</p></div>`;
-
-            let courses = data.courses.map(c => `- ${c.name}: ${getGradeText(c.grade)} (${c.units} وحدات)`).join('\\n');
-            const prompt = `بصفتك مرشداً أكاديمياً خبيراً لطلاب الهندسة في جامعة بنغازي، قم بتقديم تحليل ونصائح مختصرة بناءً على هذه النتيجة الفصلية:
-المعدل الفصلي: ${data.semesterGPA}
-المعدل التراكمي الإجمالي: ${data.cumulativeGPA}
-عدد الساعات المجتازة: ${data.cumulativeUnits}
-المواد ودرجاتها لهذا الفصل:
-${courses}
-
-أرجو تقديم رسالة تشجيعية، وملاحظتين عن الأداء (بقراءة درجات المواد)، ونصيحة عملية للفصل القادم. اجعل الرد منسقاً باستخدام عناوين ونقاط لتسهيل القراءة.`;
-
-            try {
-                const response = await callGeminiAPI(prompt, null);
-                resultDiv.innerHTML = renderAIContent(response);
-                feather.replace();
-            } catch (e) {
-                resultDiv.innerHTML = '<p class="text-red-500 text-center">عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي.</p>';
-            }
         }
 
         function triggerConfetti() {
@@ -2462,12 +2228,13 @@ ${courses}
             let frame;
             function drawConfetti() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                confetti.forEach((c, index) => {
+                for (let i = confetti.length - 1; i >= 0; i--) {
+                    const c = confetti[i];
                     ctx.beginPath(); ctx.lineWidth = c.r / 2; ctx.strokeStyle = c.color; ctx.moveTo(c.x + c.tilt, c.y); ctx.lineTo(c.x, c.y + c.tilt + c.r); ctx.stroke();
                     c.tiltAngle += c.tiltAngleIncrement; c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2; c.x += Math.sin(c.d); c.tilt = Math.sin(c.tiltAngle) * 15;
-                    if (c.y > canvas.height) confetti.splice(index, 1);
-                });
-                if (confetti.length > 0) frame = requestAnimationFrame(drawConfetti); else { ctx.clearRect(0, 0, canvas.width, canvas.height); cancelAnimationFrame(frame); }
+                    if (c.y > canvas.height) confetti.splice(i, 1);
+                }
+                if (confetti.length > 0) frame = requestAnimationFrame(drawConfetti); else ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
             drawConfetti();
         }
@@ -2475,15 +2242,19 @@ ${courses}
         // --- SIMULATION & PLANNING ---
         function runSimulation() {
             if (!validateInputs('#content-simulation section:first-child')) return;
-            const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value); const currentUnits = parseInt(document.getElementById('sim_current_units').value); const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value); const futureUnits = parseInt(document.getElementById('sim_future_units').value); const reqAvgGrade = ((targetGPA * (currentUnits + futureUnits)) - (currentGPA * currentUnits)) / futureUnits; document.getElementById('simulation_result').innerHTML = `<h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)}`; document.getElementById('simulation_result').classList.remove('hidden');
+            const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value);
+            const currentUnits = parseInt(document.getElementById('sim_current_units').value);
+            const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value);
+            const futureUnits = parseInt(document.getElementById('sim_future_units').value);
+            if (isNaN(currentGPA) || isNaN(currentUnits) || isNaN(targetGPA) || isNaN(futureUnits)) { showToast('الرجاء إدخال قيم رقمية صحيحة.', 'error'); return; }
+            if (currentGPA < 0 || currentGPA > 4 || targetGPA < 0 || targetGPA > 4) { showToast('المعدلات يجب أن تكون بين 0 و 4.', 'error'); return; }
+            if (currentUnits < 0) { showToast('عدد الساعات المجتازة لا يمكن أن يكون سالباً.', 'error'); return; }
+            if (futureUnits < 1) { showToast('عدد الوحدات القادمة يجب أن يكون 1 على الأقل.', 'error'); return; }
+            const reqAvgGrade = ((targetGPA * (currentUnits + futureUnits)) - (currentGPA * currentUnits)) / futureUnits;
+            document.getElementById('simulation_result').innerHTML = `<h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)}`;
+            document.getElementById('simulation_result').classList.remove('hidden');
         }
         function getSimulationAdvice(req, target, units) { if (req > 4.0) return `<p class="text-lg" style="color:var(--danger-color)">للوصول إلى <strong>${target.toFixed(2)}</strong> تحتاج لمتوسط <strong>${req.toFixed(2)}</strong>، وهو <span class="font-bold">غير ممكن</span>.</p>`; if (req < 0) return `<p class="text-lg" style="color:var(--success-color)">خبر رائع! معدلك الحالي أعلى من الهدف.</p>`; return `<p class="text-lg">لتحقيق هدفك، تحتاج لمتوسط <strong>${req.toFixed(2)}</strong> (<strong>${getGradeText(Math.ceil(req * 2) / 2)}</strong> أو أعلى) في الـ <strong>${units}</strong> وحدة القادمة.</p>` }
-        function addPlanCourse() { planCourseCount++; const courseRow = document.createElement('div'); courseRow.id = 'plan_course_' + planCourseCount; courseRow.className = 'plan-course-row grid grid-cols-12 gap-3 items-center'; courseRow.innerHTML = `<div class="col-span-8"><input type="text" placeholder="اسم المادة" class="form-input p-2 plan-course-name"></div><div class="col-span-3"><input type="number" placeholder="الوحدات" min="1" class="form-input p-2 plan-course-units"></div><div class="col-span-1 flex items-center justify-end"><button onclick="removeCourse('plan_course_',${planCourseCount})" class="btn !p-2 !rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة"><i data-feather="trash-2" class="text-red-500"></i></button></div>`; document.getElementById('plan_courses_container').appendChild(courseRow); feather.replace(); }
-        async function generateStudyPlan() {
-            if (!validateInputs('#content-simulation section:last-child')) return;
-            const resultDiv = document.getElementById('study_plan_result'); resultDiv.classList.remove('hidden'); resultDiv.innerHTML = `<div class="p-4 flex items-center justify-center gap-3"><div class="loading-dots"><span></span><span></span><span></span></div><p>جاري إنشاء الخطة...</p></div>`; let courses = []; document.querySelectorAll('#plan_courses_container .plan-course-row').forEach(r => { const name = r.querySelector('.plan-course-name').value; const units = r.querySelector('.plan-course-units').value; if (name && units) courses.push(`- ${name} (${units} وحدات)`); }); if (courses.length === 0) { showToast("الرجاء إضافة مادة واحدة على الأقل.", "error"); resultDiv.classList.add('hidden'); return; } const prompt = `بصفتك مرشداً أكاديمياً خبيراً لطلاب الهندسة في جامعة بنغازي، قم بإنشاء خطة دراسية استراتيجية. بيانات الطالب: المعدل الحالي ${document.getElementById("sim_current_gpa").value || "غير محدد"}, الساعات المجتازة ${document.getElementById("sim_current_units").value || "غير محدد"}. المواد: ${courses.join(", ")}. الخطة يجب أن تتضمن: تحليل للعبء، توزيع ساعات المذاكرة، 3 نصائح، ورسالة تحفيزية.`; try { const response = await callGeminiAPI(prompt, { data: null, type: null }); resultDiv.innerHTML = renderAIContent(response); } catch (e) { resultDiv.textContent = 'عذراً، حدث خطأ أثناء إنشاء الخطة.'; }
-        }
-
         function toggleCoursesTable() {
             const tableDiv = document.getElementById('courses-details-table');
             const button = document.getElementById('toggle-courses-btn');
@@ -2500,18 +2271,20 @@ ${courses}
 
         // --- DATA MANAGEMENT ---
         function saveResult() {
+            if (!lastCalculationData || !lastCalculationData.date) { showToast('احسب معدلك أولاً قبل الحفظ.', 'error'); return; }
             const resultWithId = { ...lastCalculationData, id: Date.now() };
             savedResults.push(resultWithId);
-            localStorage.setItem('gpaResults', JSON.stringify(savedResults));
+            if (!storage.set('gpaResults', JSON.stringify(savedResults))) { savedResults.pop(); return; }
             showToast("تم حفظ النتيجة بنجاح!");
             closeModal('results_modal');
         }
         function loadSavedResults() {
-            try { savedResults = JSON.parse(localStorage.getItem('gpaResults')) || []; if (!Array.isArray(savedResults)) savedResults = []; } catch (e) { savedResults = []; }
+            try { savedResults = JSON.parse(storage.get('gpaResults', '[]')) || []; if (!Array.isArray(savedResults)) savedResults = []; } catch (e) { savedResults = []; }
         }
         function loadDashboard() {
             const container = document.getElementById('saved-results-container');
             const noResults = document.getElementById('no-saved-results');
+            renderDashboardInsights();
             noResults.style.display = savedResults.length > 0 ? 'none' : 'block';
             container.innerHTML = savedResults.length > 0 ? savedResults.slice().reverse().map(result => `
                 <div class="p-4 rounded-xl border flex justify-between items-center transition-all hover:shadow-md hover:border-[var(--accent-color)]" style="border-color: var(--card-border); background-color: var(--input-bg);">
@@ -2521,11 +2294,34 @@ ${courses}
             feather.replace();
             renderGPATrendChart();
         }
+        function renderDashboardInsights() {
+            const wrap = document.getElementById('dashboard-insights');
+            if (!wrap) return;
+            if (savedResults.length === 0) { wrap.classList.add('hidden'); return; }
+            wrap.classList.remove('hidden');
+            const best = savedResults.reduce((a, b) => (Number(b.semesterGPA) || 0) > (Number(a.semesterGPA) || 0) ? b : a);
+            const latest = savedResults[savedResults.length - 1];
+            const totalUnits = Number(latest.cumulativeUnits) || 0;
+            const cards = [
+                { icon: 'award', label: 'أفضل معدل فصلي', value: (Number(best.semesterGPA) || 0).toFixed(3), sub: new Date(best.date).toLocaleDateString('ar-EG'), color: 'var(--success-color)' },
+                { icon: 'trending-up', label: 'أحدث تراكمي', value: (Number(latest.cumulativeGPA) || 0).toFixed(3), sub: `${savedResults.length} نتائج محفوظة`, color: 'var(--accent-color)' },
+                { icon: 'book-open', label: 'ساعات مجتازة', value: String(totalUnits), sub: 'حتى آخر نتيجة', color: 'var(--warning-color)' }
+            ];
+            wrap.innerHTML = cards.map(c => `
+                <div class="p-4 rounded-2xl text-center" style="background:var(--surface);border:1px solid var(--sep);">
+                    <div class="w-9 h-9 mx-auto mb-2 rounded-xl flex items-center justify-center" style="background:color-mix(in srgb, ${c.color} 12%, transparent);">
+                        <i data-feather="${c.icon}" class="w-4.5 h-4.5" style="color:${c.color};"></i>
+                    </div>
+                    <p class="text-xs font-semibold" style="color:var(--t2)">${c.label}</p>
+                    <p class="text-xl font-bold mt-0.5" style="color:${c.color}">${c.value}</p>
+                    <p class="text-xs mt-0.5" style="color:var(--t3)">${c.sub}</p>
+                </div>`).join('');
+        }
         function deleteResult(id) {
             showModal('confirm_modal');
             document.getElementById('confirm_button').onclick = () => {
                 savedResults = savedResults.filter(r => r.id !== id);
-                localStorage.setItem('gpaResults', JSON.stringify(savedResults));
+                storage.set('gpaResults', JSON.stringify(savedResults));
                 loadDashboard(); closeModal('confirm_modal'); showToast("تم حذف النتيجة.");
             };
         }
@@ -2533,36 +2329,85 @@ ${courses}
             const ctx = document.getElementById('gpa-chart')?.getContext('2d');
             if (!ctx) return;
             if (gpaChart) gpaChart.destroy();
-            if (savedResults.length < 1) return;
+            const chartCard = document.getElementById('gpa-chart-card');
+            if (savedResults.length < 1) {
+                if (chartCard) chartCard.classList.add('hidden');
+                return;
+            }
+            if (chartCard) chartCard.classList.remove('hidden');
+            const cumValues = savedResults.map(r => Number(r.cumulativeGPA) || 0);
+            const semValues = savedResults.map(r => Number(r.semesterGPA) || 0);
+            const allValues = cumValues.concat(semValues);
 
             const isDarkMode = document.documentElement.classList.contains('dark');
             const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
             const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
             const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            const warningColor = getComputedStyle(document.documentElement).getPropertyValue('--warning-color').trim();
+            const chartFont = { family: "'Noto Sans Arabic', sans-serif" };
 
             gpaChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: savedResults.map(r => new Date(r.date).toLocaleDateString('ar-EG-u-nu-latn')),
-                    datasets: [{
-                        label: 'المعدل التراكمي', data: savedResults.map(r => r.cumulativeGPA),
-                        borderColor: accentColor, backgroundColor: `${accentColor}33`, borderWidth: 2, tension: 0.3, fill: true, pointBackgroundColor: accentColor, pointRadius: 4, pointHoverRadius: 6,
-                    }]
+                    datasets: [
+                        {
+                            label: 'المعدل التراكمي', data: cumValues,
+                            borderColor: accentColor, backgroundColor: `${accentColor}33`, borderWidth: 2, tension: 0.3, fill: true, pointBackgroundColor: accentColor, pointRadius: 4, pointHoverRadius: 6,
+                        },
+                        {
+                            label: 'المعدل الفصلي', data: semValues,
+                            borderColor: warningColor, borderWidth: 2, borderDash: [6, 4], tension: 0.3, fill: false, pointBackgroundColor: warningColor, pointRadius: 3, pointHoverRadius: 5,
+                        }
+                    ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: false, suggestedMin: Math.min(...savedResults.map(r => r.cumulativeGPA)) - 0.2, grid: { color: gridColor }, ticks: { color: textColor, font: { family: "'Noto Sans Arabic', sans-serif" } } },
-                        x: { grid: { display: false }, ticks: { color: textColor, font: { family: "'Noto Sans Arabic', sans-serif" } } }
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: Math.max(0, Math.min(...allValues) - 0.2),
+                            suggestedMax: Math.min(4, Math.max(...allValues) + 0.2),
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, font: chartFont }
+                        },
+                        x: { grid: { display: false }, ticks: { color: textColor, font: chartFont } }
                     },
-                    plugins: { legend: { display: false }, tooltip: { rtl: true, titleFont: { family: "'Noto Sans Arabic', sans-serif" }, bodyFont: { family: "'Noto Sans Arabic', sans-serif" }, callbacks: { label: (c) => `المعدل: ${Number(c.raw).toFixed(3)}` } } }
+                    plugins: {
+                        legend: {
+                            display: true, rtl: true, labels: { color: textColor, font: chartFont, boxWidth: 14, boxHeight: 3, usePointStyle: false }
+                        },
+                        tooltip: {
+                            rtl: true, titleFont: chartFont, bodyFont: chartFont,
+                            callbacks: { label: (c) => `${c.dataset.label}: ${Number(c.raw).toFixed(3)}` }
+                        }
+                    }
                 }
             });
         }
 
         // --- EXPORT & SHARE ---
+        // Export libraries load on demand so they never slow down the first paint
+        const _scriptCache = {};
+        function ensureScriptLoaded(url, testFn) {
+            if (testFn()) return Promise.resolve();
+            if (_scriptCache[url]) return _scriptCache[url];
+            _scriptCache[url] = new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = url; s.async = true;
+                s.onload = () => testFn() ? resolve() : reject(new Error('SCRIPT_LOADED_BUT_MISSING_GLOBAL'));
+                s.onerror = () => reject(new Error('SCRIPT_LOAD_FAILED'));
+                document.head.appendChild(s);
+            });
+            _scriptCache[url].catch(() => { delete _scriptCache[url]; });
+            return _scriptCache[url];
+        }
+        const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+
         async function ensureImagesLoaded(container) { const images = Array.from(container.getElementsByTagName("img")); await Promise.all(images.map(img => { if (img.complete) return Promise.resolve(); return new Promise(resolve => { img.onload = img.onerror = resolve; }); })); }
         async function createExportCanvas() {
+            await ensureScriptLoaded(HTML2CANVAS_URL, () => typeof html2canvas === 'function');
             const tempDiv = document.createElement('div');
             tempDiv.style.position = 'absolute'; tempDiv.style.left = '-9999px'; tempDiv.innerHTML = getTranscriptHTMLForExport(lastCalculationData); document.body.appendChild(tempDiv);
             await ensureImagesLoaded(tempDiv);
@@ -2573,6 +2418,7 @@ ${courses}
         async function shareAsPDF() {
             showToast("جاري تجهيز ملف PDF...", "info");
             try {
+                await ensureScriptLoaded(JSPDF_URL, () => !!window.jspdf);
                 const canvas = await createExportCanvas();
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
@@ -2661,7 +2507,7 @@ ${courses}
                 <div class="export-wrapper">
                     <div class="export-header">
                         <div class="side" style="text-align:right; display:flex; align-items:center; gap:0.6rem;">
-                            <img src="logo.png" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="logo.webp" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;">
                             <div>
                                 <div style="font-weight:900;">مسارك الهندسي</div>
                                 <div style="font-size:.82rem;color:#334155;">حاسبة المعدل الذكية</div>
@@ -2676,7 +2522,7 @@ ${courses}
                                 <div style="font-weight:900;">جامعة بنغازي</div>
                                 <div style="font-size:.82rem;color:#334155;">كلية الهندسة</div>
                             </div>
-                            <img src="uob-logo.png" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="uob-logo.webp" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;">
                         </div>
                     </div>
 
@@ -2712,7 +2558,7 @@ ${courses}
                             </tr>
                         </thead>
                         <tbody>
-                            ${data.courses.map(c => `<tr><td>${c.name}</td><td>${c.type === 'retaken' ? 'معادة (تحسين)' : 'جديدة'}</td><td>${getGradeText(c.grade)}</td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}
+                            ${data.courses.map(c => `<tr><td>${escapeHtml(c.name)}</td><td>${c.type === 'retaken' ? 'معادة (تحسين)' : 'جديدة'}</td><td>${getGradeText(c.grade)}</td><td>${(c.units * c.grade).toFixed(2)}</td></tr>`).join('')}
                         </tbody>
                     </table>
 
@@ -2731,434 +2577,57 @@ ${courses}
                         <p class="warning">تنبيه: هذا التقرير تقديري وغير رسمي، ولا يغني عن الاستمارة المعتمدة من الكلية.</p>
                         <div class="credit">
                             <div>تم إنشاؤه بواسطة "مسارك الهندسي"</div>
-                            <div><a href="https://rebrand.ly/gpaeng-uob" target="_blank">rebrand.ly/gpaeng-uob</a></div>
+                            <div><a href="https://rebrand.ly/gpaeng-uob" target="_blank" rel="noopener noreferrer">rebrand.ly/gpaeng-uob</a></div>
                         </div>
                     </div>
                 </div>`;
         }
-        function exportResults() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedResults)); const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "gpa_results.json"); document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast('تم تصدير النتائج بنجاح'); }
-        function importResults(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function (e) { try { const imported = JSON.parse(e.target.result); if (Array.isArray(imported)) { savedResults = imported; localStorage.setItem('gpaResults', JSON.stringify(savedResults)); loadDashboard(); showToast('تم استيراد النتائج بنجاح'); } else { showToast('ملف غير صالح.', 'error'); } } catch (err) { showToast('خطأ في قراءة الملف.', 'error'); } }; reader.readAsText(file); }
-
-        // --- AI Companion ---
-        function openAiCompanion() {
-            document.querySelectorAll('nav .tab').forEach(t => t.classList.remove('tab-active'));
-            document.querySelectorAll('#bottom-nav .bottom-nav-item').forEach(i => i.classList.remove('active'));
-            const topTab = document.getElementById('tab-advisor');
-            if (topTab) topTab.classList.add('tab-active');
-            const bottomNavItem = document.getElementById('bottom-nav-advisor');
-            if (bottomNavItem) bottomNavItem.classList.add('active');
-            document.getElementById('ai_companion_modal').classList.add('show');
-            setTimeout(() => { const ci = document.getElementById('chat-input'); if (ci) ci.focus(); }, 380);
-            document.getElementById('main-content').style.display = 'none';
-        }
-        function closeAiCompanion() {
-            document.getElementById('ai_companion_modal').classList.remove('show');
-            document.getElementById('main-content').style.display = 'block';
-            switchTab('calculator');
-        }
-        function toggleChatHistory() {
-            document.querySelector('.ai-sidebar').classList.toggle('sidebar-visible');
-            document.getElementById('sidebar-overlay').classList.toggle('hidden');
-        }
-
-        function checkChatState() {
-            const messagesContainer = document.getElementById('chat-messages');
-            const welcomeScreen = document.getElementById('chat-welcome-screen');
-            welcomeScreen.style.display = messagesContainer.children.length === 0 ? 'flex' : 'none';
-        }
-        function setPromptAndSend(prompt) {
-            const input = document.getElementById('chat-input');
-            input.value = prompt;
-            handleSendMessage(new Event('submit'));
-        }
-        function resetChat() {
-            currentThreadId = null;
-
-            document.getElementById('chat-messages').innerHTML = '';
-            removeAttachedImage();
-            checkChatState();
-            showToast('تم بدء محادثة جديدة.');
-        }
-        async function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file || !file.type.startsWith('image/')) { showToast('الرجاء اختيار ملف صورة فقط.', 'error'); return; }
-            try {
-                showToast('جاري ضغط الصورة...', 'info');
-                const { dataUrl, mimeType, b64 } = await compressImage(file, 1600, 1600, 0.75);
-                attachedFile = { data: b64, type: mimeType };
-                document.getElementById('image-preview').src = dataUrl;
-                document.getElementById('image-preview-container').classList.remove('hidden');
-                showToast('تم ضغط الصورة.', 'success');
-            } catch (e) {
-                console.error('Image compression failed, sending original.', e);
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    attachedFile = { data: ev.target.result.split(',')[1], type: file.type };
-                    document.getElementById('image-preview').src = ev.target.result;
-                    document.getElementById('image-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        function removeAttachedImage() {
-            attachedFile = { data: null, type: null };
-            document.getElementById('file-input').value = '';
-            document.getElementById('image-preview-container').classList.add('hidden');
-        }
-        async function handleSendMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-button');
-            const message = input.value.trim();
-            if (!message && !attachedFile.data) return;
-
-            // ensure thread exists
-            if (!currentThreadId) createThread(message.slice(0, 40) || 'محادثة جديدة');
-            const thread = getCurrentThread();
-
-            checkChatState();
-            const imageUrl = attachedFile.data ? `data:${attachedFile.type};base64,${attachedFile.data}` : null;
-            appendMessage(message, 'user', imageUrl);
-            // persist user message
-            thread.messages.push({ role: 'user', text: message, imageDataUrl: imageUrl, ts: Date.now() });
-            // set title if empty
-            if (thread.title === 'محادثة جديدة' && message) { thread.title = message.slice(0, 40); }
-            saveThreads();
-
-            input.value = '';
-            const fileToSend = { ...attachedFile };
-            removeAttachedImage();
-            if (sendBtn) sendBtn.disabled = true;
-            showTypingIndicator();
-
-            try {
-                const response = await callGeminiAPI(message, fileToSend);
-                removeTypingIndicator();
-                if (sendBtn) sendBtn.disabled = false;
-                appendMessage(response, 'advisor', null);
-                // persist ai message
-                thread.messages.push({ role: 'assistant', text: response, ts: Date.now() });
-                saveThreads();
-                renderChatHistory();
-            } catch (err) {
-                removeTypingIndicator();
-                const isImageError = err.message === "IMAGE_UNRECOGNIZED";
-                const errorMessage = isImageError
-                    ? "عذراً، لم أتمكن من التعرف على محتوى الصورة. هل يمكنك تجربة صورة أخرى أو وصفها نصياً؟"
-                    : err.message;
-                if (sendBtn) sendBtn.disabled = false;
-                appendMessage(errorMessage, 'advisor', null, true);
-                thread.messages.push({ role: 'assistant', text: errorMessage, ts: Date.now(), error: true });
-                saveThreads();
-            }
-        }
-        function appendMessage(text, sender, imageDataUrl, isError = false, skipPersist = false) {
-            const messagesContainer = document.getElementById('chat-messages');
-            document.getElementById('chat-welcome-screen').style.display = 'none';
-            const isUser = sender === 'user';
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `flex items-start gap-2.5 w-full md:w-[90%] ${isUser ? 'self-end flex-row-reverse user-message' : 'self-start'} ${isError ? 'error-bubble' : ''}`;
-
-            const imageHTML = imageDataUrl
-                ? `<img src="${imageDataUrl}" class="rounded-xl max-w-xs my-2 block" style="box-shadow:var(--sh1);" alt="مرفق المستخدم">`
-                : '';
-            const renderedText = sender === 'advisor'
-                ? renderAIContent(text)
-                : (text ? text.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '');
-
-            const avatarClass = isUser ? 'chat-avatar chat-avatar-user' : 'chat-avatar chat-avatar-ai';
-            const avatarIcon = isError ? 'alert-triangle' : (isUser ? 'user' : 'cpu');
-            const iconColor = isError ? 'var(--red)' : (isUser ? 'var(--blue)' : 'white');
-
-            const bubbleContent = isUser
-                ? `<div class="chat-bubble">${imageHTML}${renderedText ? `<span>${renderedText}</span>` : ''}</div>`
-                : `<div class="ai-message-container" style="flex:1;min-width:0;"><div class="chat-bubble">${renderedText}</div></div>`;
-
-            messageDiv.innerHTML = `
-                <div class="${avatarClass}">
-                    <i data-feather="${avatarIcon}" class="w-3.5 h-3.5" style="color:${iconColor};flex-shrink:0;"></i>
-                </div>
-                ${bubbleContent}`;
-            messagesContainer.appendChild(messageDiv);
-            feather.replace();
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        function copyCodeToClipboard(button) {
-            const pre = button.closest('.code-block-wrapper').querySelector('pre');
-            navigator.clipboard.writeText(pre.innerText).then(() => {
-                button.innerHTML = '<i class="w-4 h-4" data-feather="check"></i> تم النسخ';
-                feather.replace();
-                setTimeout(() => {
-                    button.innerHTML = '<i class="w-4 h-4" data-feather="copy"></i> نسخ';
-                    feather.replace();
-                }, 2000);
-            });
-        }
-        function renderAIContent(text) {
-            if (!text || typeof katex === 'undefined') return '';
-
-            const codeBlockRegex = /```([\s\S]*?)```/g;
-            let lastIndex = 0;
-            let html = '';
-
-            text.replace(codeBlockRegex, (match, code, offset) => {
-                const precedingText = text.substring(lastIndex, offset);
-                html += processRegularText(precedingText);
-
-                const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
-                html += `
-                    <div class="code-block-wrapper">
-                        <div class="code-block-header">
-                            <span>Code</span>
-                            <button class="copy-code-btn" onclick="copyCodeToClipboard(this)">
-                                <i class="w-4 h-4" data-feather="copy"></i>
-                                <span>نسخ</span>
-                            </button>
-                        </div>
-                        <pre><code>${escapedCode}</code></pre>
-                    </div>
-                `;
-                lastIndex = offset + match.length;
-                return match;
-            });
-
-            const remainingText = text.substring(lastIndex);
-            html += processRegularText(remainingText);
-
-            return html;
-        }
-        function processRegularText(text) {
-            if (!text) return '';
-            let safeText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-            safeText = safeText.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
-                try { return katex.renderToString(latex.trim(), { displayMode: true, throwOnError: false }); } catch (e) { return `<span class="text-red-500">Error rendering equation</span>`; }
-            });
-            safeText = safeText.replace(/\$([^$]+)\$/g, (match, latex) => {
-                try { return katex.renderToString(latex.trim(), { displayMode: false, throwOnError: false }); } catch (e) { return `<span class="text-red-500">[Eq]</span>`; }
-            });
-
-            let html = safeText.split('\n').map(line => {
-                line = line.trim()
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-                if (line.startsWith('* ') || line.startsWith('- ')) return `<li>${line.substring(2)}</li>`;
-                if (line) return `<p>${line}</p>`;
-                return '';
-            }).join('');
-
-            return html.replace(/<\/li><li>/g, '</li><li>')
-                .replace(/<p><\/p>/g, '')
-                .replace(/(<\/ul>)?\s*<li>/g, '<ul><li>')
-                .replace(/<\/li>(?!<li>)/g, '</li></ul>');
-        }
-        function showTypingIndicator() { if (document.getElementById('typing-indicator')) return; const mc = document.getElementById('chat-messages'); const ti = document.createElement('div'); ti.id = 'typing-indicator'; ti.className = 'flex items-start gap-2.5 w-full self-start'; ti.innerHTML = `<div class="chat-avatar chat-avatar-ai"><i data-feather="cpu" class="w-3.5 h-3.5" style="color:white;"></i></div><div class="ai-message-container" style="flex:1;"><div class="chat-bubble" style="min-width:68px;"><div class="loading-dots"><span></span><span></span><span></span></div></div></div>`; mc.appendChild(ti); feather.replace(); mc.scrollTop = mc.scrollHeight; }
-        function removeTypingIndicator() { const ti = document.getElementById('typing-indicator'); if (ti) ti.remove(); }
-        async function callGeminiAPI(userMessage, file) {
-            const apiKey = "AIzaSyAAlGyEkEpzeL4dPjEf57mQAB2LdKEHRlo";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-            const systemInstructionBase = "أنت 'رفيق دراسي'، خبير ومتخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. مهمتك هي أن تكون مرشدًا أكاديميًا ومساعدًا في حل المسائل. كن دائمًا إيجابيًا ومشجعًا، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز ومنظم. عند حل المسائل، قم بتقسيم الحل إلى خطوات مرقمة. قم بحل المسائل الرياضية والهندسية وعرضها بصيغة LaTeX الصحيحة. قم بتضمين أي كود برمجي بين ``` و ```. أكِّد دائمًا على أهمية مراجعة المصادر الرسمية في الكلية للتحقق من المعلومات.";
-            const modeInstruction = aiMode && aiMode !== 'عام' ? `\nالمجال المختار: ${aiMode}. عدِّل أسلوب الشرح والأمثلة وفق هذا التخصص، وقم بإجراء تحقق وحداتي (Units) وتحليل أبعاد Dimensional Analysis حيث يلزم، مع توضيح الافتراضات والتنبيهات.` : '';
-            const visionInstruction = `\nإذا أُرسلت صورة، قم بقراءة النصوص المهمة (OCR) واستخراج المعطيات، وارسم مخططًا ASCII مبسطًا إن لزم لفهم المسألة.`;
-            const systemInstruction = systemInstructionBase + modeInstruction + visionInstruction;
-
-            let parts = [];
-            if (userMessage) parts.push({ text: userMessage });
-            if (file && file.data) {
-                parts.push({ inlineData: { mimeType: file.type, data: file.data } });
-            }
-
-            const payload = {
-                contents: [{ role: "user", parts: parts }],
-                systemInstruction: { parts: [{ text: systemInstruction }] },
-                generationConfig: { temperature: GEN_CONFIG.temperature, topP: GEN_CONFIG.topP, topK: GEN_CONFIG.topK, maxOutputTokens: GEN_CONFIG.maxOutputTokens }
+        function exportResults() {
+            if (!savedResults.length) { showToast('لا توجد نتائج محفوظة للتصدير بعد.', 'info'); return; }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedResults)); const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "gpa_results.json"); document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast('تم تصدير النتائج بنجاح'); }
+        function importResults(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        const valid = imported.filter(r => r && !isNaN(parseFloat(r.cumulativeGPA)) && !isNaN(parseFloat(r.semesterGPA)) && r.date);
+                        if (valid.length === 0) { showToast('الملف لا يحتوي على نتائج صالحة.', 'error'); return; }
+                        savedResults = valid;
+                        storage.set('gpaResults', JSON.stringify(savedResults));
+                        loadDashboard();
+                        showToast(`تم استيراد ${valid.length} نتيجة بنجاح.`);
+                    } else { showToast('ملف غير صالح.', 'error'); }
+                } catch (err) { showToast('خطأ في قراءة الملف.', 'error'); }
+                event.target.value = '';
             };
-
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) {
-                    const errorBody = await response.json().catch(() => response.text());
-                    console.error("API Error Response:", errorBody);
-                    if (response.status === 400 && file?.data) {
-                        throw new Error("IMAGE_UNRECOGNIZED");
-                    }
-                    if (errorBody?.error?.message) {
-                        throw new Error(`خطأ من الخادم: ${errorBody.error.message}`);
-                    }
-                    throw new Error(`خطأ في الشبكة: ${response.status}`);
-                }
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content?.parts?.[0]?.text) {
-                    return result.candidates[0].content.parts[0].text;
-                }
-                if (result.candidates && result.candidates[0].finishReason === "SAFETY") {
-                    return "تم حظر الرد بسبب سياسات الأمان. الرجاء تعديل صياغة سؤالك.";
-                }
-                return "عذراً، لم أتلق استجابة مفهومة. هل يمكنك إعادة الصياغة؟";
-            } catch (error) {
-                console.error("API Call failed:", error);
-                if (error.message === "IMAGE_UNRECOGNIZED") throw error;
-                throw new Error("حدث خطأ في الاتصال بالمرشد الذكي. الرجاء التحقق من مفتاح الـ API أو المحاولة مرة أخرى لاحقاً.");
-            }
+            reader.readAsText(file);
         }
 
-        function setupChat() {
-            const attachBtn = document.getElementById('attach-file-btn');
-            const fileInput = document.getElementById('file-input');
-            const chatForm = document.getElementById('chat-form');
-            const removeImageBtn = document.getElementById('remove-image-btn');
-            const modeSel = document.getElementById('ai-mode');
-            const newChatBtn = document.getElementById('new-chat-btn-modal');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (attachBtn && fileInput) attachBtn.addEventListener('click', () => fileInput.click());
-            if (fileInput) fileInput.addEventListener('change', handleFileSelect);
-            if (chatForm) chatForm.addEventListener('submit', handleSendMessage);
-            if (removeImageBtn) removeImageBtn.addEventListener('click', removeAttachedImage);
-            if (modeSel) {
-                modeSel.value = aiMode;
-                modeSel.addEventListener('change', (e) => { aiMode = e.target.value; localStorage.setItem('aiMode', aiMode); showToast(`وضع المساعد: ${aiMode}`, 'info'); });
-            }
-            if (newChatBtn) newChatBtn.addEventListener('click', () => { resetChat(); if (window.innerWidth < 768) toggleChatHistory(); });
-            if (overlay) overlay.addEventListener('click', toggleChatHistory);
-            renderChatHistory();
-            checkChatState();
-        }
-        function toggleChatHistory() {
-            const sidebar = document.querySelector('.ai-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (!sidebar || !overlay) return;
-            sidebar.classList.toggle('sidebar-visible');
-            overlay.classList.toggle('hidden');
-        }
-        // --- Chat history helpers ---
-        function saveThreads() { localStorage.setItem('aiChatThreads', JSON.stringify(chatThreads)); }
-        function createThread(title) { const id = 't_' + Date.now(); const thread = { id, title: title || 'محادثة جديدة', createdAt: Date.now(), mode: aiMode, messages: [] }; chatThreads.push(thread); currentThreadId = id; saveThreads(); renderChatHistory(); return thread; }
-        function getCurrentThread() { return chatThreads.find(t => t.id === currentThreadId) || null; }
-        function renderChatHistory() {
-            const c = document.getElementById('chat-history-container');
-            if (!c) return;
-            if (!Array.isArray(chatThreads) || chatThreads.length === 0) { c.innerHTML = '<p>لا توجد محادثات سابقة.</p>'; return; }
-            c.innerHTML = chatThreads.slice().reverse().map(t => `
-                <div class="flex items-center gap-1 mb-1 rounded-lg" style="${t.id === currentThreadId ? 'background:color-mix(in srgb, var(--accent-color) 10%, transparent);border:1px solid color-mix(in srgb, var(--accent-color) 20%, transparent);' : ''}">
-                    <button class="history-item flex-1 text-right block px-3 py-2 rounded-lg hover:bg-[var(--input-bg)] transition-colors text-sm" data-id="${t.id}">
-                        <div class="font-medium truncate">${escapeHtml(t.title)}</div>
-                        <div class="text-xs" style="color:var(--text-secondary)">${new Date(t.createdAt).toLocaleString('ar-EG')}</div>
-                    </button>
-                    <button class="delete-thread-btn btn btn-secondary !p-1.5 !rounded-lg !gap-0 flex-shrink-0 opacity-40 hover:opacity-100 ml-1" data-id="${t.id}" title="حذف" style="color:var(--danger-color);min-height:unset;">
-                        <i data-feather="trash-2" class="w-3.5 h-3.5"></i>
-                    </button>
-                </div>`).join('');
-            feather.replace();
-            c.querySelectorAll('.history-item').forEach(btn => btn.addEventListener('click', () => loadThread(btn.dataset.id)));
-            c.querySelectorAll('.delete-thread-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteThread(btn.dataset.id); }));
-        }
         function escapeHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-        function deleteThread(id) {
-            chatThreads = chatThreads.filter(t => t.id !== id);
-            if (currentThreadId === id) {
-                currentThreadId = null;
-                document.getElementById('chat-messages').innerHTML = '';
-                document.getElementById('chat-welcome-screen').style.display = 'flex';
-            }
-            saveThreads();
-            renderChatHistory();
-            showToast('تم حذف المحادثة.', 'info');
-        }
-        function loadThread(id) {
-            const t = chatThreads.find(x => x.id === id);
-            if (!t) return;
-            currentThreadId = id;
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = '';
-            document.getElementById('chat-welcome-screen').style.display = 'none';
-            t.messages.forEach(m => { appendMessage(m.text, m.role === 'user' ? 'user' : 'advisor', m.imageDataUrl || null, false, true); });
-            if (window.innerWidth < 768) toggleChatHistory();
-        }
-
-        // --- Image Compression Utilities ---
-        async function compressImage(file, maxW = 1600, maxH = 1600, quality = 0.75) {
-            const dataUrl = await readFileAsDataURL(file);
-            const img = await loadImage(dataUrl);
-            const { width, height } = fitWithin(img.naturalWidth || img.width, img.naturalHeight || img.height, maxW, maxH);
-            const canvas = document.createElement('canvas');
-            canvas.width = width; canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-            const out = canvas.toDataURL(mimeType, quality);
-            return { dataUrl: out, mimeType, b64: out.split(',')[1] };
-        }
-        function readFileAsDataURL(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
-        function loadImage(src) { return new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; }); }
-        function fitWithin(w, h, maxW, maxH) { const scale = Math.min(maxW / w, maxH / h, 1); return { width: Math.round(w * scale), height: Math.round(h * scale) }; }
-
         function validateInputs(containerSelector) {
             let allValid = true;
+            let firstInvalid = null;
             const container = document.querySelector(containerSelector);
             if (!container) return false;
             container.querySelectorAll('input[type="number"]:not(:disabled), select:not(:disabled)').forEach(input => {
                 input.classList.remove('border-red-500', 'shake');
                 if (input.offsetParent === null) return;
                 if (input.value.trim() === '') {
-                    input.classList.add('border-red-500');
+                    void input.offsetWidth; // restart the shake animation
+                    input.classList.add('border-red-500', 'shake');
+                    if (!firstInvalid) firstInvalid = input;
                     allValid = false;
                 }
             });
-            if (!allValid) showToast('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
+            if (!allValid) {
+                showToast('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
+                firstInvalid?.focus({ preventScroll: true });
+                firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return allValid;
         }
-        // --- Mobile viewport & keyboard handling for AI Companion ---
-        (function () {
-            const setVh = () => {
-                const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-                document.documentElement.style.setProperty('--vh', (vh * 0.01) + 'px');
-            };
-            // Initial set
-            setVh();
-            // Update on resize / visualViewport change
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', setVh, { passive: true });
-                window.visualViewport.addEventListener('scroll', setVh, { passive: true });
-            } else {
-                window.addEventListener('resize', setVh, { passive: true });
-            }
-
-            // Handle chat input focus to ensure messages scroll into view and input stays above keyboard
-            const chatInput = document.getElementById('chat-input');
-            const messagesWrapper = document.getElementById('chat-messages-wrapper');
-            const chatContainer = document.getElementById('chat-messages-container');
-
-            function scrollToBottomSmooth() {
-                const mc = document.getElementById('chat-messages');
-                if (!mc) return;
-                try { mc.scrollTo({ top: mc.scrollHeight, behavior: 'smooth' }); } catch (e) { mc.scrollTop = mc.scrollHeight; }
-            }
-
-            if (chatInput) {
-                chatInput.addEventListener('focus', () => {
-                    // small timeout to allow keyboard to appear
-                    setTimeout(() => {
-                        setVh();
-                        document.getElementById('chat-input-container')?.classList.add('sticky');
-                        scrollToBottomSmooth();
-                    }, 300);
-                });
-                chatInput.addEventListener('blur', () => {
-                    // restore
-                    setTimeout(() => { document.getElementById('chat-input-container')?.classList.remove('sticky'); setVh(); }, 200);
-                });
-            }
-
-            // When new messages appended, ensure we stay scrolled to bottom on mobile
-            const mc = document.getElementById('chat-messages');
-            if (mc) {
-                const observer = new MutationObserver(() => {
-                    scrollToBottomSmooth();
-                });
-                observer.observe(mc, { childList: true, subtree: true });
-            }
-        })();
     </script>
 </body>
 
