@@ -3,16 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مسارك الهندسى: حاسبة المعدل الذكية</title>
 
     <!-- Scripts & Libraries -->
-    <link rel="stylesheet" href="tailwind.css">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preload" as="image" href="logo.png">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
     <!-- KaTeX for LaTeX Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
@@ -1379,207 +1378,10 @@
                 transition-duration: 0.001ms !important;
             }
         }
-
-        /* ─────────────── UX / UI Polish ─────────────── */
-        ::selection {
-            background: var(--blue-g);
-            color: var(--t1);
-        }
-
-        html {
-            color-scheme: light;
-        }
-
-        html.dark {
-            color-scheme: dark;
-        }
-
-        .tab:hover {
-            color: var(--blue);
-        }
-
-        .tab:active {
-            transform: scale(.97);
-        }
-
-        .bottom-nav-item.active svg {
-            transform: scale(1.12);
-            transition: transform var(--t-fast) var(--spring);
-        }
-
-        input[type=number]::-webkit-inner-spin-button {
-            opacity: .45;
-        }
-
-        /* Skip link (a11y) */
-        .skip-link {
-            position: fixed;
-            top: -60px;
-            right: 1rem;
-            z-index: 9999;
-            background: var(--blue);
-            color: #fff;
-            font-weight: 700;
-            padding: .65rem 1.25rem;
-            border-radius: var(--rf);
-            transition: top var(--t-base) var(--ease);
-        }
-
-        .skip-link:focus-visible {
-            top: 1rem;
-        }
-
-        /* Toast with action button */
-        #toast {
-            max-width: calc(100vw - 2rem);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        #toast.show {
-            animation: toastIn .3s var(--spring) both;
-        }
-
-        #toast.hide {
-            animation: toastOut .25s var(--ease) both;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(14px) scale(.96);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes toastOut {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0;
-                transform: translateY(8px) scale(.97);
-            }
-        }
-
-        .toast-action {
-            border: 1px solid rgba(255, 255, 255, .45);
-            background: rgba(255, 255, 255, .16);
-            color: #fff;
-            font-weight: 800;
-            font-size: .78rem;
-            padding: .28rem .85rem;
-            border-radius: var(--rf);
-            cursor: pointer;
-            transition: background var(--t-fast) var(--ease);
-        }
-
-        .toast-action:hover {
-            background: rgba(255, 255, 255, .3);
-        }
-
-        /* Scroll-to-top FAB */
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 6rem;
-            left: 1.1rem;
-            z-index: 45;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--surface-hi);
-            border: 1px solid var(--glass-border);
-            color: var(--blue);
-            box-shadow: var(--sh2);
-            backdrop-filter: blur(20px) saturate(1.8);
-            -webkit-backdrop-filter: blur(20px) saturate(1.8);
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-            transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease);
-        }
-
-        .scroll-top-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .scroll-top-btn:active {
-            transform: scale(.94);
-        }
-
-        @media (min-width: 768px) {
-            .scroll-top-btn {
-                bottom: 1.5rem;
-            }
-        }
-
-        /* Sticky mobile calculate bar */
-        .calc-sticky-bar {
-            position: fixed;
-            bottom: calc(5.4rem + env(safe-area-inset-bottom));
-            left: 50%;
-            transform: translate3d(-50%, 0, 0);
-            width: calc(100vw - 2rem);
-            max-width: 480px;
-            z-index: 39;
-            opacity: 0;
-            visibility: hidden;
-            transform: translate3d(-50%, 80px, 0);
-            pointer-events: none;
-            transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base);
-        }
-
-        .calc-sticky-bar.visible {
-            opacity: 1;
-            visibility: visible;
-            transform: translate3d(-50%, 0, 0);
-            pointer-events: auto;
-        }
-
-        @media (min-width: 768px) {
-            .calc-sticky-bar {
-                display: none;
-            }
-        }
-
-        .calc-sticky-bar .btn {
-            width: 100%;
-        }
-
-        /* Modal a11y */
-        .modal-overlay[role="dialog"]:focus {
-            outline: none;
-        }
-
-        /* Simulation result card polish */
-        .simulation-result {
-            animation: popIn var(--t-slow) var(--spring) both;
-        }
-
-        /* Number input hint text */
-        .field-hint {
-            display: block;
-            font-size: .72rem;
-            color: var(--t3);
-            margin-top: .35rem;
-        }
     </style>
 </head>
 
 <body>
-    <a href="#main-content" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
-
     <!-- Main Content Area -->
     <div id="main-content" class="container mx-auto px-4 py-6 md:px-8 md:py-10 max-w-5xl pb-36 md:pb-10">
 
@@ -1641,7 +1443,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="prev_gpa" class="field-label">معدلك التراكمي الحالي</label>
-                                    <input type="number" id="prev_gpa" min="0" max="4" step="0.001" placeholder="مثال: 1.74"
+                                    <input type="number" id="prev_gpa" step="0.001" placeholder="مثال: 1.74"
                                         class="form-input text-lg" aria-label="المعدل التراكمي الحالي">
                                 </div>
                                 <div>
@@ -1751,7 +1553,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                                 <div>
                                     <label for="sim_current_gpa" class="field-label">معدلك التراكمي الحالي</label>
-                                    <input type="number" id="sim_current_gpa" min="0" max="4" step="0.001"
+                                    <input type="number" id="sim_current_gpa" step="0.001"
                                         placeholder="أدخل معدلك الحالي" class="form-input">
                                 </div>
                                 <div>
@@ -1761,7 +1563,7 @@
                                 </div>
                                 <div>
                                     <label for="sim_target_gpa" class="field-label">المعدل الذي تطمح إليه</label>
-                                    <input type="number" id="sim_target_gpa" min="0" max="4" step="0.001" placeholder="مثال: 3.500"
+                                    <input type="number" id="sim_target_gpa" step="0.001" placeholder="مثال: 3.500"
                                         class="form-input">
                                 </div>
                                 <div>
@@ -1857,8 +1659,7 @@
                             <div class="flex justify-center p-2 border rounded-lg"
                                 style="background-color: var(--card-bg); border-color: var(--card-border);">
                                 <img src="transcript-guide.png" alt="شرح استمارة جامعة بنغازي"
-                                    class="rounded-md shadow-md max-w-full h-auto" loading="lazy" decoding="async"
-                                    onerror="this.style.display='none'">
+                                    class="rounded-md shadow-md max-w-full h-auto" onerror="this.style.display='none'">
                             </div>
                         </div>
                         <div class="help-section">
@@ -1948,8 +1749,7 @@
         <footer class="text-center mt-10 pb-4" style="color:var(--t2);font-size:.84rem;">
             <div class="flex items-center justify-center gap-6 mb-3">
                 <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md" loading="lazy"
-                        decoding="async">
+                    <img src="logo.png" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
                     <div style="text-align:right">
                         <strong>مسارك الهندسى</strong>
                         <div style="font-size:0.85rem;color:var(--text-secondary)">مخصص لطلاب كلية الهندسة - جامعة
@@ -1958,8 +1758,7 @@
                 </div>
                 <div style="width:1px; height:48px; background:var(--sep)"></div>
                 <div class="flex items-center gap-3">
-                    <img src="uob-logo.png" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90" loading="lazy"
-                        decoding="async">
+                    <img src="uob-logo.png" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
                 </div>
             </div>
             <p>&copy; <span id="year"></span> - تم التطوير لخدمة طلاب كلية الهندسة - جامعة بنغازي.</p>
@@ -1969,7 +1768,7 @@
     </div>
 
     <!-- Bottom Navigation for Mobile -->
-    <nav id="bottom-nav" class="md:hidden bottom-nav" aria-label="التنقل الرئيسي للجوال">
+    <nav id="bottom-nav" class="md:hidden bottom-nav">
         <a id="bottom-nav-calculator" class="bottom-nav-item active" onclick="switchTab('calculator')"
             aria-label="حساب الفصل">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2020,22 +1819,6 @@
         </a>
     </nav>
 
-    <!-- Sticky Calculate Bar (Mobile) -->
-    <div id="calc-sticky-bar" class="calc-sticky-bar" aria-hidden="true">
-        <button onclick="calculateGPA()" class="btn btn-primary" style="padding:.8rem 1.5rem;gap:.55rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-            احسب المعدل الآن
-        </button>
-    </div>
-
-    <!-- Scroll to Top -->
-    <button id="scroll-top-btn" class="scroll-top-btn" onclick="scrollToTop()" aria-label="العودة إلى الأعلى">
-        <i data-feather="arrow-up" class="w-5 h-5"></i>
-    </button>
-
     <!-- AI Companion Full Screen Modal -->
     <div id="ai_companion_modal">
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden md:hidden" onclick="toggleChatHistory()">
@@ -2076,15 +1859,9 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="showApiKeyModal()" class="btn btn-secondary !p-2 !rounded-full !gap-0"
-                        aria-label="إدارة مفتاح الذكاء الاصطناعي" title="مفتاح الذكاء الاصطناعي">
-                        <i data-feather="key"></i>
-                    </button>
-                    <button onclick="closeAiCompanion()" class="btn btn-secondary !p-2 !rounded-full !gap-0">
-                        <i data-feather="x"></i>
-                    </button>
-                </div>
+                <button onclick="closeAiCompanion()" class="btn btn-secondary !p-2 !rounded-full !gap-0">
+                    <i data-feather="x"></i>
+                </button>
             </header>
             <div id="chat-messages-container">
                 <div class="chat-messages-wrapper" id="chat-messages-wrapper">
@@ -2163,7 +1940,7 @@
     </div>
 
     <!-- Results Modal -->
-    <div id="results_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-label="نتيجة الحساب">
+    <div id="results_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
         <div class="modal-content glass-surface p-0 w-full max-w-3xl relative overflow-hidden">
             <canvas id="confetti-canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
             <button onclick="closeModal('results_modal')"
@@ -2188,7 +1965,7 @@
     </div>
 
     <!-- Confirmation Modal -->
-    <div id="confirm_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-label="تأكيد الحذف">
+    <div id="confirm_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
         <div class="modal-content glass-surface p-8 w-full max-w-sm text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full"
                 style="background-color: color-mix(in srgb, var(--danger-color) 15%, transparent);"><i
@@ -2206,7 +1983,7 @@
     </div>
 
     <!-- Bulk Add Courses Modal -->
-    <div id="bulk_add_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-label="إضافة مواد متعددة">
+    <div id="bulk_add_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50">
         <div class="modal-content glass-surface p-7 w-full max-w-sm">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -2243,53 +2020,9 @@
         </div>
     </div>
 
-    <!-- AI API Key Modal -->
-    <div id="api_key_modal" class="fixed inset-0 modal-overlay flex items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-label="مفتاح الذكاء الاصطناعي">
-        <div class="modal-content glass-surface p-7 w-full max-w-sm">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
-                        style="background: color-mix(in srgb, var(--purple) 12%, transparent);">
-                        <i data-feather="key" class="w-5 h-5" style="color: var(--purple);"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold">مفتاح الذكاء الاصطناعي</h3>
-                        <p class="text-sm" style="color:var(--text-secondary)">مفتاحك الشخصي من Google AI Studio.</p>
-                    </div>
-                </div>
-                <button onclick="cancelApiKeyPrompt()" class="btn btn-secondary !p-2 !rounded-full !gap-0"
-                    aria-label="إغلاق">
-                    <i data-feather="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <div class="mt-5">
-                <label for="api-key-input" class="field-label">مفتاح Gemini API</label>
-                <input id="api-key-input" type="password" class="form-input text-left" dir="ltr" placeholder="AIza..."
-                    autocomplete="off" aria-label="مفتاح Gemini API">
-                <p class="text-xs mt-2" style="color:var(--text-secondary)">
-                    يتم حفظ المفتاح على جهازك فقط (localStorage) ولا يُرسل لأي خادم آخر.
-                    <br>للحصول على مفتاح مجاني:
-                    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"
-                        style="color:var(--accent-color)">Google AI Studio</a>
-                </p>
-            </div>
-
-            <div class="mt-6 flex justify-center gap-3">
-                <button onclick="saveApiKey()" class="btn btn-primary" style="padding:.7rem 1.4rem;">
-                    <i data-feather="check" class="w-4 h-4"></i>
-                    حفظ
-                </button>
-                <button onclick="cancelApiKeyPrompt()" class="btn btn-secondary"
-                    style="padding:.7rem 1.4rem;">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification -->
     <div id="toast"
-        class="fixed bottom-24 md:bottom-5 right-5 py-3 px-5 rounded-full shadow-2xl opacity-0 translate-y-3 transition-all duration-300 z-[100] flex items-center gap-2 backdrop-filter backdrop-blur-xl font-semibold text-sm"
-        role="status" aria-live="polite">
+        class="fixed bottom-24 md:bottom-5 right-5 py-3 px-5 rounded-full shadow-2xl opacity-0 translate-y-3 transition-all duration-300 z-[100] flex items-center gap-2 backdrop-filter backdrop-blur-xl font-semibold text-sm">
         <i data-feather="check-circle" id="toast-icon" class="w-4 h-4 flex-shrink-0"></i>
         <p id="toast-message"></p>
     </div>
@@ -2319,49 +2052,7 @@
             addPlanCourse();
             document.getElementById('year').textContent = new Date().getFullYear();
             setupChat();
-            setupScrollHelpers();
-            setupFirstVisitHint();
         });
-
-        // --- SCROLL HELPERS & FIRST-VISIT HINT ---
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function setupScrollHelpers() {
-            const fab = document.getElementById('scroll-top-btn');
-            const stickyBar = document.getElementById('calc-sticky-bar');
-            let ticking = false;
-            const update = () => {
-                ticking = false;
-                const y = window.scrollY || document.documentElement.scrollTop;
-                const docH = document.documentElement.scrollHeight;
-                const winH = window.innerHeight;
-                if (fab) fab.classList.toggle('visible', y > 350);
-                if (stickyBar && currentTab === 'calculator') {
-                    const inView = y > 240 && y < docH - winH - 180;
-                    stickyBar.classList.toggle('visible', inView);
-                    stickyBar.setAttribute('aria-hidden', inView ? 'false' : 'true');
-                }
-            };
-            const onScroll = () => {
-                if (ticking) return;
-                ticking = true;
-                requestAnimationFrame(() => { ticking = false; update(); });
-                window.setTimeout(() => { if (ticking) { ticking = false; update(); } }, 120);
-            };
-            window.addEventListener('scroll', onScroll, { passive: true });
-            window.addEventListener('resize', update, { passive: true });
-            update();
-        }
-        function setupFirstVisitHint() {
-            try {
-                if (localStorage.getItem('gpaOnboarded')) return;
-                window.setTimeout(() => {
-                    showToast('ابدأ بإدخال معدلك الحالي ثم أضف مواد الفصل، أو تصفح تبويب "مساعدة" لشرح الاستمارة.');
-                    localStorage.setItem('gpaOnboarded', '1');
-                }, 900);
-            } catch (e) { /* ignore */ }
-        }
 
         // --- THEME & UI ---
         function applyTheme(theme) {
@@ -2405,27 +2096,15 @@
             if (topTab) topTab.classList.add('tab-active');
             const bottomNavItem = document.getElementById(`bottom-nav-${tabName}`);
             if (bottomNavItem) bottomNavItem.classList.add('active');
-            document.querySelectorAll('nav .tab, #bottom-nav .bottom-nav-item').forEach(el => {
-                const isActive = el.classList.contains('tab-active') || el.classList.contains('active');
-                if (isActive) el.setAttribute('aria-current', 'page');
-                else el.removeAttribute('aria-current');
-            });
             currentTab = tabName;
             if (tabName === 'dashboard') loadDashboard();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        let _lastFocusedBeforeModal = null;
         function showModal(id) {
             const el = document.getElementById(id);
             if (!el) return;
             el.classList.remove('closing');
             el.classList.add('show');
             document.body.style.overflow = 'hidden';
-            _lastFocusedBeforeModal = document.activeElement;
-            window.setTimeout(() => {
-                const focusable = el.querySelector('button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])');
-                if (focusable) focusable.focus({ preventScroll: true });
-            }, 320);
         }
         function closeModal(id) {
             const el = document.getElementById(id);
@@ -2436,19 +2115,7 @@
                 el.classList.remove('closing');
                 document.body.style.overflow = 'auto';
             }, 260);
-            if (_lastFocusedBeforeModal && _lastFocusedBeforeModal.isConnected) {
-                window.setTimeout(() => _lastFocusedBeforeModal.focus({ preventScroll: true }), 280);
-            }
         }
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const openModal = document.querySelector('.modal-overlay.show, #ai_companion_modal.show');
-                if (openModal) {
-                    if (openModal.id === 'ai_companion_modal') closeAiCompanion();
-                    else closeModal(openModal.id);
-                }
-            }
-        });
 
         function setLoadingButton(btn, isLoading, text) {
             if (!btn) return;
@@ -2465,8 +2132,7 @@
             }
         }
         let _toastTimer = null;
-        let _toastActionBtn = null;
-        function showToast(message, type = 'success', action = null) {
+        function showToast(message, type = 'success') {
             const t = document.getElementById('toast');
             const icon = document.getElementById('toast-icon');
             if (!t) return;
@@ -2477,34 +2143,8 @@
             t.style.color = 'white';
             document.getElementById('toast-message').textContent = message;
             if (icon) { icon.setAttribute('data-feather', icons[type] || 'check-circle'); feather.replace(); }
-            if (action) {
-                if (!_toastActionBtn) {
-                    _toastActionBtn = document.createElement('button');
-                    _toastActionBtn.className = 'toast-action';
-                    _toastActionBtn.type = 'button';
-                    t.appendChild(_toastActionBtn);
-                }
-                _toastActionBtn.textContent = action.label;
-                _toastActionBtn.onclick = () => { action.onClick(); hideToast(); };
-                _toastActionBtn.style.display = '';
-            } else if (_toastActionBtn) {
-                _toastActionBtn.style.display = 'none';
-                _toastActionBtn.onclick = null;
-            }
-            t.classList.remove('hide');
-            t.classList.add('show');
             t.classList.remove('opacity-0', 'translate-y-3');
-            _toastTimer = setTimeout(hideToast, 3500);
-        }
-        function hideToast() {
-            const t = document.getElementById('toast');
-            if (!t) return;
-            t.classList.remove('show');
-            t.classList.add('hide');
-            window.setTimeout(() => {
-                t.classList.remove('hide');
-                t.classList.add('opacity-0', 'translate-y-3');
-            }, 260);
+            _toastTimer = setTimeout(() => t.classList.add('opacity-0', 'translate-y-3'), 3500);
         }
         function getGradeOptions(isOld = false) { const o = `<option value="4.0">AA (4.0)</option><option value="3.5">A (3.5)</option><option value="3.0">BB (3.0)</option><option value="2.5">B (2.5)</option><option value="2.0">CC (2.0)</option><option value="1.5">C (1.5)</option><option value="1.0">DD (1.0)</option><option value="0.5">D (0.5)</option><option value="0.0">F (0.0)</option>`; return isOld ? `<option value="" disabled selected>التقدير القديم</option>${o}` : `<option value="" disabled selected>اختر التقدير</option>${o}` }
         function getGradeText(v) { const g = { 4.0: 'AA', 3.5: 'A', 3.0: 'BB', 2.5: 'B', 2.0: 'CC', 1.5: 'C', 1.0: 'DD', 0.5: 'D', 0.0: 'F' }; return g[v] || `N/A` }
@@ -2575,9 +2215,6 @@
             feather.replace();
             checkEmptyState();
             if (scroll) courseRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            if (scroll && window.innerWidth < 768) {
-                window.setTimeout(() => courseRow.querySelector('.course-name')?.focus({ preventScroll: true }), 350);
-            }
         }
 
         function addMultipleCourses(count) {
@@ -2616,33 +2253,13 @@
             const container = document.getElementById(`old-grade-container-${courseId}`);
             if (container) container.classList.toggle('hidden', courseType !== 'retaken');
         }
-        let _lastRemovedCourse = null;
         function removeCourse(prefix, id) {
             const courseRow = document.getElementById(prefix + id);
             if (courseRow) {
                 courseRow.style.animation = 'fadeOut 0.4s forwards';
                 setTimeout(() => {
-                    if (prefix === 'course_') {
-                        _lastRemovedCourse = { node: courseRow, nextSibling: courseRow.nextElementSibling };
-                    }
                     courseRow.remove();
                     checkEmptyState();
-                    if (prefix === 'course_' && _lastRemovedCourse) {
-                        showToast('تم حذف المادة.', 'info', { label: 'تراجع', onClick: () => {
-                            if (_lastRemovedCourse && _lastRemovedCourse.node) {
-                                const parent = document.getElementById('courses_container');
-                                const restored = _lastRemovedCourse.node;
-                                if (_lastRemovedCourse.nextSibling) {
-                                    parent.insertBefore(restored, _lastRemovedCourse.nextSibling);
-                                } else {
-                                    parent.appendChild(restored);
-                                }
-                                restored.style.animation = 'popIn 0.4s var(--spring) both';
-                                _lastRemovedCourse = null;
-                                checkEmptyState();
-                            }
-                        } });
-                    }
                 }, 400);
             }
         }
@@ -2858,15 +2475,7 @@ ${courses}
         // --- SIMULATION & PLANNING ---
         function runSimulation() {
             if (!validateInputs('#content-simulation section:first-child')) return;
-            const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value); const currentUnits = parseInt(document.getElementById('sim_current_units').value); const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value); const futureUnits = parseInt(document.getElementById('sim_future_units').value);
-            if (!futureUnits || futureUnits <= 0) { showToast('عدد الوحدات المستقبلية يجب أن يكون أكبر من صفر.', 'error'); return; }
-            const reqAvgGrade = ((targetGPA * (currentUnits + futureUnits)) - (currentGPA * currentUnits)) / futureUnits; const resultDiv = document.getElementById('simulation_result');
-            resultDiv.className = 'simulation-result text-center p-6 rounded-2xl mt-6';
-            resultDiv.innerHTML = `<div class="flex items-center justify-center gap-2 mb-2"><i data-feather="${reqAvgGrade > 4.0 ? 'alert-triangle' : reqAvgGrade < 0 ? 'check-circle' : 'target'}" class="w-6 h-6" style="color:${reqAvgGrade > 4.0 ? 'var(--danger-color)' : reqAvgGrade < 0 ? 'var(--success-color)' : 'var(--accent-color)'};"></i><h3 class="text-xl font-bold">نتيجة المحاكاة</h3></div> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)} <button onclick="copySimulationResult()" class="btn btn-secondary mt-4 !py-2 !px-4 text-sm"><i data-feather="copy" class="w-4 h-4"></i> نسخ النتيجة</button>`;
-        }
-        function copySimulationResult() {
-            const text = document.getElementById('simulation_result').innerText.replace('نسخ النتيجة', '').trim();
-            navigator.clipboard.writeText(text).then(() => showToast('تم نسخ نتيجة المحاكاة!'), () => showToast('تعذر النسخ.', 'error'));
+            const currentGPA = parseFloat(document.getElementById('sim_current_gpa').value); const currentUnits = parseInt(document.getElementById('sim_current_units').value); const targetGPA = parseFloat(document.getElementById('sim_target_gpa').value); const futureUnits = parseInt(document.getElementById('sim_future_units').value); const reqAvgGrade = ((targetGPA * (currentUnits + futureUnits)) - (currentGPA * currentUnits)) / futureUnits; document.getElementById('simulation_result').innerHTML = `<h3 class="text-xl font-bold mb-4">نتيجة المحاكاة</h3> ${getSimulationAdvice(reqAvgGrade, targetGPA, futureUnits)}`; document.getElementById('simulation_result').classList.remove('hidden');
         }
         function getSimulationAdvice(req, target, units) { if (req > 4.0) return `<p class="text-lg" style="color:var(--danger-color)">للوصول إلى <strong>${target.toFixed(2)}</strong> تحتاج لمتوسط <strong>${req.toFixed(2)}</strong>، وهو <span class="font-bold">غير ممكن</span>.</p>`; if (req < 0) return `<p class="text-lg" style="color:var(--success-color)">خبر رائع! معدلك الحالي أعلى من الهدف.</p>`; return `<p class="text-lg">لتحقيق هدفك، تحتاج لمتوسط <strong>${req.toFixed(2)}</strong> (<strong>${getGradeText(Math.ceil(req * 2) / 2)}</strong> أو أعلى) في الـ <strong>${units}</strong> وحدة القادمة.</p>` }
         function addPlanCourse() { planCourseCount++; const courseRow = document.createElement('div'); courseRow.id = 'plan_course_' + planCourseCount; courseRow.className = 'plan-course-row grid grid-cols-12 gap-3 items-center'; courseRow.innerHTML = `<div class="col-span-8"><input type="text" placeholder="اسم المادة" class="form-input p-2 plan-course-name"></div><div class="col-span-3"><input type="number" placeholder="الوحدات" min="1" class="form-input p-2 plan-course-units"></div><div class="col-span-1 flex items-center justify-end"><button onclick="removeCourse('plan_course_',${planCourseCount})" class="btn !p-2 !rounded-full hover:bg-red-100 dark:hover:bg-red-900/40" aria-label="حذف المادة"><i data-feather="trash-2" class="text-red-500"></i></button></div>`; document.getElementById('plan_courses_container').appendChild(courseRow); feather.replace(); }
@@ -2891,7 +2500,6 @@ ${courses}
 
         // --- DATA MANAGEMENT ---
         function saveResult() {
-            if (!lastCalculationData || !lastCalculationData.date) { showToast('لا توجد نتيجة لحفظها. احسب معدلك أولاً.', 'error'); closeModal('results_modal'); return; }
             const resultWithId = { ...lastCalculationData, id: Date.now() };
             savedResults.push(resultWithId);
             localStorage.setItem('gpaResults', JSON.stringify(savedResults));
@@ -2953,25 +2561,8 @@ ${courses}
         }
 
         // --- EXPORT & SHARE ---
-        const _scriptCache = {};
-        function loadScript(src) {
-            if (_scriptCache[src]) return _scriptCache[src];
-            _scriptCache[src] = new Promise((resolve, reject) => {
-                const s = document.createElement('script');
-                s.src = src; s.async = true;
-                s.onload = () => resolve();
-                s.onerror = () => { delete _scriptCache[src]; reject(new Error('فشل تحميل المكتبة')); };
-                document.head.appendChild(s);
-            });
-            return _scriptCache[src];
-        }
-        async function loadExportLibraries() {
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-        }
         async function ensureImagesLoaded(container) { const images = Array.from(container.getElementsByTagName("img")); await Promise.all(images.map(img => { if (img.complete) return Promise.resolve(); return new Promise(resolve => { img.onload = img.onerror = resolve; }); })); }
         async function createExportCanvas() {
-            await loadExportLibraries();
             const tempDiv = document.createElement('div');
             tempDiv.style.position = 'absolute'; tempDiv.style.left = '-9999px'; tempDiv.innerHTML = getTranscriptHTMLForExport(lastCalculationData); document.body.appendChild(tempDiv);
             await ensureImagesLoaded(tempDiv);
@@ -3165,6 +2756,11 @@ ${courses}
             document.getElementById('main-content').style.display = 'block';
             switchTab('calculator');
         }
+        function toggleChatHistory() {
+            document.querySelector('.ai-sidebar').classList.toggle('sidebar-visible');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
+        }
+
         function checkChatState() {
             const messagesContainer = document.getElementById('chat-messages');
             const welcomeScreen = document.getElementById('chat-welcome-screen');
@@ -3358,40 +2954,8 @@ ${courses}
         }
         function showTypingIndicator() { if (document.getElementById('typing-indicator')) return; const mc = document.getElementById('chat-messages'); const ti = document.createElement('div'); ti.id = 'typing-indicator'; ti.className = 'flex items-start gap-2.5 w-full self-start'; ti.innerHTML = `<div class="chat-avatar chat-avatar-ai"><i data-feather="cpu" class="w-3.5 h-3.5" style="color:white;"></i></div><div class="ai-message-container" style="flex:1;"><div class="chat-bubble" style="min-width:68px;"><div class="loading-dots"><span></span><span></span><span></span></div></div></div>`; mc.appendChild(ti); feather.replace(); mc.scrollTop = mc.scrollHeight; }
         function removeTypingIndicator() { const ti = document.getElementById('typing-indicator'); if (ti) ti.remove(); }
-        let _apiKeyWaiters = [];
-        function getStoredApiKey() { return (localStorage.getItem('geminiApiKey') || '').trim(); }
-        function promptForApiKey() {
-            return new Promise((resolve) => {
-                _apiKeyWaiters.push(resolve);
-                showModal('api_key_modal');
-                window.setTimeout(() => { document.getElementById('api-key-input')?.focus(); }, 300);
-            });
-        }
-        function cancelApiKeyPrompt() {
-            closeModal('api_key_modal');
-            const waiters = _apiKeyWaiters; _apiKeyWaiters = [];
-            waiters.forEach(w => w(null));
-        }
-        function showApiKeyModal() {
-            document.getElementById('api-key-input').value = getStoredApiKey();
-            showModal('api_key_modal');
-        }
-        function saveApiKey() {
-            const input = document.getElementById('api-key-input');
-            const key = (input.value || '').trim();
-            if (!key) { showToast('الرجاء إدخال مفتاح صالح.', 'error'); return; }
-            localStorage.setItem('geminiApiKey', key);
-            closeModal('api_key_modal');
-            showToast('تم حفظ المفتاح بنجاح!');
-            const waiters = _apiKeyWaiters; _apiKeyWaiters = [];
-            waiters.forEach(w => w(key));
-        }
         async function callGeminiAPI(userMessage, file) {
-            let apiKey = getStoredApiKey();
-            if (!apiKey) {
-                apiKey = await promptForApiKey();
-                if (!apiKey) throw new Error('تم إلغاء الطلب: يرجى إدخال مفتاح الذكاء الاصطناعي أولاً.');
-            }
+            const apiKey = "AIzaSyAAlGyEkEpzeL4dPjEf57mQAB2LdKEHRlo";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const systemInstructionBase = "أنت 'رفيق دراسي'، خبير ومتخصص في مساعدة طلاب كلية الهندسة بجامعة بنغازي. مهمتك هي أن تكون مرشدًا أكاديميًا ومساعدًا في حل المسائل. كن دائمًا إيجابيًا ومشجعًا، وقدم إجاباتك باللغة العربية بأسلوب واضح وموجز ومنظم. عند حل المسائل، قم بتقسيم الحل إلى خطوات مرقمة. قم بحل المسائل الرياضية والهندسية وعرضها بصيغة LaTeX الصحيحة. قم بتضمين أي كود برمجي بين ``` و ```. أكِّد دائمًا على أهمية مراجعة المصادر الرسمية في الكلية للتحقق من المعلومات.";
             const modeInstruction = aiMode && aiMode !== 'عام' ? `\nالمجال المختار: ${aiMode}. عدِّل أسلوب الشرح والأمثلة وفق هذا التخصص، وقم بإجراء تحقق وحداتي (Units) وتحليل أبعاد Dimensional Analysis حيث يلزم، مع توضيح الافتراضات والتنبيهات.` : '';
@@ -3417,10 +2981,6 @@ ${courses}
                     console.error("API Error Response:", errorBody);
                     if (response.status === 400 && file?.data) {
                         throw new Error("IMAGE_UNRECOGNIZED");
-                    }
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('geminiApiKey');
-                        throw new Error("مفتاح الذكاء الاصطناعي غير صالح أو انتهت صلاحيته. يرجى إدخال مفتاح جديد من أيقونة المفتاح.");
                     }
                     if (errorBody?.error?.message) {
                         throw new Error(`خطأ من الخادم: ${errorBody.error.message}`);
@@ -3535,7 +3095,6 @@ ${courses}
 
         function validateInputs(containerSelector) {
             let allValid = true;
-            let firstInvalid = null;
             const container = document.querySelector(containerSelector);
             if (!container) return false;
             container.querySelectorAll('input[type="number"]:not(:disabled), select:not(:disabled)').forEach(input => {
@@ -3543,18 +3102,10 @@ ${courses}
                 if (input.offsetParent === null) return;
                 if (input.value.trim() === '') {
                     input.classList.add('border-red-500');
-                    if (!firstInvalid) firstInvalid = input;
                     allValid = false;
                 }
             });
-            if (!allValid) {
-                showToast('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
-                if (firstInvalid) {
-                    firstInvalid.classList.add('shake');
-                    firstInvalid.focus({ preventScroll: true });
-                    window.setTimeout(() => firstInvalid.classList.remove('shake'), 600);
-                }
-            }
+            if (!allValid) showToast('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
             return allValid;
         }
         // --- Mobile viewport & keyboard handling for AI Companion ---
