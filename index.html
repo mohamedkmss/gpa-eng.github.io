@@ -38,9 +38,9 @@
 
             /* Text */
             --t1: #000;
-            --t2: rgba(60, 60, 67, .75);
-            --t3: rgba(60, 60, 67, .45);
-            --sep: rgba(60, 60, 67, .14);
+            --t2: rgba(60, 60, 67, .78);
+            --t3: rgba(60, 60, 67, .52);
+            --sep: rgba(60, 60, 67, .16);
 
             /* Brand */
             --blue: #007aff;
@@ -95,12 +95,12 @@
             --surface: rgba(28, 28, 30, .85);
             --surface-hi: rgba(44, 44, 46, .92);
             --glass: rgba(28, 28, 30, .80);
-            --glass-border: rgba(255, 255, 255, .08);
+            --glass-border: rgba(255, 255, 255, .14);
             --glass-inner: rgba(255, 255, 255, .03);
             --t1: #fff;
-            --t2: rgba(235, 235, 245, .60);
-            --t3: rgba(235, 235, 245, .30);
-            --sep: rgba(84, 84, 88, .50);
+            --t2: rgba(235, 235, 245, .74);
+            --t3: rgba(235, 235, 245, .44);
+            --sep: rgba(84, 84, 88, .62);
             --blue: #0a84ff;
             --blue-l: rgba(10, 132, 255, .15);
             --blue-g: rgba(10, 132, 255, .35);
@@ -108,8 +108,8 @@
             --orange: #ff9f0a;
             --red: #ff453a;
             --card-bg: rgba(44, 44, 46, .82);
-            --card-border: rgba(255, 255, 255, .08);
-            --input-bg: rgba(118, 118, 128, .18);
+            --card-border: rgba(255, 255, 255, .14);
+            --input-bg: rgba(118, 118, 128, .22);
             --accent-color: #0a84ff;
             --accent-color-dark: #64d2ff;
             --danger-color: #ff453a;
@@ -467,6 +467,7 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             white-space: nowrap;
+            min-height: 44px;
         }
 
         .btn.is-loading {
@@ -503,7 +504,14 @@
 
         .tab:focus-visible,
         .bottom-nav-item:focus-visible,
-        .history-item:focus-visible {
+        .history-item:focus-visible,
+        .btn-status:focus-visible,
+        .form-input:focus-visible,
+        .form-select:focus-visible,
+        .course-delete-btn:focus-visible,
+        .lightbox-close:focus-visible,
+        #transcript-zoom-btn:focus-visible,
+        .course-type-help-btn:focus-visible {
             outline: 2px solid var(--blue);
             outline-offset: 3px;
             border-radius: var(--r2);
@@ -594,9 +602,9 @@
         /* Field label */
         .field-label {
             display: block;
-            font-size: .72rem;
+            font-size: .8rem;
             font-weight: 700;
-            letter-spacing: .04em;
+            letter-spacing: .02em;
             text-transform: uppercase;
             color: var(--t2);
             margin-bottom: .45rem;
@@ -713,13 +721,13 @@
         }
 
         .section-head-text h2 {
-            font-size: 1.15rem;
+            font-size: 1.22rem;
             font-weight: 700;
             line-height: 1.3;
         }
 
         .section-head-text p {
-            font-size: .76rem;
+            font-size: .82rem;
             color: var(--t2);
             margin-top: 2px;
         }
@@ -749,6 +757,37 @@
             margin-top: 2px;
         }
 
+        /* ── Course-type help tooltip toggle ── */
+        .course-type-help-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .course-type-help-btn:hover {
+            color: var(--t1);
+            background: var(--input-bg);
+        }
+
+        .course-type-help.show {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        @media (max-width: 639px) {
+            .course-type-help {
+                width: min(19rem, calc(100vw - 3rem)) !important;
+            }
+        }
+
         /* ══════════════════════════════════════
            COURSE ROWS
         ══════════════════════════════════════ */
@@ -756,6 +795,7 @@
             border-radius: var(--r3);
             animation: slideIn .34s var(--spring) both;
             overflow: hidden;
+            padding: 1rem;
             transition: transform var(--t-fast) var(--spring),
                 background var(--t-fast) var(--ease),
                 border-color var(--t-fast) var(--ease);
@@ -770,6 +810,94 @@
         .highlight-retaken {
             background: rgba(255, 149, 0, .07) !important;
             border-color: rgba(255, 149, 0, .26) !important;
+        }
+
+        /* ── Course row grid ───────────────────────────
+           Mobile (<768px): vertical card
+             [ name        | units ]
+             [ grade       | type  ]
+             [        delete        ]
+           Desktop (>=768px): single horizontal row */
+        .course-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+                "name units"
+                "grade type"
+                "delete delete";
+            gap: .7rem .75rem;
+            align-items: end;
+        }
+
+        .course-grid .course-name-col { grid-area: name; }
+        .course-grid .course-units-col { grid-area: units; }
+        .course-grid .course-grade-col { grid-area: grade; }
+        .course-grid .course-type-col { grid-area: type; }
+        .course-grid .course-delete-col { grid-area: delete; }
+        .course-grid .old-grade-container { grid-area: oldgrade; grid-column: 1 / -1; }
+
+        .course-grid label {
+            display: block;
+            font-size: .76rem;
+            font-weight: 700;
+            color: var(--t2);
+            margin-bottom: .35rem;
+        }
+
+        .course-delete-btn {
+            width: 100%;
+            min-height: 44px;
+            border-radius: var(--r2);
+            border: 1px solid color-mix(in srgb, var(--danger-color) 22%, transparent);
+            background: color-mix(in srgb, var(--danger-color) 9%, transparent);
+            color: var(--danger-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            font-weight: 600;
+            font-size: .8rem;
+            font-family: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--spring);
+        }
+
+        .course-delete-btn:hover {
+            background: color-mix(in srgb, var(--danger-color) 16%, transparent);
+        }
+
+        .course-delete-btn:active {
+            transform: scale(.97);
+        }
+
+        @media (min-width: 768px) {
+            .course-grid {
+                grid-template-columns: minmax(0, 4fr) minmax(0, 1.6fr) minmax(0, 1.9fr) minmax(0, 2.2fr) minmax(44px, auto);
+                grid-template-areas: "name units grade type delete";
+                gap: .9rem 1rem;
+            }
+
+            .course-delete-btn {
+                width: 46px;
+                min-height: 46px;
+            }
+
+            .course-delete-btn span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 319px) {
+            .course-grid {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "name"
+                    "units"
+                    "grade"
+                    "type"
+                    "delete";
+            }
         }
 
         /* ══════════════════════════════════════
@@ -787,6 +915,7 @@
         .btn-status {
             flex: 1;
             padding: .42rem .5rem;
+            min-height: 42px;
             border-radius: calc(var(--r2) - 3px);
             border: none;
             background: transparent;
@@ -801,6 +930,12 @@
             gap: .32rem;
             transition: all var(--t-fast) var(--spring);
             -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (max-width: 767px) {
+            .btn-status {
+                min-height: 46px;
+            }
         }
 
         .btn-status svg,
@@ -881,6 +1016,165 @@
                 0 8px 24px rgba(0, 0, 0, .46),
                 inset 0 1px 0 rgba(255, 255, 255, .08),
                 inset 0 -1px 0 rgba(0, 0, 0, .28);
+        }
+
+        /* ── Modal on mobile: sheet-style, scrollable body, sticky actions ── */
+        @media (max-width: 767px) {
+            #results_modal.modal-overlay {
+                padding: .75rem;
+                align-items: flex-end;
+            }
+
+            .modal-content {
+                max-height: 94dvh;
+                border-radius: var(--r4);
+            }
+
+            #result-content-area {
+                flex: 1 1 auto;
+                min-height: 0;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 1.25rem 1rem;
+            }
+
+            .modal-actions {
+                flex-shrink: 0;
+            }
+        }
+
+        /* ── Results modal action buttons (priority order) ──
+           Mobile: primary full-width, then 3 secondary in a row.
+           Desktop: single row. */
+        .modal-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .6rem;
+            padding: .9rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .modal-actions .btn {
+            min-width: 0;
+            justify-content: center;
+            padding: .65rem .5rem;
+        }
+
+        .modal-actions .modal-action-primary {
+            grid-column: 1 / -1;
+        }
+
+        @media (min-width: 640px) {
+            .modal-actions {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 1rem;
+            }
+
+            .modal-actions .btn {
+                flex: 1 1 auto;
+                min-width: 150px;
+                padding: .7rem 1.1rem;
+            }
+
+            .modal-actions .modal-action-primary {
+                grid-column: auto;
+                flex: 0 1 auto;
+            }
+        }
+
+        /* ── Help image: zoom button + lightbox ── */
+        .transcript-zoom-btn {
+            display: block;
+            position: relative;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: zoom-in;
+            border-radius: var(--r2);
+            -webkit-tap-highlight-color: transparent;
+            max-width: 100%;
+        }
+
+        .transcript-zoom-btn img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--r2);
+            transition: transform var(--t-base) var(--ease), box-shadow var(--t-base) var(--ease);
+        }
+
+        .transcript-zoom-btn:hover img {
+            transform: scale(1.015);
+            box-shadow: var(--sh3);
+        }
+
+        .transcript-zoom-btn .zoom-hint {
+            position: absolute;
+            inset: auto 0 0.5rem 0;
+            margin-inline: auto;
+            width: max-content;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .35rem .85rem;
+            border-radius: var(--rf);
+            background: rgba(0, 0, 0, .55);
+            color: #fff;
+            font-size: .78rem;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        .image-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, .85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--t-base) var(--ease);
+        }
+
+        .image-lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .image-lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: var(--r2);
+            box-shadow: var(--sh4);
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, .16);
+            color: #fff;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, .28);
         }
 
         #results_modal #result-content-area {
@@ -966,15 +1260,15 @@
         }
 
         .bottom-nav-item svg {
-            width: 23px;
-            height: 23px;
-            stroke-width: 1.8;
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.9;
             flex-shrink: 0;
             transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .nav-text {
-            font-size: 10.5px;
+            font-size: 11.5px;
             font-weight: 600;
             line-height: 1;
             letter-spacing: .01em;
@@ -990,7 +1284,7 @@
         }
 
         .dark .bottom-nav-item {
-            color: rgba(235, 235, 245, .45);
+            color: rgba(235, 235, 245, .62);
         }
 
         .dark .bottom-nav-item.active {
@@ -1233,8 +1527,9 @@
             <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
                 <!-- App Logo -->
                 <div class="relative">
-                    <img src="logo.png" alt="شعار مسارك الهندسى"
-                        class="relative w-32 h-32 object-contain filter drop-shadow-xl transition-transform hover:scale-105 duration-300">
+                    <img src="logo.webp" alt="شعار مسارك الهندسى"
+                        class="relative w-32 h-32 object-contain filter drop-shadow-xl transition-transform hover:scale-105 duration-300"
+                        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='logo.png'}">
                 </div>
                 <!-- Text content -->
                 <div class="text-center sm:text-right">
@@ -1319,9 +1614,12 @@
                                         </div>
                                     </div>
                                     <div class="relative group">
-                                        <i data-feather="help-circle" class="w-5 h-5 cursor-pointer"
-                                            style="color: var(--text-secondary);"></i>
-                                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-80 p-3 rounded-lg text-sm shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none glass-surface"
+                                        <button type="button" class="course-type-help-btn"
+                                            aria-label="شرح حالة المادة" aria-expanded="false"
+                                            onclick="toggleCourseTypeHelp(this)">
+                                            <i data-feather="help-circle" class="w-5 h-5"></i>
+                                        </button>
+                                        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-80 p-3 rounded-lg text-sm shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none glass-surface course-type-help"
                                             style="z-index: 10;">
                                             <p class="font-bold mb-2 text-base">شرح حالة المادة:</p>
                                             <div class="flex items-start gap-2 mb-2">
@@ -1336,8 +1634,10 @@
                                                 <div><strong>معادة:</strong> اختر هذا للمواد التي سبق لك دراستها. سيتم
                                                     إلغاء تقديرك القديم واحتساب الجديد فقط.</div>
                                             </div>
-                                            <div class="mt-2 text-xs" style="color: var(--warning-color);">
-                                                </div>
+                                            <div class="mt-2 text-xs" style="color: var(--t3);">
+                                                ملاحظة: المواد الجديدة تُحتسب ضمن معدلك التراكمي إذا كانت ساعاتها
+                                                مدرجة في استمارتك.
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1347,7 +1647,7 @@
                             </div>
 
                             <div id="courses_container" class="space-y-3">
-                                <div id="courses_empty_state" class="text-center p-10 border-2 border-dashed rounded-xl"
+                                <div id="courses_empty_state" class="text-center p-8 sm:p-10 border-2 border-dashed rounded-xl"
                                     style="border-color: color-mix(in srgb, var(--accent-color) 20%, transparent); background: color-mix(in srgb, var(--accent-color) 3%, transparent);">
                                     <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
                                         style="background: color-mix(in srgb, var(--accent-color) 10%, transparent);">
@@ -1355,8 +1655,11 @@
                                             style="color: var(--accent-color);"></i>
                                     </div>
                                     <h3 class="font-bold text-lg">لم تقم بإضافة مواد بعد</h3>
-                                    <p style="color: var(--text-secondary);" class="mt-1 text-sm">اضغط <strong>إضافة
-                                            مادة</strong> للبدء.</p>
+                                    <p style="color: var(--text-secondary);" class="mt-1 text-sm">أضف موادك الدراسية
+                                        لتبدأ حساب المعدل.</p>
+                                    <button type="button" onclick="addCourse()" class="btn btn-primary mt-4">
+                                        <i data-feather="plus"></i> إضافة مادة
+                                    </button>
                                 </div>
                             </div>
 
@@ -1501,11 +1804,17 @@
                                 <strong>"المعدل العام"</strong> و <strong>"الساعات الإجمالية"</strong> من استمارتك
                                 الجامعية.
                             </p>
-                            <div class="flex justify-center p-2 border rounded-lg"
+                            <div class="flex justify-center p-2 border rounded-lg relative"
                                 style="background-color: var(--card-bg); border-color: var(--card-border);">
-                                <img src="transcript-guide.png" alt="شرح استمارة جامعة بنغازي"
-                                    class="rounded-md shadow-md max-w-full h-auto" loading="lazy" decoding="async"
-                                    onerror="if(this.dataset.fallback){this.style.display='none'}else{this.dataset.fallback='1';this.src='transcript-guide.jpg'}">
+                                <button type="button" id="transcript-zoom-btn" class="transcript-zoom-btn"
+                                    aria-label="تكبير صورة شرح الاستمارة" aria-haspopup="dialog">
+                                    <img src="transcript-guide.webp" alt="شرح استمارة جامعة بنغازي"
+                                        class="rounded-md shadow-md max-w-full h-auto" loading="lazy" decoding="async"
+                                        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='transcript-guide.png'}else if(this.dataset.fb==='1'){this.dataset.fb='2';this.src='transcript-guide.jpg'}else{this.style.display='none'}">
+                                    <span class="zoom-hint" aria-hidden="true">
+                                        <i data-feather="maximize-2" class="w-4 h-4"></i> اضغط للتكبير
+                                    </span>
+                                </button>
                             </div>
                         </div>
                         <div class="help-section">
@@ -1593,7 +1902,8 @@
         <footer class="text-center mt-10 pb-4" style="color:var(--t2);font-size:.84rem;">
             <div class="flex items-center justify-center gap-6 mb-3">
                 <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
+                    <img src="logo.webp" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md"
+                        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='logo.png'}">
                     <div style="text-align:right">
                         <strong>مسارك الهندسى</strong>
                         <div style="font-size:0.85rem;color:var(--text-secondary)">مخصص لطلاب كلية الهندسة - جامعة
@@ -1602,7 +1912,8 @@
                 </div>
                 <div style="width:1px; height:48px; background:var(--sep)"></div>
                 <div class="flex items-center gap-3">
-                    <img src="uob-logo.png" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
+                    <img src="uob-logo.webp" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90"
+                        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='uob-logo.png'}">
                 </div>
             </div>
             <p>&copy; <span id="year"></span> - تم التطوير لخدمة طلاب كلية الهندسة - جامعة بنغازي.</p>
@@ -1665,15 +1976,11 @@
             <div id="result-content-area" class="p-6 sm:p-8 relative z-10">
                 <!-- Dynamically Generated -->
             </div>
-            <div id="modal-buttons" class="flex flex-wrap justify-center gap-3 p-4 border-t"
-                style="border-color: var(--card-border);">
-                <button onclick="saveResult()" class="btn btn-primary"><i data-feather="save"></i> حفظ النتيجة</button>
-                <button onclick="shareAsImage()" class="btn btn-secondary"><i data-feather="camera"></i> حفظ
-                    كصورة</button>
-                <button onclick="shareAsPDF()" class="btn btn-secondary"><i data-feather="file-text"></i> حفظ كـ
-                    PDF</button>
-                <button onclick="shareWebsite()" class="btn btn-secondary"><i data-feather="share-2"></i>
-                    مشاركة</button>
+            <div id="modal-buttons" class="modal-actions">
+                <button onclick="saveResult()" class="btn btn-primary modal-action-primary"><i data-feather="save"></i> حفظ النتيجة</button>
+                <button onclick="shareAsImage()" class="btn btn-secondary"><i data-feather="camera"></i> حفظ كصورة</button>
+                <button onclick="shareAsPDF()" class="btn btn-secondary"><i data-feather="file-text"></i> حفظ كـ PDF</button>
+                <button onclick="shareWebsite()" class="btn btn-secondary"><i data-feather="share-2"></i> مشاركة</button>
             </div>
         </div>
     </div>
@@ -1735,10 +2042,17 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast"
+    <div id="toast" role="status" aria-live="polite"
         class="fixed bottom-24 md:bottom-5 right-5 py-3 px-5 rounded-full shadow-2xl opacity-0 translate-y-3 transition-all duration-300 z-[100] flex items-center gap-2 backdrop-filter backdrop-blur-xl font-semibold text-sm">
         <i data-feather="check-circle" id="toast-icon" class="w-4 h-4 flex-shrink-0"></i>
         <p id="toast-message"></p>
+    </div>
+
+    <!-- Image Lightbox (help section) -->
+    <div id="image-lightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-label="صورة شرح الاستمارة">
+        <button type="button" class="lightbox-close" aria-label="إغلاق الصورة">×</button>
+        <img id="lightbox-img" src="transcript-guide.webp" alt="شرح استمارة جامعة بنغازي (مكبّرة)"
+            onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='transcript-guide.png'}else if(this.dataset.fb==='1'){this.dataset.fb='2';this.src='transcript-guide.jpg'}else{this.style.display='none'}">
     </div>
 
     <script>
@@ -2070,34 +2384,32 @@
             courseRow.style.borderColor = 'var(--sep)';
             courseRow.style.background = 'var(--surface)';
             courseRow.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-x-4 gap-y-3 items-center">
-                    <div class="md:col-span-4">
-                        <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">اسم المادة</label>
-                        <input type="text" placeholder="مثال: ES102" dir="rtl" class="form-input p-2.5 course-name">
+                <div class="course-grid">
+                    <div class="course-name-col">
+                        <label for="course-name-${courseCount}" class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">اسم المادة</label>
+                        <input type="text" id="course-name-${courseCount}" placeholder="مثال: ES102" dir="rtl" class="form-input p-2.5 course-name">
                     </div>
-                    <div class="md:col-span-4 flex gap-3">
-                        <div class="flex-1">
-                            <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">الوحدات</label>
-                            <input type="number" placeholder="مثال: 12" min="3" max="12" step="0.5" dir="rtl" class="form-input p-2.5 course-units">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">التقدير</label>
-                            <select class="form-select p-2.5 course-grade">${getGradeOptions()}</select>
+                    <div class="course-units-col">
+                        <label for="course-units-${courseCount}" class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">الوحدات</label>
+                        <input type="number" id="course-units-${courseCount}" placeholder="مثال: 12" min="3" max="12" step="0.5" dir="rtl" class="form-input p-2.5 course-units">
+                    </div>
+                    <div class="course-grade-col">
+                        <label for="course-grade-${courseCount}" class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">التقدير</label>
+                        <select id="course-grade-${courseCount}" class="form-select p-2.5 course-grade">${getGradeOptions()}</select>
+                    </div>
+                    <div class="course-type-col">
+                        <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">نوع المادة</label>
+                        <div class="status-toggle-group">
+                            <button type="button" class="btn-status active" data-value="new" onclick="setCourseType(this, ${courseCount})"><i data-feather="award" class="w-4 h-4"></i><span>جديدة</span></button>
+                            <button type="button" class="btn-status" data-value="retaken" onclick="setCourseType(this, ${courseCount})"><i data-feather="refresh-cw" class="w-4 h-4"></i><span class="whitespace-nowrap">معادة</span></button>
                         </div>
                     </div>
-                    <div class="md:col-span-4 flex items-end gap-2">
-                        <div class="flex-1">
-                            <label class="block text-xs font-semibold mb-1" style="color:var(--text-secondary)">نوع المادة</label>
-                            <div class="status-toggle-group">
-                                <button type="button" class="btn-status active" data-value="new" onclick="setCourseType(this, ${courseCount})"><i data-feather="award" class="w-4 h-4"></i><span>جديدة</span></button>
-                                <button type="button" class="btn-status" data-value="retaken" onclick="setCourseType(this, ${courseCount})"><i data-feather="refresh-cw" class="w-4 h-4"></i><span class="whitespace-nowrap">معادة</span></button>
-                            </div>
-                        </div>
-                        <button onclick="removeCourse('course_', ${courseCount})" class="btn !p-2.5 !rounded-lg flex-shrink-0" style="color:var(--danger-color);background:color-mix(in srgb, var(--danger-color) 8%, transparent);border-color:color-mix(in srgb, var(--danger-color) 15%, transparent);" aria-label="حذف المادة">
-                            <i data-feather="trash-2" class="w-4 h-4"></i>
+                    <div class="course-delete-col">
+                        <button type="button" onclick="removeCourse('course_', ${courseCount})" class="course-delete-btn" aria-label="حذف المادة ${courseCount}">
+                            <i data-feather="trash-2" class="w-4 h-4"></i><span>حذف المادة</span>
                         </button>
                     </div>
-                    <div id="old-grade-container-${courseCount}" class="md:col-span-12 hidden mt-1">
+                    <div id="old-grade-container-${courseCount}" class="old-grade-container hidden">
                         <div class="p-3 rounded-xl" style="background:color-mix(in srgb, var(--warning-color) 8%, transparent);border:1px solid color-mix(in srgb, var(--warning-color) 20%, transparent);">
                             <label for="old-grade-select-${courseCount}" class="block text-xs text-center font-semibold mb-2" style="color:var(--warning-color)">⚠️ أدخل تقديرك السابق في هذه المادة</label>
                             <div class="max-w-xs mx-auto"><select id="old-grade-select-${courseCount}" class="form-select p-2 course-old-grade">${getGradeOptions(true)}</select></div>
@@ -2158,6 +2470,45 @@
                     scheduleDraftSave();
                 }, 400);
             }
+        }
+
+        function toggleCourseTypeHelp(btn) {
+            const tip = btn.parentElement.querySelector('.course-type-help');
+            const open = tip.classList.toggle('show');
+            btn.setAttribute('aria-expanded', String(open));
+            const close = () => {
+                tip.classList.remove('show');
+                btn.setAttribute('aria-expanded', 'false');
+                document.removeEventListener('click', close);
+            };
+            setTimeout(() => document.addEventListener('click', close), 0);
+        }
+
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        function openLightbox(src) {
+            if (!lightbox) return;
+            lightboxImg.src = src;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            lightbox.querySelector('.lightbox-close').focus();
+        }
+        function closeLightbox() {
+            if (!lightbox) return;
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        if (lightbox) {
+            lightbox.addEventListener('click', e => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); });
+            lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox(); });
+        }
+        const transcriptZoomBtn = document.getElementById('transcript-zoom-btn');
+        if (transcriptZoomBtn) {
+            transcriptZoomBtn.addEventListener('click', () => {
+                const img = transcriptZoomBtn.querySelector('img');
+                if (img && img.src) openLightbox(img.src);
+            });
         }
         function calculateGPA() {
             const calcBtn = document.getElementById('calculate-gpa-btn');
@@ -2645,7 +2996,7 @@
                 <div class="export-wrapper">
                     <div class="export-header">
                         <div class="side" style="text-align:right; display:flex; align-items:center; gap:0.6rem;">
-                            <img src="logo.png" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="logo.webp" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='logo.png'}">
                             <div>
                                 <div style="font-weight:900;">مسارك الهندسي</div>
                                 <div style="font-size:.82rem;color:#334155;">حاسبة المعدل الذكية</div>
@@ -2660,7 +3011,7 @@
                                 <div style="font-weight:900;">جامعة بنغازي</div>
                                 <div style="font-size:.82rem;color:#334155;">كلية الهندسة</div>
                             </div>
-                            <img src="uob-logo.png" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="uob-logo.webp" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;" onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='uob-logo.png'}">
                         </div>
                     </div>
 
@@ -2761,7 +3112,18 @@
                 }
             });
             if (!allValid) {
-                showToast('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
+                let msg = 'الرجاء تعبئة جميع الحقول المطلوبة.';
+                if (firstInvalid) {
+                    if (firstInvalid.classList.contains('course-old-grade')) {
+                        msg = 'الرجاء إدخال التقدير السابق للمادة المعادة.';
+                    } else if (firstInvalid.closest('.course-row')) {
+                        const fieldName = firstInvalid.classList.contains('course-units') ? 'الوحدات'
+                            : firstInvalid.classList.contains('course-grade') ? 'التقدير'
+                            : 'البيانات';
+                        msg = `الرجاء تعبئة حقل «${fieldName}» في المادة.`;
+                    }
+                }
+                showToast(msg, 'error');
                 firstInvalid?.focus({ preventScroll: true });
                 firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
