@@ -131,6 +131,9 @@
         html {
             scroll-behavior: smooth;
             -webkit-text-size-adjust: 100%;
+            /* Fix for Chromium scroll repaint issues on mobile */
+            overflow-y: auto;
+            contain: layout style paint;
         }
 
         body {
@@ -141,6 +144,9 @@
             -webkit-font-smoothing: antialiased;
             transition: background var(--t-base) var(--ease),
                 color var(--t-base) var(--ease);
+            /* Fix for Chromium scroll repaint issues */
+            transform: translateZ(0);
+            backface-visibility: visible;
         }
 
         /* ── Performance-optimised scrollbars ── */
@@ -168,6 +174,9 @@
             z-index: -1;
             pointer-events: none;
             will-change: transform;
+            /* Prevent repaint issues during scroll on Chromium mobile */
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         body::before {
@@ -926,7 +935,7 @@
             padding: 6px;
             gap: 2px;
             will-change: transform;
-            /* Glass pill */
+            /* Glass pill - optimized for mobile scroll performance */
             min-height: 68px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 100%);
             backdrop-filter: blur(56px) saturate(2.2) brightness(1.08);
@@ -938,6 +947,9 @@
                 0 6px 18px rgba(0, 0, 0, .09),
                 inset 0 1px 0 rgba(255, 255, 255, .88),
                 inset 0 -1px 0 rgba(0, 0, 0, .05);
+            /* Hardware acceleration for smooth scrolling */
+            transform: translateZ(0);
+            backface-visibility: visible;
         }
 
         .dark .bottom-nav {
@@ -1067,9 +1079,16 @@
             padding: .65rem 1.1rem;
         }
 
-        /* Performance layers */
+        /* Performance layers - fix scroll repaint issues */
         .glass-surface,
-        .modal-content {
+        .modal-content,
+        .card {
+            transform: translateZ(0);
+            backface-visibility: visible;
+        }
+        
+        /* Main content area - hardware acceleration */
+        #main-content {
             transform: translateZ(0);
         }
 
@@ -1096,6 +1115,21 @@
                 animation-duration: 0.001ms !important;
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.001ms !important;
+            }
+            
+            /* Disable heavy effects for users with motion sensitivity */
+            .glass-surface,
+            .bottom-nav {
+                backdrop-filter: blur(20px) saturate(1.5);
+                -webkit-backdrop-filter: blur(20px) saturate(1.5);
+            }
+        }
+        
+        /* ── Chromium Mobile Scroll Fix ── */
+        /* Force GPU compositing to prevent black/blank areas during scroll */
+        @supports (-webkit-overflow-scrolling: touch) {
+            body {
+                -webkit-overflow-scrolling: touch;
             }
         }
 
@@ -1128,6 +1162,9 @@
             body {
                 background: #ffffff !important;
                 overflow: visible !important;
+                /* Reset performance properties for print */
+                transform: none !important;
+                will-change: auto !important;
             }
 
             /* Never print interactive chrome */
