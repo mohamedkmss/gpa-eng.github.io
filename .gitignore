@@ -1,1 +1,1 @@
-(index.html is a source file, so no need to add it to .gitignore)
+Nothing should be ignored in this case. The added files are image assets (apple-touch-icon.png, icon-192.png) which are legitimate source files that should be tracked in version control. No build artifacts, dependencies, or temporary files are present in the changes.
