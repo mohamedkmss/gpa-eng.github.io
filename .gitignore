@@ -1,1 +1,1 @@
-(index.html is a source file, so no changes needed to .gitignore)
+(index.html is a source file, so according to rule 6, since there are only source/config files and no build artifacts, dependencies, or temp files, the output should be empty)
