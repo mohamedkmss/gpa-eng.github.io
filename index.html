@@ -131,9 +131,6 @@
         html {
             scroll-behavior: smooth;
             -webkit-text-size-adjust: 100%;
-            /* Fix for Chromium scroll repaint issues on mobile */
-            overflow-y: auto;
-            contain: layout style paint;
         }
 
         body {
@@ -144,9 +141,6 @@
             -webkit-font-smoothing: antialiased;
             transition: background var(--t-base) var(--ease),
                 color var(--t-base) var(--ease);
-            /* Fix for Chromium scroll repaint issues */
-            transform: translateZ(0);
-            backface-visibility: visible;
         }
 
         /* ── Performance-optimised scrollbars ── */
@@ -170,13 +164,9 @@
             content: '';
             position: fixed;
             border-radius: 50%;
-            filter: blur(110px);
+            filter: blur(90px);
             z-index: -1;
             pointer-events: none;
-            will-change: transform;
-            /* Prevent repaint issues during scroll on Chromium mobile */
-            transform: translateZ(0);
-            backface-visibility: hidden;
         }
 
         body::before {
@@ -370,8 +360,8 @@
         .glass-surface {
             position: relative;
             background: var(--glass);
-            backdrop-filter: blur(62px) saturate(2.15) brightness(1.06);
-            -webkit-backdrop-filter: blur(62px) saturate(2.15) brightness(1.06);
+            backdrop-filter: blur(28px) saturate(1.5) brightness(1.03);
+            -webkit-backdrop-filter: blur(28px) saturate(1.5) brightness(1.03);
             border: 1px solid var(--glass-border);
             box-shadow: var(--sh3),
                 inset 0 1px 0 rgba(255, 255, 255, .70),
@@ -471,8 +461,6 @@
                 background var(--t-fast) var(--ease),
                 opacity var(--t-fast) var(--ease);
             background: linear-gradient(180deg, rgba(255, 255, 255, .82) 0%, rgba(255, 255, 255, .58) 100%);
-            backdrop-filter: blur(26px) saturate(1.85) brightness(1.04);
-            -webkit-backdrop-filter: blur(26px) saturate(1.85) brightness(1.04);
             border: 1px solid rgba(255, 255, 255, .62);
             box-shadow: var(--sh1), inset 0 1px 0 rgba(255, 255, 255, .62);
             color: var(--t1);
@@ -768,7 +756,6 @@
             border-radius: var(--r3);
             animation: slideIn .34s var(--spring) both;
             overflow: hidden;
-            will-change: transform;
             transition: transform var(--t-fast) var(--spring),
                 background var(--t-fast) var(--ease),
                 border-color var(--t-fast) var(--ease);
@@ -934,12 +921,11 @@
             align-items: stretch;
             padding: 6px;
             gap: 2px;
-            will-change: transform;
-            /* Glass pill - optimized for mobile scroll performance */
+            /* Glass pill */
             min-height: 68px;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.25) 100%);
-            backdrop-filter: blur(56px) saturate(2.2) brightness(1.08);
-            -webkit-backdrop-filter: blur(56px) saturate(2.2) brightness(1.08);
+            backdrop-filter: blur(28px) saturate(1.5) brightness(1.03);
+            -webkit-backdrop-filter: blur(28px) saturate(1.5) brightness(1.03);
             border: 1px solid rgba(255, 255, 255, 0.35);
             border-radius: 999px;
             box-shadow:
@@ -947,9 +933,6 @@
                 0 6px 18px rgba(0, 0, 0, .09),
                 inset 0 1px 0 rgba(255, 255, 255, .88),
                 inset 0 -1px 0 rgba(0, 0, 0, .05);
-            /* Hardware acceleration for smooth scrolling */
-            transform: translateZ(0);
-            backface-visibility: visible;
         }
 
         .dark .bottom-nav {
@@ -1079,28 +1062,44 @@
             padding: .65rem 1.1rem;
         }
 
-        /* Performance layers - fix scroll repaint issues */
-        .glass-surface,
-        .modal-content,
-        .card {
-            transform: translateZ(0);
-            backface-visibility: visible;
-        }
-        
-        /* Main content area - hardware acceleration */
-        #main-content {
-            transform: translateZ(0);
-        }
+        /* Performance layers */
+        /* NOTE: no translateZ(0)/will-change forcing here — on mobile GPUs
+           many forced layers + backdrop-filter blur cause scroll repaint
+           glitches (black/blank flashes). Layers are created implicitly
+           by backdrop-filter only where needed. */
 
-        @media (max-width: 640px) {
+        @media (max-width: 1024px) {
+            /* Mobile/tablet: drop backdrop-filter entirely and use solid
+               surfaces — removes the compositor pressure that causes
+               black/empty flash artifacts while scrolling (Chrome/Brave,
+               Android, dark mode). */
+            .glass-surface,
+            .modal-content {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+
             .glass-surface {
-                backdrop-filter: blur(46px) saturate(2.0) brightness(1.05);
-                -webkit-backdrop-filter: blur(46px) saturate(2.0) brightness(1.05);
+                background: rgba(255, 255, 255, .94);
+            }
+
+            .dark .glass-surface {
+                background: rgba(28, 28, 30, .97);
+            }
+
+            .glass-surface::before {
+                mix-blend-mode: normal;
+                opacity: .5;
             }
 
             .bottom-nav {
-                backdrop-filter: blur(48px) saturate(2.0) brightness(1.06);
-                -webkit-backdrop-filter: blur(48px) saturate(2.0) brightness(1.06);
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: rgba(255, 255, 255, .95);
+            }
+
+            .dark .bottom-nav {
+                background: rgba(24, 24, 26, .97);
             }
         }
 
@@ -1115,21 +1114,6 @@
                 animation-duration: 0.001ms !important;
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.001ms !important;
-            }
-            
-            /* Disable heavy effects for users with motion sensitivity */
-            .glass-surface,
-            .bottom-nav {
-                backdrop-filter: blur(20px) saturate(1.5);
-                -webkit-backdrop-filter: blur(20px) saturate(1.5);
-            }
-        }
-        
-        /* ── Chromium Mobile Scroll Fix ── */
-        /* Force GPU compositing to prevent black/blank areas during scroll */
-        @supports (-webkit-overflow-scrolling: touch) {
-            body {
-                -webkit-overflow-scrolling: touch;
             }
         }
 
@@ -1162,9 +1146,6 @@
             body {
                 background: #ffffff !important;
                 overflow: visible !important;
-                /* Reset performance properties for print */
-                transform: none !important;
-                will-change: auto !important;
             }
 
             /* Never print interactive chrome */
@@ -1252,7 +1233,7 @@
             <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
                 <!-- App Logo -->
                 <div class="relative">
-                    <img src="logo.png" alt="شعار مسارك الهندسى"
+                    <img src="logo.webp" alt="شعار مسارك الهندسى"
                         class="relative w-32 h-32 object-contain filter drop-shadow-xl transition-transform hover:scale-105 duration-300">
                 </div>
                 <!-- Text content -->
@@ -1355,6 +1336,8 @@
                                                 <div><strong>معادة:</strong> اختر هذا للمواد التي سبق لك دراستها. سيتم
                                                     إلغاء تقديرك القديم واحتساب الجديد فقط.</div>
                                             </div>
+                                            <div class="mt-2 text-xs" style="color: var(--warning-color);">
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1520,7 +1503,7 @@
                             </p>
                             <div class="flex justify-center p-2 border rounded-lg"
                                 style="background-color: var(--card-bg); border-color: var(--card-border);">
-                                <img src="transcript-guide.png" alt="شرح استمارة جامعة بنغازي"
+                                <img src="transcript-guide.webp" alt="شرح استمارة جامعة بنغازي"
                                     class="rounded-md shadow-md max-w-full h-auto" loading="lazy" decoding="async"
                                     onerror="if(this.dataset.fallback){this.style.display='none'}else{this.dataset.fallback='1';this.src='transcript-guide.jpg'}">
                             </div>
@@ -1583,9 +1566,7 @@
                                 style="font-size:.95rem;"><i data-feather="help-circle" class="w-4 h-4"
                                     style="color:var(--blue);flex-shrink:0;"></i> أسئلة شائعة</h3>
                             <ul class="list-disc list-inside space-y-3" style="color: var(--text-secondary)">
-                                <li><strong>ماذا أفعل في حالة الرسوب (F)؟</strong><br>عند إعادة المادة وتحصيل تقدير
-                                    جديد، سيتم إلغاء تأثير التقدير القديم (F) واحتساب التقدير الجديد فقط في المعدل
-                                    التراكمي. الساعات لا تضاف مرة أخرى.</li>
+                                <li><strong>ماذا أفعل في حالة الرسوب (F)؟</strong><br>إذا كانت ساعات المادة الراسبة محسوبة في إجمالي استمارتك، اختر «معادة» مع إدخال التقدير القديم F، وسيتم إلغاء تأثيره واحتساب الجديد فقط دون إضافة الساعات مرة أخرى. أما إذا كانت كليتك لا تحتسب ساعات الراسب في الإجمالي، فاختر «جديدة» لتُحتسب ساعاتها لأول مرة.</li>
                                 <li><strong>كيف يتم التعامل مع المواد المحذوفة (W)؟</strong><br>المواد التي يتم حذفها
                                     (Withdrawal) لا تدخل في حساب المعدل التراكمي ولا تؤثر عليه.</li>
                             </ul>
@@ -1612,7 +1593,7 @@
         <footer class="text-center mt-10 pb-4" style="color:var(--t2);font-size:.84rem;">
             <div class="flex items-center justify-center gap-6 mb-3">
                 <div class="flex items-center gap-3">
-                    <img src="logo.png" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
+                    <img src="logo.webp" alt="شعار المسار" class="w-20 h-20 object-contain drop-shadow-md">
                     <div style="text-align:right">
                         <strong>مسارك الهندسى</strong>
                         <div style="font-size:0.85rem;color:var(--text-secondary)">مخصص لطلاب كلية الهندسة - جامعة
@@ -1621,7 +1602,7 @@
                 </div>
                 <div style="width:1px; height:48px; background:var(--sep)"></div>
                 <div class="flex items-center gap-3">
-                    <img src="benghazi-university-logo.png" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
+                    <img src="uob-logo.webp" alt="شعار جامعة بنغازي" class="w-20 h-20 object-contain opacity-90">
                 </div>
             </div>
             <p>&copy; <span id="year"></span> - تم التطوير لخدمة طلاب كلية الهندسة - جامعة بنغازي.</p>
@@ -2664,7 +2645,7 @@
                 <div class="export-wrapper">
                     <div class="export-header">
                         <div class="side" style="text-align:right; display:flex; align-items:center; gap:0.6rem;">
-                            <img src="logo.png" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="logo.webp" alt="شعار مسارك الهندسي" style="width:52px;height:52px;object-fit:contain;">
                             <div>
                                 <div style="font-weight:900;">مسارك الهندسي</div>
                                 <div style="font-size:.82rem;color:#334155;">حاسبة المعدل الذكية</div>
@@ -2679,7 +2660,7 @@
                                 <div style="font-weight:900;">جامعة بنغازي</div>
                                 <div style="font-size:.82rem;color:#334155;">كلية الهندسة</div>
                             </div>
-                            <img src="benghazi-university-logo.png" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;">
+                            <img src="uob-logo.webp" alt="شعار الجامعة" style="width:52px;height:52px;object-fit:contain;">
                         </div>
                     </div>
 
